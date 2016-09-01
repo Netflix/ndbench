@@ -1,0 +1,340 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/av-icons.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+
+<!--
+@element ndb-instances
+@author kunalkundaje
+-->
+<dom-module id="ndb-instances">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            table {
+                border: 1px solid var(--ndb-silver);
+            }
+            tbody tr {
+                cursor: pointer;
+            }
+            tr.selected {
+                background-color: var(--ndb-yellow);
+            }
+            th {
+                border: 1px solid var(--ndb-silver);
+                color: var(--ndb-concrete);
+                font-weight: 400;
+                padding: 0.5em 0;
+            }
+            td {
+                border: 1px solid var(--ndb-silver);
+                padding: 0 0.5em;
+            }
+            td.hostname {
+                min-width: 340px;
+            }
+            td.centered {
+                text-align: center;
+            }
+
+            a {
+                color: var(--ndb-blue);
+                text-decoration: none;
+            }
+
+            paper-icon-button.start {
+                color: var(--ndb-green);
+            }
+            paper-icon-button.stop {
+                color: var(--ndb-red);
+            }
+            paper-icon-button[disabled] {
+                color: var(--ndb-silver);
+            }
+            paper-icon-button[hidden] {
+                display: none;
+            }
+
+            .running-pattern {
+                max-width: 84px;
+                margin-bottom: 0.5em;
+                font-size: 11px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+        </style>
+
+        <div hidden$="[[ !_hasInstanceDetails ]]">
+            <table border="1">
+                <thead>
+                    <tr on-click="_runBulkOperation">
+                        <th>Instance</th>
+                        <th>
+                            <div>Backfill</div>
+                            <div>
+                                <paper-icon-button class="start" icon="av:play-circle-outline"
+                                                   data-operation="startDataFillAsync"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <paper-icon-button class="stop" icon="av:pause-circle-outline"
+                                                   data-operation="stopDataFill"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                            </div>
+                        </th>
+                        <th>
+                            <div>Writes</div>
+                            <div>
+                                <paper-icon-button class="start" icon="av:play-circle-outline"
+                                                   data-operation="startWrites"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <paper-icon-button class="stop" icon="av:pause-circle-outline"
+                                                   data-operation="stopWrites"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                            </div>
+                        </th>
+                        <th>
+                            <div>Reads</div>
+                            <div>
+                                <paper-icon-button class="start" icon="av:play-circle-outline"
+                                                   data-operation="startReads"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <paper-icon-button class="stop" icon="av:pause-circle-outline"
+                                                   data-operation="stopReads"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                            </div>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template is="dom-repeat" items="[[ _instanceDetails ]]" as="instance"
+                              sort="_sortInstances">
+                        <tr data-instance="[[ instance ]]"
+                            on-click="_runOperation"
+                            class$="[[ _getClassForInstanceRow(instance, selectedInstance) ]]">
+                            <td class="hostname"><a href="#">[[ instance.HostName ]]</a></td>
+                            <td class="centered">
+                                <paper-icon-button class="start" icon="av:play-circle-filled"
+                                                   data-operation="startDataFillAsync"
+                                                   hidden$="[[ instance.IsBackfillRunning ]]"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <paper-icon-button class="stop" icon="av:pause-circle-filled"
+                                                   data-operation="stopDataFill"
+                                                   hidden$="[[ !instance.IsBackfillRunning ]]"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                            </td>
+                            <td class="centered">
+                                <paper-icon-button class="start" icon="av:play-circle-filled"
+                                                   data-operation="startWrites"
+                                                   hidden$="[[ instance.IsWritesRunning ]]"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <paper-icon-button class="stop" icon="av:pause-circle-filled"
+                                                   data-operation="stopWrites"
+                                                   hidden$="[[ !instance.IsWritesRunning ]]"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <div hidden$="[[ !instance.IsWritesRunning ]]"
+                                     class="running-pattern">
+                                    [[ instance.RunningWriteLoadPattern ]]
+                                </div>
+                            </td>
+                            <td class="centered">
+                                <paper-icon-button class="start" icon="av:play-circle-filled"
+                                                   data-operation="startReads"
+                                                   hidden$="[[ instance.IsReadsRunning ]]"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <paper-icon-button class="stop" icon="av:pause-circle-filled"
+                                                   data-operation="stopReads"
+                                                   hidden$="[[ !instance.IsReadsRunning ]]"
+                                                   disabled$="[[ !_isDriverConnected(instance) ]]">
+                                </paper-icon-button>
+                                <div hidden$="[[ !instance.IsReadsRunning ]]"
+                                     class="running-pattern">
+                                    [[ instance.RunningReadLoadPattern ]]
+                                </div>
+                            </td>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'ndb-instances',
+
+            properties: {
+                /**
+                 * List of Instances in the selected Cluster.
+                 * This is an array of Hostname/IP strings.
+                 */
+                instances: {
+                    type: Array,
+                },
+                /**
+                 * The currently selected Instance.
+                 */
+                selectedInstance: {
+                    type: Object,
+                    notify: true,
+                },
+                /**
+                 * When false, this element is disabled and cannot be interacted with.
+                 */
+                enabled: {
+                    type: Boolean,
+                    value: false,
+                },
+                /**
+                 * List of Instance details.
+                 * Each item in this list is used to generate a row in the table of Instances.
+                 */
+                _instanceDetails: {
+                    type: Array,
+                },
+                /**
+                 * Returns true if the at least one Instance has its details populated.
+                 */
+                _hasInstanceDetails: {
+                    type: Boolean,
+                    value: false,
+                    computed: '_computeHasInstanceDetails(_instanceDetails.*)',
+                },
+            },
+
+            observers: [
+                '_refreshDebounced(instances, enabled)',
+            ],
+
+            refresh() {
+                this._fetchInstanceDetails();
+            },
+
+            _refreshDebounced() {
+                this.selectedInstance = null;
+                this.debounce('_fetchInstanceDetails', this._fetchInstanceDetails, 250);
+            },
+
+            _fetchInstanceDetails() {
+                this._instanceDetails = [];
+
+                if (!this.instances) {
+                    return;
+                }
+
+                this.instances.forEach(instanceHost => {
+                    fetch(`//${instanceHost}/REST/ndbench/driver/getserverstatus`)
+                        .then(response => response.json())
+                        .then(status => {
+                            status.HostName = instanceHost;
+                            this.push('_instanceDetails', status);
+                        });
+                });
+            },
+
+            /**
+             * Fires the `run-operation` event to ask the <ndb-runner> component to
+             * attempt to run the given operation on the Instance that was clicked on.
+             */
+            _runOperation(e) {
+                e.preventDefault();
+
+                const target = Polymer.dom(e).localTarget;
+                const operation = target.getAttribute('data-operation');
+                const instance = e.currentTarget.dataInstance;
+
+                if (!!operation) {
+                    target.disabled = true;
+                    this.fire('run-operation', {
+                        operation: operation,
+                        instances: [instance]
+                    });
+                }
+
+                this.selectedInstance = instance;
+            },
+
+            /**
+             * Fires the `run-operation` event to ask the <ndb-runner> component to
+             * attempt to run the given operation on all Instances.
+             */
+            _runBulkOperation(e) {
+                e.preventDefault();
+
+                const target = Polymer.dom(e).localTarget;
+                const operation = target.getAttribute('data-operation');
+                if (!operation) {
+                    return;
+                }
+
+                this.fire('run-operation', {
+                    operation: operation,
+                    instances: this._instanceDetails
+                });
+            },
+
+            /**
+             * Returns true if a Driver is connected to the given Instance.
+             */
+            _isDriverConnected(instance) {
+                return instance.RunningDriver !== 'NA';
+            },
+
+            /**
+             * Returns `selected` if the given Instance is the same as the selected Instance.
+             * This highlights the currently selected Instance in the table.
+             */
+            _getClassForInstanceRow(instance) {
+                if (!!this.selectedInstance &&
+                    this.selectedInstance.HostName === instance.HostName) {
+                    return 'selected';
+                }
+                return '';
+            },
+
+            /**
+             * Sorts Instances in ascending order of their hostnames
+             */
+            _sortInstances(instance1, instance2) {
+                return instance1.HostName.localeCompare(instance2.HostName);
+            },
+
+            /**
+             * Returns true if the at least one Instance has its details populated.
+             */
+            _computeHasInstanceDetails() {
+                return !!this._instanceDetails && this._instanceDetails.length > 0;
+            },
+        });
+    </script>
+</dom-module>

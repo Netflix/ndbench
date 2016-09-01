@@ -1,0 +1,183 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-flex-layout/iron-flex-layout-classes.html">
+<link rel="import" href="../bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="../bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../bower_components/iron-icons/image-icons.html">
+<link rel="import" href="ndb-common.html">
+<link rel="import" href="ndb-cluster-selector.html">
+<link rel="import" href="ndb-driver-selector.html">
+<link rel="import" href="ndb-runner.html">
+<link rel="import" href="ndb-stats.html">
+
+<!--
+@element ndbench-ui-app
+@author kunalkundaje
+-->
+<dom-module id="ndbench-ui-app">
+    <template>
+        <style>
+            :host {
+                display: block;
+                height: 100%;
+                background-color: var(--ndb-seashell);
+            }
+
+            paper-toolbar {
+                --paper-toolbar-background: var(--ndb-gray);
+            }
+            paper-toolbar > paper-icon-button {
+                margin-right: 1em;
+            }
+
+            .content {
+                display: flex;
+                flex-flow: row wrap;
+                padding: var(--ndb-standard-space);
+            }
+            .col-left {
+                min-width: 700px;
+                flex: 1 1 auto;
+                margin-right: var(--ndb-standard-space);
+            }
+            .col-right {
+                min-width: 400px;
+                flex: 1 1 33%;
+            }
+        </style>
+
+        <paper-header-panel class="flex">
+            <paper-toolbar>
+                <paper-icon-button icon="image:tune"></paper-icon-button>
+                <h1 class="title">NDBench Runner</h1>
+            </paper-toolbar>
+
+            <div class="content">
+                <div class="col-left">
+                    <ndb-cluster-selector selected-cluster="{{ cluster }}">
+                    </ndb-cluster-selector>
+
+                    <ndb-driver-selector instances="[[ instances ]]"
+                                         enabled="[[ _hasInstances ]]"
+                                         is-driver-connected="{{ isDriverConnected }}">
+                    </ndb-driver-selector>
+
+                    <ndb-runner instances="[[ instances ]]"
+                                selected-instance="{{ selectedInstance }}"
+                                enabled="[[ isDriverConnected ]]">
+                    </ndb-runner>
+                </div>
+
+                <template is="dom-if" if="[[ selectedInstance ]]" restamp>
+                    <div class="col-right">
+                        <ndb-stats instance="[[ selectedInstance ]]">
+                        </ndb-stats>
+                    </div>
+                </template>
+
+            </div>
+        </paper-header-panel>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'ndbench-ui-app',
+
+            properties: {
+                /**
+                 * The selected Cluster name.
+                 * This is set by the <ndb-cluster-selector> component when
+                 * the user selects a Cluster.
+                 */
+                cluster: {
+                    type: String,
+                },
+                /**
+                 * Indicates whether a Driver is connected to the selected Cluster.
+                 * This is set by the <ndb-driver-selector> component when the user
+                 * selects and connects a Driver.
+                 */
+                isDriverConnected: {
+                    type: Boolean,
+                    value: false,
+                },
+                /**
+                 * List of Instances in the selected Cluster.
+                 * This is an array of Hostname/IP strings.
+                 */
+                instances: {
+                    type: Array,
+                },
+                /**
+                 * The currently selected Instance.
+                 * This is set by the <ndb-runner> component when the user selects
+                 * an Instance from the table of available Instances.
+                 */
+                selectedInstance: {
+                    type: Object,
+                },
+                /**
+                 * Returns true if the selected Cluster has at least one Instance.
+                 */
+                _hasInstances: {
+                    type: Boolean,
+                    value: false,
+                    computed: '_computeHasInstances(instances)',
+                },
+            },
+
+            observers: [
+                '_clusterChanged(cluster)',
+            ],
+
+            /**
+             * Called when the selected Cluster changes
+             */
+            _clusterChanged() {
+                this._fetchInstancesInCluster();
+            },
+
+            /**
+             * Gets the list of Instances in the selected Cluster
+             */
+            _fetchInstancesInCluster() {
+                this.instances = null;
+
+                if (!this.cluster) {
+                    return;
+                }
+
+                fetch(`/REST/ndbench/cluster/${this.cluster}/list`)
+                    .then(response => response.json())
+                    .then(instances => {
+                        this.instances = instances;
+                    });
+            },
+
+            /**
+             * Returns true if the selected Cluster has at least one Instance.
+             */
+            _computeHasInstances(instances) {
+                return !!instances && instances.length > 0;
+            },
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,12 @@
+dependencies {
+    compile project(':ndbench-api')
+    //Datastax - Cassandra Java driver
+    compile group: 'com.datastax.cassandra', name: 'cassandra-driver-core', version: '3.1.0'
+
+    //Netflix - Cassandra Astyanax
+    compile group: 'com.netflix.astyanax', name: 'astyanax-core', version: 'latest.release'
+    compile group: 'com.netflix.astyanax', name: 'astyanax-thrift', version: 'latest.release'
+    compile group: 'com.netflix.astyanax', name: 'astyanax-cassandra', version: 'latest.release'
+
+
+}

@@ -1,0 +1,30 @@
+apply plugin: 'war'
+apply plugin: "org.akhikhl.gretty"
+
+dependencies {
+    compile project(':ndbench-core')
+    compile project(':ndbench-api')
+    compile project(':ndbench-cass-plugins')
+    compile project(':ndbench-dyno-plugins')
+    compile project(':ndbench-sample-plugins')
+    compile 'com.google.inject.extensions:guice-servlet:4.0'
+    compile 'com.google.inject:guice:4.0'
+
+}
+// Gretty allows us to run tomcat from the command line using the "tomcatRun" task.
+Properties development_properties = new Properties()
+development_properties.load(new FileInputStream(file("src/main/resources/laptop.properties")))
+gretty {
+    contextPath = '/'
+    servletContainer = 'tomcat8'
+    systemProperties = development_properties
+    scanDirs = ['**/src/main/webapp/**']
+    scanDependencies = true
+    // More properties can be found here:
+    // http://akhikhl.github.io/gretty-doc/Gretty-configuration.html
+}
+configurations {
+      grettyRunnerTomcat8 {
+           exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
+         }
+    }

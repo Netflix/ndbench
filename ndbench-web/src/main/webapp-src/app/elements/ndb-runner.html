@@ -1,0 +1,239 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="ndb-card.html">
+<link rel="import" href="ndb-instances.html">
+
+<!--
+@element ndb-runner
+@author kunalkundaje
+-->
+<dom-module id="ndb-runner">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            vaadin-combo-box {
+                max-width: var(--vaadin-combo-box-max-width);
+            }
+
+            paper-input {
+                display: inline-block;
+                width: 50%;
+                max-width: 190px;
+                margin-right: var(--ndb-standard-space);
+            }
+
+            ndb-instances {
+                margin-top: var(--ndb-standard-space);
+            }
+        </style>
+
+        <ndb-card heading="3. Run Load Tests" enabled="[[ enabled ]]">
+            <vaadin-combo-box label="Load Pattern"
+                              items="[[ _loadPatterns ]]"
+                              value="{{ _selectedLoadPattern }}">
+                <!-- Hide the clear button to prevent no Load Pattern from being selected -->
+                <span class="clear-button" hidden></span>
+            </vaadin-combo-box>
+
+            <template is="dom-if" if="[[ _isSlidingWindow ]]">
+                <paper-input label="Window Size"
+                             type="number" min="0" step="10"
+                             value="{{ _slidingWindowParams.windowSize }}">
+                </paper-input>
+
+                <paper-input label="Test Duration"
+                             type="number" min="0" step="10"
+                             value="{{ _slidingWindowParams.durationInSec }}">
+                    <div suffix>seconds</div>
+                </paper-input>
+            </template>
+
+            <ndb-instances id="ndbInstances"
+                           instances="[[ instances ]]"
+                           selected-instance="{{ selectedInstance }}"
+                           enabled="[[ enabled ]]"
+                           on-run-operation="_runOperation">
+            </ndb-instances>
+        </ndb-card>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'ndb-runner',
+
+            properties: {
+                /**
+                 * List of Instances in the selected Cluster.
+                 * This is an array of Hostname/IP strings.
+                 */
+                instances: {
+                    type: Array,
+                },
+                /**
+                 * The currently selected Instance.
+                 * This is set by the <ndb-instances> component when the user selects
+                 * an Instance from the table of available Instances.
+                 */
+                selectedInstance: {
+                    type: Object,
+                    notify: true,
+                },
+                /**
+                 * When false, this element is disabled and cannot be interacted with.
+                 */
+                enabled: {
+                    type: Boolean,
+                    value: false,
+                },
+                /**
+                 * List of available Load Patterns to display in the Load Pattern
+                 * selector dropdown.
+                 */
+                _loadPatterns: {
+                    type: Array,
+                },
+                /**
+                 * The selected Load Pattern.
+                 */
+                _selectedLoadPattern: {
+                    type: String,
+                },
+                /**
+                 * Returns true if the SLIDING_WINDOW Load Pattern is selected.
+                 */
+                _isSlidingWindow: {
+                    type: Boolean,
+                    value: false,
+                    computed: '_computeIsSlidingWindow(_selectedLoadPattern)',
+                },
+                /**
+                 * A map of parameters for the SLIDING_WINDOW Load Pattern.
+                 */
+                _slidingWindowParams: {
+                    type: Object,
+                },
+            },
+
+            observers: [
+                '_instancesChanged(instances)',
+            ],
+
+            ready() {
+                // Set default values for the SLIDING_WINDOW Load Pattern parameters.
+                this._slidingWindowParams = {
+                    windowSize: 100,
+                    durationInSec: 300,
+                };
+            },
+
+            /**
+             * Called when the list of Instances changes, typically when a
+             * different Cluster is selected.
+             */
+            _instancesChanged() {
+                this._fetchAvailableLoadPatterns();
+            },
+
+            /**
+             * Gets the list of available Load Patterns to display in the
+             * Load Patterns selector dropdown.
+             */
+            _fetchAvailableLoadPatterns() {
+                this._loadPatterns = null;
+                this._selectedLoadPattern = null;
+
+                if (!this.instances) {
+                    return;
+                }
+
+                const instanceHost = this.instances[0];
+                fetch(`//${instanceHost}/REST/ndbench/driver/getserverstatus`)
+                    .then(response => response.json())
+                    .then(serverStatus => {
+                        this._loadPatterns = serverStatus.LoadPatterns.sort();
+                        this._selectedLoadPattern = this._loadPatterns[0];
+                    });
+            },
+
+            /**
+             * Performs the selected operation on the selected Instances.
+             * The parameters are encapsulated in the payload of the `run-operation` event
+             * that is fired by the <ndb-instances> component.
+             */
+            _runOperation(e) {
+                const params = e.detail;
+                this._runOperationOnInstances(params.operation, params.instances);
+            },
+
+            /**
+             * Performs the selected operation on the selected Instances.
+             */
+            _runOperationOnInstances(operation, instances) {
+                // The `startReads` and `startWrites` operations require the selected
+                // Load Pattern and any associated parameters to be passed as query params to the
+                // API endpoint.
+                let queryParams = '';
+                if (operation === 'startReads' || operation === 'startWrites') {
+                    const loadPattern = this._getSelectedLoadPattern();
+
+                    queryParams = `?loadPattern=${loadPattern.type}`;
+                    Object.keys(loadPattern.params).forEach(paramName => {
+                        const paramValue = loadPattern.params[paramName];
+                        queryParams += `&${paramName}=${paramValue}`;
+                    });
+                }
+
+                const requests = instances.map(instance =>
+                    fetch(`//${instance.HostName}/REST/ndbench/driver/${operation}${queryParams}`));
+
+                Promise.all(requests)
+                    .then(() => this.$.ndbInstances.refresh());
+            },
+
+            /**
+             * Returns an object containing the selected Load Pattern type, and any
+             * parameters necessary for that Load Pattern.
+             */
+            _getSelectedLoadPattern() {
+                const loadPattern = {
+                    type: this._selectedLoadPattern,
+                    params: {},
+                };
+                if (this._isSlidingWindow) {
+                    loadPattern.params = this._slidingWindowParams;
+                }
+                return loadPattern;
+            },
+
+            /**
+             * Returns true if the SLIDING_WINDOW Load Pattern is selected.
+             */
+            _computeIsSlidingWindow() {
+                return this._selectedLoadPattern === 'SLIDING_WINDOW';
+            },
+        });
+    </script>
+</dom-module>

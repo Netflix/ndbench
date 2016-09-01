@@ -1,0 +1,332 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+
+<!--
+@element ndb-driver-settings
+@author kunalkundaje
+-->
+<dom-module id="ndb-driver-settings">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            #container {
+                display: flex;
+                position: relative;
+                padding: 0.5em 1em 1em 1em;
+                border: 1px solid var(--ndb-silver);
+                background-color: var(--ndb-seashell);
+            }
+
+            .col {
+                flex: 1 1 50%;
+            }
+
+            h3 {
+                font-weight: 400;
+                color: var(--ndb-gray);
+            }
+            p {
+                font-size: 14px;
+                font-weight: 300;
+                color: var(--ndb-gray);
+                margin-right: 1em;
+            }
+            table {
+                font-family: var(--ndb-monospace-font-face);
+                font-size: 13px;
+                margin-right: var(--ndb-standard-space);
+            }
+            label {
+                margin-right: 1em;
+            }
+            input[type=number] {
+                font-family: var(--ndb-monospace-font-face);
+                font-size: 13px;
+                padding: 0.25em 0.5em;
+                width: 84px;
+                border: 1px solid var(--ndb-silver);
+            }
+            input[type=checkbox] {
+                width: 16px;
+                height: 16px;
+                margin: 0.5em 0;
+            }
+            input[readonly] {
+                background-color: var(--ndb-seashell);
+                color: var(--ndb-gray);
+            }
+
+            paper-button {
+                position: absolute;
+                bottom: 1em;
+                right: 1em;
+                background-color: var(--ndb-blue);
+                color: var(--ndb-seashell);
+            }
+            paper-button[disabled] {
+                background-color: var(--ndb-silver);
+                color: var(--ndb-concrete);
+            }
+        </style>
+
+        <div id="container">
+            <div class="col">
+                <h3>Initial Settings</h3>
+                <p>These settings can only be changed before connecting a Driver.</p>
+                <table>
+                    <tbody>
+                        <template is="dom-repeat" items="[[ _initialConfig ]]" as="configItem">
+                            <tr>
+                                <td><label>[[ configItem.label ]]</label></td>
+                                <td>
+                                    <template is="dom-if" if="[[ _isNumeric(configItem.type) ]]" restamp>
+                                        <input type="number"
+                                               value="{{ configItem.value::input }}"
+                                               readonly$="[[ isDriverConnected ]]"
+                                               on-input="_markAsEdited" />
+                                    </template>
+                                    <template is="dom-if" if="[[ _isBoolean(configItem.type) ]]" restamp>
+                                        <input type="checkbox"
+                                               checked="{{ configItem.value::change }}"
+                                               disabled$="[[ isDriverConnected ]]"
+                                               on-change="_markAsEdited" />
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col">
+                <h3>Runtime Settings</h3>
+                <p>These settings can be changed at any time while a Load Test is running.</p>
+                <table>
+                    <tbody>
+                        <template is="dom-repeat" items="[[ _runtimeConfig ]]" as="configItem">
+                            <tr>
+                                <td><label>[[ configItem.label ]]</label></td>
+                                <td>
+                                    <template is="dom-if" if="[[ _isNumeric(configItem.type) ]]" restamp>
+                                        <input type="number"
+                                               value="{{ configItem.value::input }}"
+                                               readonly$="[[ !isDriverConnected ]]"
+                                               on-input="_markAsEdited" />
+                                    </template>
+                                    <template is="dom-if" if="[[ _isBoolean(configItem.type) ]]" restamp>
+                                        <input type="checkbox"
+                                               checked="{{ configItem.value::change }}"
+                                               disabled$="[[ !isDriverConnected ]]"
+                                               on-change="_markAsEdited" />
+                                    </template>
+                                </td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
+
+            <paper-button raised disabled$="[[ !_canSaveSettings ]]"
+                          on-click="_saveSettings">Save Settings</paper-button>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'ndb-driver-settings',
+
+            properties: {
+                /**
+                 * List of Instances in the selected Cluster.
+                 * This is an array of Hostname/IP strings.
+                 */
+                instances: {
+                    type: Array,
+                },
+                /**
+                 * Returns true if a Driver is connected to the selected Cluster.
+                 */
+                isDriverConnected: {
+                    type: Boolean,
+                    value: false,
+                },
+                /**
+                 * List of initial settings that can only be changed before a Driver is
+                 * connected.
+                 */
+                _initialConfig: {
+                    type: Array,
+                },
+                /**
+                 * List of runtime settings that can be changed after a Driver is connected
+                 * at any time while a Load Test is running.
+                 */
+                _runtimeConfig: {
+                    type: Array,
+                },
+                /**
+                 * Returns true if any settings have been edited and need to be saved.
+                 */
+                _canSaveSettings: {
+                    type: Boolean,
+                    value: false,
+                },
+            },
+
+            observers: [
+                '_instancesChanged(instances)',
+            ],
+
+            /**
+             * Called when the list of Instances changes, typically when a
+             * different Cluster is selected.
+             */
+            _instancesChanged() {
+                this._getSettings();
+            },
+
+            /**
+             * Gets the list of Initial and Runtime settings and their currently set or
+             * default values.
+             */
+            _getSettings() {
+                this._initialConfig = null;
+                this._runtimeConfig = null;
+                this._canSaveSettings = false;
+
+                if (!this.instances) {
+                    return;
+                }
+
+                // Get the list of Initial Settings
+                const instanceHost = this.instances[0];
+                fetch(`//${instanceHost}/REST/ndbench/config/list`)
+                    .then(response => response.json())
+                    .then(driverConfig => {
+                        this._initialConfig = this._configObjToArray(driverConfig);
+                    });
+
+                // Get the list of Runtime Settings
+                fetch(`//${instanceHost}/REST/ndbench/config/tunable/list`)
+                    .then(response => response.json())
+                    .then(tunableConfig => {
+                        this._runtimeConfig = this._configObjToArray(tunableConfig);
+                    });
+            },
+
+            /**
+             * Attempts to push the updates set of settings to all Instances in the
+             * selected Cluster.
+             */
+            _saveSettings() {
+                let requestBody = null;
+                let requestAPI = null;
+
+                if (this.isDriverConnected) {
+                    // If a Driver is already connected, only Runtime settings are POSTed.
+                    requestBody = this._configArrayToObj(this._runtimeConfig);
+                    requestAPI = `REST/ndbench/config/tunable/set`;
+                } else {
+                    // If a Driver is not connected, all Initial settings are POSTed.
+                    requestBody = this._configArrayToObj(this._initialConfig);
+                    requestAPI = `REST/ndbench/config/set`;
+                }
+
+                const requests = this.instances.map(instanceHost => (
+                    fetch(`//${instanceHost}/${requestAPI}`, {
+                        method: 'POST',
+                        headers: new Headers({
+                            'Content-Type': 'application/json',
+                        }),
+                        body: JSON.stringify(requestBody),
+                    })
+                ));
+
+                Promise.all(requests)
+                    .then(responses => {
+                        if (responses.every(response => response.ok)) {
+                            this._getSettings();
+                        }
+                    });
+            },
+
+            /**
+             * Enables the Save Settings button when any settings are edited.
+             */
+            _markAsEdited() {
+                this._canSaveSettings = true;
+            },
+
+            /**
+             * Converts a map of settings to an array to be able to generate the
+             * editor DOM nodes in a <dom-repeat> loop.
+             */
+            _configObjToArray(configObj) {
+                return Object.keys(configObj)
+                            .map(configName => ({
+                                label: configName,
+                                value: configObj[configName],
+                                type: typeof(configObj[configName]),
+                            }))
+                            .sort((c1, c2) =>
+                                c2.type.localeCompare(c1.type) ||
+                                c1.label.localeCompare(c2.label));
+            },
+
+            /**
+             * Converts an array of settings to a map that can then be POSTed to
+             * the save settings API endpoints.
+             */
+            _configArrayToObj(configArr) {
+                const configObj = {};
+                configArr.forEach(configItem => {
+                    let configItemValue = configItem.value;
+                    if (this._isNumeric(configItem.type)) {
+                        configItemValue = parseInt(configItem.value, 10);
+                    }
+
+                    configObj[configItem.label] = configItemValue;
+                });
+                return configObj;
+            },
+
+            /**
+             * Returns true if the data type of a setting is a number.
+             * <input type="number" /> elements are generated as editors for such settings.
+             */
+            _isNumeric(type) {
+                return type === 'number';
+            },
+
+            /**
+             * Returns true if the data type of a setting is a boolean.
+             * <input type="checkbox" /> elements are generated as editors for such settings.
+             */
+            _isBoolean(type) {
+                return type === 'boolean';
+            },
+        });
+    </script>
+</dom-module>

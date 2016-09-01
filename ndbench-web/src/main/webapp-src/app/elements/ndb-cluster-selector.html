@@ -1,0 +1,128 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="ndb-common.html">
+<link rel="import" href="ndb-card.html">
+
+<!--
+@element ndb-cluster-selector
+@author kunalkundaje
+-->
+<dom-module id="ndb-cluster-selector">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            vaadin-combo-box {
+                max-width: var(--vaadin-combo-box-max-width);
+            }
+        </style>
+
+        <ndb-card heading="1. Select a Cluster">
+            <!-- Cluster selector dropdown -->
+            <vaadin-combo-box label="Cluster"
+                              items="[[ _clusters ]]"
+                              value="{{ selectedCluster }}">
+            </vaadin-combo-box>
+        </ndb-card>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'ndb-cluster-selector',
+
+            properties: {
+                /**
+                 * The selected Cluster name.
+                 */
+                selectedCluster: {
+                    type: String,
+                    notify: true,
+                },
+                /**
+                 * List of available Cluster names to display in the Cluster
+                 * selector dropdown.
+                 */
+                _clusters: {
+                    type: Array,
+                },
+            },
+
+            observers: [
+                '_setClusterQueryParam(selectedCluster)',
+            ],
+
+            ready() {
+                this._fetchAvailableClusters();
+            },
+
+            /**
+             * Gets the list of available Cluster names to display in the
+             * Cluster selector dropdown.
+             */
+            _fetchAvailableClusters() {
+                fetch('/REST/ndbench/cluster/list')
+                    .then(response => response.json())
+                    .then(clusters => {
+                        this._clusters = clusters.sort();
+                        this._checkQueryParamsForCluster();
+                    });
+            },
+
+            /**
+             * Updates the `cluster` query parameter in the URL bar to reflect the currently
+             * selected Cluster.
+             */
+            _setClusterQueryParam() {
+                if (!!this.selectedCluster &&
+                    this.selectedCluster !== this._getClusterQueryParam()) {
+                    const base = window.location.href.replace(window.location.search, '');
+                    window.history.replaceState({}, '', `${base}?cluster=${this.selectedCluster}`);
+                }
+            },
+
+            /**
+             * Gets the `cluster` query parameter from the URL bar.
+             * Returns `null` if the `cluster` query parameter doesn't exist.
+             */
+            _getClusterQueryParam() {
+                const clusterMatch = window.location.search.match(/cluster=([^&#]*)/);
+                if (clusterMatch && clusterMatch.length > 1) {
+                    return clusterMatch[1];
+                }
+                return null;
+            },
+
+            /**
+             * Sets the selected Cluster to the value of the `cluster` query parameter,
+             * if one exists.
+             */
+            _checkQueryParamsForCluster() {
+                const clusterQueryParam = this._getClusterQueryParam();
+                if (this._clusters.includes(clusterQueryParam)) {
+                    this.selectedCluster = clusterQueryParam;
+                }
+            },
+        });
+    </script>
+</dom-module>

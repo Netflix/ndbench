@@ -1,0 +1,277 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="ndb-card.html">
+
+<!--
+@element ndb-stats
+@author kunalkundaje
+-->
+<dom-module id="ndb-stats">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            h4 {
+                font-weight: 300;
+            }
+
+            pre {
+                font-family: var(--ndb-monospace-font-face);
+                font-size: 13px;
+                margin-top: var(--ndb-standard-space);
+                padding: 0.5em 1em 1em 1em;
+                border: 1px solid var(--ndb-silver);
+                background-color: var(--ndb-seashell);
+            }
+
+            #legend {
+                margin-top: var(--ndb-standard-space);
+            }
+
+            #chart {
+                margin-top: var(--ndb-standard-space);
+                margin-bottom: var(--ndb-standard-space);
+            }
+
+            .chart-toggle-item {
+                display: inline-block;
+                font-size: 14px;
+                min-width: 132px;
+            }
+
+            paper-button {
+                margin-top: var(--ndb-standard-space);
+            }
+        </style>
+
+        <ndb-card heading="Instance Statistics">
+            <h4>[[ instance.HostName ]]</h4>
+
+            <div id="legend"></div>
+
+            <div id="chart" style="width: 100%;"
+                 on-mouseover="_pauseChartUpdates"
+                 on-mouseout="_resumeChartUpdates"></div>
+
+            <div id="chart-toggles">
+                <template is="dom-repeat" items="[[ _metricToggles ]]" as="metric">
+                    <span class="chart-toggle-item">
+                        <input type="checkbox"
+                               data-metric-index$="[[ index ]]"
+                               id$="[[ metric.label ]]-toggle"
+                               checked="{{ metric.visibility::change }}"
+                               on-click="_toggleMetric" />
+                        <label for$="[[ metric.label ]]-toggle">[[ metric.label ]]</label>
+                    </span>
+                </template>
+            </div>
+
+            <paper-button raised on-click="_toggleRawStats">
+                <span hidden$="[[ _showRawStats ]]">Show Stats JSON</span>
+                <span hidden$="[[ !_showRawStats ]]">Hide Stats JSON</span>
+            </paper-button>
+
+            <iron-collapse opened="[[ _showRawStats ]]">
+                <pre>[[ _rawStats ]]</pre>
+            </iron-collapse>
+        </ndb-card>
+    </template>
+
+    <script src="../bower_components/dygraphs/dygraph-combined.js"></script>
+    <script>
+        Polymer({
+
+            is: 'ndb-stats',
+
+            properties: {
+                /**
+                 * The currently selected Instance.
+                 * This is set by the <ndb-instances> component when the user selects
+                 * an Instance from the table of available Instances.
+                 */
+                instance: {
+                    type: Object,
+                },
+                /**
+                 * The raw stats for the selected Instance as formatted JSON.
+                 */
+                _rawStats: {
+                    type: String,
+                },
+                /**
+                 * When true, the raw stats are displayed as formatted JSON.
+                 */
+                _showRawStats: {
+                    type: Boolean,
+                    value: false,
+                },
+                /**
+                 * List of toggleable Metrics.
+                 * Each item in the array consists of a label and a boolean value indicating
+                 * whether that metric should be plotted on the chart.
+                 */
+                _metricToggles: {
+                    type: Array,
+                },
+                /**
+                 * Returns true if the chart should be updated.
+                 */
+                _shouldUpdateChart: {
+                    type: Boolean,
+                    value: true,
+                },
+            },
+
+            observers: [
+                '_instanceChanged(instance)',
+            ],
+
+            /**
+             * Called when the selected Instance changes, typically when the user
+             * selects a different Instance from the table, or when the selected Cluster changes.
+             */
+            _instanceChanged() {
+                this._reset();
+
+                if (!this.instance) {
+                    return;
+                }
+
+                this._fetchStats();
+                this._refreshInterval = window.setInterval(() => {
+                    this._fetchStats();
+                }, 1000);
+            },
+
+            _reset() {
+                window.clearInterval(this._refreshInterval);
+                this._rawStats = null;
+                this._chart = null;
+                this._metricToggles = null;
+                this._chartData = [];
+            },
+
+            _fetchStats() {
+                const instanceHost = this.instance.HostName;
+                fetch(`//${instanceHost}/REST/ndbench/driver/stats`)
+                    .then(response => response.json())
+                    .then(stats => {
+                        this._rawStats = JSON.stringify(stats, undefined, 4);
+
+                        this._setMetricToggles(stats);
+                        this._updateChart(stats);
+                    });
+            },
+
+            _setMetricToggles(stats) {
+                if (!!this._metricToggles) {
+                    return;
+                }
+
+                const savedState = this._loadMetricToggleState();
+                this._metricToggles = Object.keys(stats)
+                    .map(metricName => ({
+                        label: metricName,
+                        visibility: savedState[metricName] || false,
+                    }));
+            },
+
+            _updateChart(stats) {
+                const dataPoint = [new Date()];
+                Object.keys(stats).forEach(metricName => {
+                    dataPoint.push(stats[metricName]);
+                });
+                this._chartData.push(dataPoint);
+
+                // Only keep the most recent 1800 points, which is ~30 mins of data
+                // if updated every second.
+                if (this._chartData.length > 1800) {
+                    this._chartData.shift();
+                }
+
+                if (!this._chart) {
+                    this._chart = new window.Dygraph(this.$.chart, this._chartData, {
+                        labels: ['Time'].concat(this._metricToggles.map(metric => metric.label)),
+                        visibility: this._metricToggles.map(metric => metric.visibility),
+                        legend: 'always',
+                        labelsDiv: this.$.legend,
+                    });
+                } else if (this._shouldUpdateChart) {
+                    this._chart.updateOptions({ file: this._chartData });
+                }
+            },
+
+            /**
+             * Shows/hides the raw stats JSON.
+             */
+            _toggleRawStats() {
+                this._showRawStats = !this._showRawStats;
+            },
+
+            /**
+             * Pauses updates to the chart.
+             */
+            _pauseChartUpdates() {
+                this._shouldUpdateChart = false;
+            },
+
+            /**
+             * Resumes updates to the chart.
+             */
+            _resumeChartUpdates() {
+                this._shouldUpdateChart = true;
+            },
+
+            /**
+             * Toggles the visibility of the selected Metric on the chart.
+             */
+            _toggleMetric(e) {
+                if (this._chart) {
+                    const seriesIndex = e.target.getAttribute('data-metric-index');
+                    this._chart.setVisibility(seriesIndex, e.target.checked);
+                    this.async(() => this._saveMetricToggleState(), 100);
+                }
+            },
+
+            /**
+             * Saves the state of Metrics toggles to local storage.
+             */
+            _saveMetricToggleState() {
+                const state = {};
+                this._metricToggles.forEach(metric => {
+                    state[metric.label] = metric.visibility;
+                });
+                window.localStorage.setItem('ndb-metric-toggle-state', JSON.stringify(state));
+            },
+
+            /**
+             * Retrieves the state of Metrics toggles from local storage.
+             */
+            _loadMetricToggleState() {
+                const savedState = window.localStorage.getItem('ndb-metric-toggle-state');
+                return savedState ? JSON.parse(savedState) : {};
+            },
+        });
+    </script>
+</dom-module>

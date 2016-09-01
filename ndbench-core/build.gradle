@@ -1,0 +1,20 @@
+dependencies {
+    compile "org.codehaus.groovy:groovy-all:latest.release"
+    compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
+    compile group: 'joda-time', name: 'joda-time', version: 'latest.release'
+
+    compile 'com.sun.jersey:jersey-bundle:1.19.1'
+    compile 'com.sun.jersey.contribs:jersey-multipart:1.19.1'
+    compile 'com.sun.jersey.contribs:jersey-guice:1.19.1'
+
+    compile group: 'com.owlike', name: 'genson', version: '1.4'
+
+
+    // For getting all implementations of an Interface
+    compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
+
+
+    compile  project(':ndbench-api')
+
+    compile 'junit:junit:latest.release'
+}

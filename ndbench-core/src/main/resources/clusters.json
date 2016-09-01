@@ -1,0 +1,4 @@
+{
+  "localhost": ["localhost:8080"]
+  //"Cluster1": ["Node1:8080","Node2:8080"]
+}

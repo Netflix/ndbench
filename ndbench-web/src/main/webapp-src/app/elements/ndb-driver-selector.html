@@ -1,0 +1,327 @@
+<!--
+ *
+ *  Copyright 2016 Netflix, Inc.
+ *
+ *     Licensed under the Apache License, Version 2.0 (the "License");
+ *     you may not use this file except in compliance with the License.
+ *     You may obtain a copy of the License at
+ *
+ *         http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *     Unless required by applicable law or agreed to in writing, software
+ *     distributed under the License is distributed on an "AS IS" BASIS,
+ *     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *     See the License for the specific language governing permissions and
+ *     limitations under the License.
+ *
+-->
+
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="ndb-card.html">
+<link rel="import" href="ndb-driver-settings.html">
+
+<!--
+@element ndb-driver-selector
+@author kunalkundaje
+-->
+<dom-module id="ndb-driver-selector">
+    <template>
+        <style>
+            :host {
+                display: block;
+            }
+
+            vaadin-combo-box {
+                max-width: var(--vaadin-combo-box-max-width);
+            }
+
+            #customScriptEditor {
+                width: 100%;
+                max-width: 640px;
+                margin-top: var(--ndb-standard-space);
+                font-family: var(--ndb-monospace-font-face);
+                font-size: 12px;
+            }
+
+            #connectionInfo {
+                max-width: 640px;
+                font-size: 14px;
+                font-weight: 300;
+            }
+
+            paper-button {
+                margin: 1em 1em 0 0;
+            }
+            paper-button.connect {
+                background-color: var(--ndb-green);
+                color: var(--ndb-seashell);
+            }
+            paper-button.disconnect {
+                background-color: var(--ndb-red);
+                color: var(--ndb-seashell);
+            }
+            paper-button[disabled] {
+                background-color: var(--ndb-silver);
+                color: var(--ndb-concrete);
+            }
+
+            ndb-driver-settings {
+                margin-top: var(--ndb-standard-space);
+                max-width: 640px;
+            }
+        </style>
+
+        <ndb-card heading="2. Connect a Driver" enabled="[[ enabled ]]">
+            <!-- Driver selector dropdown -->
+            <vaadin-combo-box label="Driver"
+                              items="[[ _drivers ]]"
+                              value="{{ _selectedDriver }}"
+                              readonly="[[ isDriverConnected ]]">
+            </vaadin-combo-box>
+
+            <!-- Custom initialization script editor -->
+            <div hidden$="[[ !_isCustomScript ]]">
+                <textarea id="customScriptEditor" rows="10"
+                          value="{{ _customScriptBody::input }}"></textarea>
+            </div>
+
+            <!-- Driver connection info -->
+            <div id="connectionInfo" hidden$="[[ !isDriverConnected ]]">
+                [[ _connectionInfo ]]
+            </div>
+
+            <!-- Toggle button to show/hide Driver settings -->
+            <paper-button raised on-click="_toggleDriverDetails">
+                <span hidden$="[[ _showDetails ]]">Update Settings</span>
+                <span hidden$="[[ !_showDetails ]]">Hide Settings</span>
+            </paper-button>
+
+            <!-- Buttons to connect/disconnect the selected Driver -->
+            <paper-button class="connect" raised
+                          hidden$="[[ isDriverConnected ]]"
+                          disabled$="[[ !_selectedDriver ]]"
+                          on-click="_connectDriver">
+                Connect Driver
+            </paper-button>
+            <paper-button class="disconnect" raised
+                          hidden$="[[ !isDriverConnected ]]"
+                          on-click="_disconnectDriver">
+                Disconnect Driver
+            </paper-button>
+
+            <!-- Collapsible section for Driver settings -->
+            <iron-collapse opened="[[ _showDetails ]]">
+                <ndb-driver-settings instances="[[ instances ]]"
+                                     is-driver-connected="[[ isDriverConnected ]]">
+                </ndb-driver-settings>
+            </iron-collapse>
+        </ndb-card>
+    </template>
+
+    <script>
+        Polymer({
+
+            is: 'ndb-driver-selector',
+
+            properties: {
+                /**
+                 * List of Instances in the selected Cluster.
+                 * This is an array of Hostname/IP strings.
+                 */
+                instances: {
+                    type: Array,
+                },
+                /**
+                 * When false, this element is disabled and cannot be interacted with.
+                 */
+                enabled: {
+                    type: Boolean,
+                    value: false,
+                },
+                /**
+                 * Returns true if a Driver is connected to the selected Cluster.
+                 */
+                isDriverConnected: {
+                    type: Boolean,
+                    value: false,
+                    notify: true,
+                },
+                /**
+                 * List of available Driver names to display in the Driver
+                 * selector dropdown.
+                 */
+                _drivers: {
+                    type: Array,
+                },
+                /**
+                 * The selected Driver name.
+                 */
+                _selectedDriver: {
+                    type: String,
+                },
+                /**
+                 * Returns true if the 'Custom Script' Driver option is selected.
+                 */
+                _isCustomScript: {
+                    type: Boolean,
+                    value: false,
+                    computed: '_computeIsCustomScript(_selectedDriver)',
+                },
+                /**
+                 * The body of the custom initialization script.
+                 * This is a block of Groovy code that is POSTed to the API.
+                 */
+                _customScriptBody: {
+                    type: String,
+                    value: '// Paste your custom Groovy initialization script here',
+                },
+                /**
+                 * The Connection Info string when a Driver is connected to the Cluster.
+                 */
+                _connectionInfo: {
+                    type: String,
+                },
+                /**
+                 * When true, the Driver settings expander is opened.
+                 */
+                _showDetails: {
+                    type: Boolean,
+                    value: false,
+                },
+            },
+
+            observers: [
+                '_instancesChanged(instances)',
+            ],
+
+            /**
+             * Called when the list of Instances changes, typically when a
+             * different Cluster is selected.
+             */
+            _instancesChanged() {
+                this._fetchAvailableDrivers();
+                this._checkForConnectedDriver();
+            },
+
+            /**
+             * Gets the list of available Driver names to display in the
+             * Driver selector dropdown.
+             */
+            _fetchAvailableDrivers() {
+                this._drivers = null;
+
+                if (!this.instances) {
+                    return;
+                }
+
+                const instanceHost = this.instances[0];
+                fetch(`//${instanceHost}/REST/ndbench/driver/getdrivers`)
+                    .then(response => response.json())
+                    .then(drivers => {
+                        // 'Custom Script' is a "special" Driver type that is appened to the
+                        // end of the list of available Drivers
+                        this._drivers = drivers.sort().concat('Custom Script');
+                    });
+            },
+
+            /**
+             * Checks if a Driver is connected to an Instance in the selected Cluster.
+             */
+            _checkForConnectedDriver() {
+                this._selectedDriver = null;
+                this._connectionInfo = null;
+                this.isDriverConnected = false;
+
+                if (!this.instances) {
+                    return;
+                }
+
+                const instanceHost = this.instances[0];
+                fetch(`//${instanceHost}/REST/ndbench/driver/getserverstatus`)
+                    .then(response => response.json())
+                    .then(serverStatus => {
+                        if (serverStatus.RunningDriver !== 'NA') {
+                            this._selectedDriver = serverStatus.RunningDriver;
+                            this._connectionInfo = serverStatus.ConnectionInfo;
+                            this.isDriverConnected = true;
+                        }
+                    });
+            },
+
+            /**
+             * Attempts to connect the selected Driver to all Instances in the selected Cluster.
+             */
+            _connectDriver() {
+                const requests = this.instances.map(instanceHost => {
+                    // If the 'Custom Script' Driver type is selected, the Groovy code block is
+                    // POSTed to the API to connect the Driver
+                    if (this._isCustomScript) {
+                        const requestBody = new FormData();
+                        requestBody.append('dynamicplugin', this._customScriptBody);
+                        return fetch(`//${instanceHost}/REST/ndbench/driver/initfromscript`, {
+                            method: 'POST',
+                            body: requestBody,
+                        });
+                    }
+
+                    // The Driver connection API call for all other Driver types
+                    return fetch(
+                        `//${instanceHost}/REST/ndbench/driver/init/${this._selectedDriver}`);
+                });
+
+                Promise.all(requests)
+                    .then(responses => {
+                        this._checkForErrors(responses);
+                        this._checkForConnectedDriver();
+                    });
+            },
+
+            /**
+             * Attempts to disconnect the selected Driver from all Instances in the
+             * selected Cluster.
+             */
+            _disconnectDriver() {
+                const requests = this.instances.map(instanceHost =>
+                    fetch(`//${instanceHost}/REST/ndbench/driver/shutdownclient`));
+
+                Promise.all(requests)
+                    .then(() => this._checkForConnectedDriver());
+            },
+
+            /**
+             * Checks if an error response was returned, and displays an alert toast for each one.
+             */
+            _checkForErrors(responses) {
+                let i = 0;
+                responses.forEach(response => {
+                    if (!response.ok) {
+                        window.setTimeout(() => {
+                            window.alertify
+                                .logPosition('bottom right')
+                                .maxLogItems(responses.length)
+                                .delay(5000)
+                                .error(`Failed to connect driver: ${response.url}`);
+                        }, i++ * 500);
+                    }
+                });
+            },
+
+            /**
+             * Expands/collapses the Driver Settings panel.
+             */
+            _toggleDriverDetails() {
+                this._showDetails = !this._showDetails;
+            },
+
+            /**
+             * Returns true if the 'Custom Script' Driver option is selected.
+             */
+            _computeIsCustomScript(selectedDriver) {
+                return selectedDriver === 'Custom Script';
+            },
+        });
+    </script>
+</dom-module>
