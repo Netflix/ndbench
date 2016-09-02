@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 
-var token = '[{"token":"1383429731","hostname":"localhost" ,"dc":"local-dc","ip":"127.0.0.1","zone":"us-east-1c","location":"us-east-1c"}]';
+var token = '[{"token":"2110532567","hostname":"localhost" ,"dc":"local-dc","ip":"127.0.0.1","zone":"local-dc","location":"local-dc"}]';
 
 app.get('/REST/v1/admin/cluster_describe', function (req, res) {
   res.send(token);

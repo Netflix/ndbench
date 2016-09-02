@@ -85,7 +85,8 @@ public class DynoJedisPlugin implements NdBenchClient{
                 .withHostSupplier(hSupplier)
                 .withCPConfig(new ConnectionPoolConfigurationImpl("myCP")
                 				  .withTokenSupplier(new LocalHttpEndpointBasedTokenMapSupplier(8102))
-                				  .setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware))
+                				  .setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware)
+                				  .setLocalRack("local-dc"))
                 .build();
 
         jedisClient.set(jClient);

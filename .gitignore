@@ -1,3 +1,8 @@
 classes
 build
 .gradle
+.project
+.classpath
+.class
+.settings
+bin/
