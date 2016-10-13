@@ -56,7 +56,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         upsertCF(this.session);
 
         writePstmt = session.prepare("INSERT INTO "+ TableName +" (\"_id\", name) VALUES (?, ?)");
-        readPstmt = session.prepare("SELECT * From "+ TableName +" Where _id = ?");
+        readPstmt = session.prepare("SELECT * From "+ TableName +" Where \"_id\" = ?");
 
         Logger.info("Initialized ElassandraCassJavaDriverPlugin");
     }
