@@ -55,7 +55,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         upsertKeyspace(this.session);
         upsertCF(this.session);
 
-        writePstmt = session.prepare("INSERT INTO "+ TableName +" (_id, name) VALUES (?, ?)");
+        writePstmt = session.prepare("INSERT INTO "+ TableName +" (\"_id\", name) VALUES (?, ?)");
         readPstmt = session.prepare("SELECT * From "+ TableName +" Where _id = ?");
 
         Logger.info("Initialized ElassandraCassJavaDriverPlugin");
@@ -71,7 +71,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     @Override
     public String readSingle(String key) throws Exception {
         BoundStatement bStmt = readPstmt.bind();
-        bStmt.setString("_id", key);
+        bStmt.setString("\"_id\"", key);
         bStmt.setConsistencyLevel(this.ReadConsistencyLevel);
         ResultSet rs = session.execute(bStmt);
 
@@ -99,7 +99,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     @Override
     public String writeSingle(String key) throws Exception {
         BoundStatement bStmt = writePstmt.bind();
-        bStmt.setString("_id", key);
+        bStmt.setString("\"_id\"", key);
         bStmt.setString("name", this.dataGenerator.getRandomValue());
         bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
 
