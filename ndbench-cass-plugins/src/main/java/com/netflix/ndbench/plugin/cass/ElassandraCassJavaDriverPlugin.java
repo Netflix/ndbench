@@ -151,8 +151,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         		       " AND memtable_flush_period_in_ms = 0 " + 
         		       " AND min_index_interval = 128 " + 
         		       " AND read_repair_chance = 0.0 " + 
-        		       " AND speculative_retry = '99.0PERCENTILE'; " + 
-        		       " \"); ");
+        		       " AND speculative_retry = '99.0PERCENTILE'; ");
         session.execute("CREATE CUSTOM INDEX elastic_external_name_idx ON customer.external (name) USING 'org.elasticsearch.cassandra.index.ExtendedElasticSecondaryIndex';");
     }
 }
