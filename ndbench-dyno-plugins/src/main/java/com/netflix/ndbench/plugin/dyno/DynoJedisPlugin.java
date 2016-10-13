@@ -16,24 +16,21 @@
  */
 package com.netflix.ndbench.plugin.dyno;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
-import com.netflix.dyno.connectionpool.ConnectionPoolConfiguration.LoadBalancingStrategy;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
 import com.netflix.dyno.connectionpool.OperationResult;
-import com.netflix.dyno.connectionpool.impl.ConnectionPoolConfigurationImpl;
 import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 /**
@@ -79,14 +76,12 @@ public class DynoJedisPlugin implements NdBenchClient{
 
         };
 
+
+
         DynoJedisClient jClient = new DynoJedisClient.Builder()
                 .withApplicationName(ClusterName)
                 .withDynomiteClusterName(ClusterName)
                 .withHostSupplier(hSupplier)
-                .withCPConfig(new ConnectionPoolConfigurationImpl("myCP")
-                				  .withTokenSupplier(new LocalHttpEndpointBasedTokenMapSupplier(8102))
-                				  .setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware)
-                				  .setLocalRack("local-dc"))
                 .build();
 
         jedisClient.set(jClient);

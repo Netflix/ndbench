@@ -1,38 +1,25 @@
-/*
- *  Copyright 2016 Netflix, Inc.
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
 package com.netflix.ndbench.plugin.cass;
 
-import com.datastax.driver.core.*;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.datastax.driver.core.BoundStatement;
+import com.datastax.driver.core.Cluster;
+import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.PreparedStatement;
+import com.datastax.driver.core.ResultSet;
+import com.datastax.driver.core.Row;
+import com.datastax.driver.core.Session;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-
-/**
- * @author vchella
- */
 @Singleton
-@NdBenchClientPlugin("CassJavaDriverPlugin")
-public class CassJavaDriverPlugin implements NdBenchClient{
+@NdBenchClientPlugin("ElassandraCassJavaDriverPlugin")
+public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     private static final Logger Logger = LoggerFactory.getLogger(CassJavaDriverPlugin.class);
 
     private Cluster cluster;
@@ -40,7 +27,7 @@ public class CassJavaDriverPlugin implements NdBenchClient{
 
     private DataGenerator dataGenerator;
 
-    private String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1", KeyspaceName ="dev1", TableName ="emp";
+    private String ClusterName = "Localhost", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
     private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
     private PreparedStatement readPstmt;
@@ -68,10 +55,10 @@ public class CassJavaDriverPlugin implements NdBenchClient{
         upsertKeyspace(this.session);
         upsertCF(this.session);
 
-        writePstmt = session.prepare("INSERT INTO "+ TableName +" (emp_uname, emp_first, emp_last, emp_dept ) VALUES (?, ?, ?, ? )");
-        readPstmt = session.prepare("SELECT * From "+ TableName +" Where emp_uname = ?");
+        writePstmt = session.prepare("INSERT INTO "+ TableName +" (_id, name) VALUES (?, ?)");
+        readPstmt = session.prepare("SELECT * From "+ TableName +" Where _id = ?");
 
-        Logger.info("Initialized CassJavaDriverPlugin");
+        Logger.info("Initialized ElassandraCassJavaDriverPlugin");
     }
 
     /**
@@ -84,7 +71,7 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     @Override
     public String readSingle(String key) throws Exception {
         BoundStatement bStmt = readPstmt.bind();
-        bStmt.setString("emp_uname", key);
+        bStmt.setString("_id", key);
         bStmt.setConsistencyLevel(this.ReadConsistencyLevel);
         ResultSet rs = session.execute(bStmt);
 
@@ -112,10 +99,8 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     @Override
     public String writeSingle(String key) throws Exception {
         BoundStatement bStmt = writePstmt.bind();
-        bStmt.setString("emp_uname", key);
-        bStmt.setString("emp_first", this.dataGenerator.getRandomValue());
-        bStmt.setString("emp_last", this.dataGenerator.getRandomValue());
-        bStmt.setString("emp_dept", this.dataGenerator.getRandomValue());
+        bStmt.setString("_id", key);
+        bStmt.setString("name", this.dataGenerator.getRandomValue());
         bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
 
         session.execute(bStmt);
@@ -127,7 +112,7 @@ public class CassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public void shutdown() throws Exception {
-        Logger.info("Shutting down CassJavaDriverPlugin");
+        Logger.info("Shutting down ElassandraCassJavaDriverPlugin");
         cluster.close();
     }
 
@@ -150,11 +135,24 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     }
 
     void upsertKeyspace(Session session) {
-        session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor':1};");
+        session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;");
         session.execute("Use " + KeyspaceName);
     }
     void upsertCF(Session session) {
-        session.execute("CREATE TABLE IF NOT EXISTS "+ TableName +" (emp_uname varchar primary key, emp_first varchar, emp_last varchar, emp_dept varchar);");
-
+        session.execute("CREATE TABLE IF NOT EXISTS "+ TableName +" (\"_id\" text PRIMARY KEY, name list<text>) WITH bloom_filter_fp_chance = 0.01 " + 
+        		       " AND caching = '{\"keys\":\"ALL\", \"rows_per_partition\":\"NONE\"}'" + 
+        		       " AND comment = 'Auto-created by Elassandra' " + 
+        		       " AND compaction = {'class': 'org.apache.cassandra.db.compaction.SizeTieredCompactionStrategy'} " + 
+        		       " AND compression = {'sstable_compression': 'org.apache.cassandra.io.compress.LZ4Compressor'} " + 
+        		       " AND dclocal_read_repair_chance = 0.1  " + 
+        		       " AND default_time_to_live = 0 " + 
+        		       " AND gc_grace_seconds = 864000 " +
+        		       " AND max_index_interval = 2048 " + 
+        		       " AND memtable_flush_period_in_ms = 0 " + 
+        		       " AND min_index_interval = 128 " + 
+        		       " AND read_repair_chance = 0.0 " + 
+        		       " AND speculative_retry = '99.0PERCENTILE'; " + 
+        		       " \"); ");
+        session.execute("CREATE CUSTOM INDEX elastic_external_name_idx ON customer.external (name) USING 'org.elasticsearch.cassandra.index.ExtendedElasticSecondaryIndex';");
     }
 }

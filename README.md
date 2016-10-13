@@ -5,6 +5,15 @@
 
 
 **About NdBench**
+Netflix Data Benchmark (NDBench) is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for the major data store systems that we use -- Cassandra (Thrift and CQL), Dynomite (Redis), and Elasticsearch. It can also be extended to other client APIs. 
+
+## Features
+   * Dynamically change the benchmark configurations while the test is running, hence perform tests along with our production microservices.
+   * Be able to integrate with platform cloud services such as dynamic configurations, discovery, metrics, etc.
+   * Run for an infinite duration in order to introduce failure scenarios and test long running maintenances such as database repairs.
+   * Provide pluggable patterns and loads.
+   * Support different client APIs.
+   * Deploy, manage and monitor multiple instances from a single entry point.
 
 Details about the features can be found in the [Wiki](https://github.com/Netflix/ndbench/wiki)
 
@@ -24,7 +33,7 @@ The gradlew script will pull down all necessary gradle components/infrastructure
 
 NdBench provides several default implementations ( LocalClusConfiguration, credentials etc). You can use these or choose to create your own. NdBench is currently working on AWS and your local environment. We are open to contributions to support other platforms as well.
 
-## Howto
+## How to
 
 The first step before building ndbench is to configure the interfaces related to your environment in the [InjectedWebListener](https://github.com/Netflix/ndbench/blob/master/ndbench-web/src/main/java/com/netflix/ndbench/defaultimpl/InjectedWebListener.java). Checkout the [Wiki](https://github.com/Netflix/ndbench/wiki/Configuration) for further explanation on what interfaces to bind based on your environment. 
 
@@ -43,7 +52,7 @@ You can provide properties by using ndbench{version}.jar in your web container a
 
 Need some help with either getting up and going or some problems with the code?
 
-   * Submit an issue to repo
+   * Submit a Github [issue](https://github.com/Netflix/ndbench/issues)
    * Chat with us on [![Dev chat at https://gitter.im/Netflix/ndbench](https://badges.gitter.im/Netflix/ndbench.svg)](https://gitter.im/Netflix/ndbench?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 ## License
