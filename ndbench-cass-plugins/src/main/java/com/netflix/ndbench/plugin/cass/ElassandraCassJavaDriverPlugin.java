@@ -101,7 +101,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     public String writeSingle(String key) throws Exception {
         BoundStatement bStmt = writePstmt.bind();
         bStmt.setString("\"_id\"", key);
-        bStmt.setList("name", Arrays.asList(this.dataGenerator.getRandomValue()));
+        bStmt.setList("name", Arrays.asList(this.dataGenerator.getRandomValue())) ;
         bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
 
         session.execute(bStmt);
