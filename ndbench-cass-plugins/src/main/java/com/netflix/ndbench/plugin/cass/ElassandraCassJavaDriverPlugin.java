@@ -1,5 +1,6 @@
 package com.netflix.ndbench.plugin.cass;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -100,7 +101,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     public String writeSingle(String key) throws Exception {
         BoundStatement bStmt = writePstmt.bind();
         bStmt.setString("\"_id\"", key);
-        bStmt.setString("name", this.dataGenerator.getRandomValue());
+        bStmt.setList("name", Arrays.asList(this.dataGenerator.getRandomValue()));
         bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
 
         session.execute(bStmt);
