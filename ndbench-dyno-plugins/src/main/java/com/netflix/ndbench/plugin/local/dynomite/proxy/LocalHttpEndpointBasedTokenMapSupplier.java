@@ -1,4 +1,4 @@
-package com.netflix.ndbench.plugin.dyno;
+package com.netflix.ndbench.plugin.local.dynomite.proxy;
 
 import com.netflix.dyno.connectionpool.impl.lb.HttpEndpointBasedTokenMapSupplier;
 

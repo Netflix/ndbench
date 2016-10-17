@@ -1,4 +1,4 @@
-package com.netflix.ndbench.plugin.dyno;
+package com.netflix.ndbench.plugin.local.dynomite.proxy;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +18,7 @@ import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.plugin.dyno.DynoJedisPlugin;
 
 /**
  * @author diegopacheco
