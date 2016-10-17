@@ -18,6 +18,16 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 
+/**
+ * This is a Elassandra(http://www.elassandra.io/) plugin using the CASS api. <BR> 
+ * You need make sure you install Elassandra properly on top of your Cass database.
+ * More details on elassandra installation here: http://doc.elassandra.io/en/latest/installation.html
+ * 
+ * This plugin will create the schema and will stress Elassandra via Datastax driver.
+ * 
+ * @author diegopacheco
+ *
+ */
 @Singleton
 @NdBenchClientPlugin("ElassandraCassJavaDriverPlugin")
 public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
