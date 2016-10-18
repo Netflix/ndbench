@@ -10,7 +10,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AWSLocalClusterDiscovery implements IClusterDiscovery {
+public class AWSClassicLocalClusterDiscovery implements IClusterDiscovery {
     private static final Logger logger = LoggerFactory.getLogger(LocalClusterDiscovery.class.getName());
 
     @Override
