@@ -1,0 +1,9 @@
+dyn_o_mite:
+  datacenter: local-dc
+  rack: local-dc
+  listen: 127.0.0.1:8102
+  dyn_listen: 127.0.0.1:8101
+  tokens: '2110532567'
+  servers:
+  - 127.0.0.1:6379:1
+  data_store: 0
