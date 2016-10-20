@@ -28,6 +28,7 @@ import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.config.NdBenchConfiguration;
+import com.netflix.ndbench.core.discovery.AWSLocalClusterDiscovery;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import com.netflix.ndbench.core.discovery.LocalClusterDiscovery;
 import com.netflix.ndbench.core.generators.StringDataGenerator;
@@ -47,7 +48,7 @@ public class NdBenchGuiceModule extends AbstractModule
     {
         bind(IConfiguration.class).to(NdBenchConfiguration.class);
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
-        bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
+        bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
         bind(DataGenerator.class).to(StringDataGenerator.class);
 
         //Get all implementations of NdBenchClient Interface and install them as Plugins
