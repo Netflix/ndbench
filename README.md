@@ -2,10 +2,18 @@
 
 [![Build Status](https://travis-ci.org/Netflix/ndbench.svg)](https://travis-ci.org/Netflix/ndbench)
 [![Dev chat at https://gitter.im/Netflix/ndbench](https://badges.gitter.im/Netflix/ndbench.svg)](https://gitter.im/Netflix/ndbench?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+[![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/Netflix/ndbench/blob/master/LICENSE)
 
 
 **About NdBench**
-Netflix Data Benchmark (NDBench) is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for the major data store systems that we use -- Cassandra (Thrift and CQL), Dynomite (Redis), and Elasticsearch. It can also be extended to other client APIs. 
+Netflix Data Benchmark (NDBench) is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for several data stores and can be extended to other client APIs.
+
+## Client APIs
+* Cassandra (Thrift and CQL)
+* Redis
+* Dynomite with Redis
+* Elasticsearch
+* Elassandra
 
 ## Features
    * Dynamically change the benchmark configurations while the test is running, hence perform tests along with our production microservices.
