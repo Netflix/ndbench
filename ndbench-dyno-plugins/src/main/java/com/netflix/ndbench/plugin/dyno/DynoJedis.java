@@ -42,7 +42,7 @@ public class DynoJedis implements NdBenchClient {
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
-    private static final String ClusterName = "dynomite_redis_puneet";
+    private static final String ClusterName = "dynomite_redis";
 
     private DataGenerator dataGenerator;
 
@@ -110,7 +110,7 @@ public class DynoJedis implements NdBenchClient {
     }
 
     /**
-     *
+     * Shutdown the client
      */
     @Override
     public void shutdown() throws Exception {
@@ -121,11 +121,11 @@ public class DynoJedis implements NdBenchClient {
     }
 
     /**
-     * shutdown the client
+     * Get connection information
      */
     @Override
     public String getConnectionInfo() throws Exception {
-        return String.format("DynoJedisPlugin - ConnectionInfo ::Cluster Name - %s", ClusterName);
+        return String.format("DynoJedis Plugin - ConnectionInfo ::Cluster Name - %s", ClusterName);
     }
 
     @Override
