@@ -18,7 +18,7 @@ import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.plugin.dyno.DynoJedisPlugin;
+import com.netflix.ndbench.plugin.dyno.DynoJedis;
 
 /**
  * @author diegopacheco
@@ -26,7 +26,7 @@ import com.netflix.ndbench.plugin.dyno.DynoJedisPlugin;
 @Singleton
 @NdBenchClientPlugin("LocalDynomiteProxyPlugin")
 public class LocalDynomiteProxyPlugin implements NdBenchClient{
-    private static final Logger logger = LoggerFactory.getLogger(DynoJedisPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynoJedis.class);
 
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;

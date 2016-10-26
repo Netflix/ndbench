@@ -19,7 +19,6 @@ package com.netflix.ndbench.plugin.dyno;
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
-import com.netflix.dyno.connectionpool.OperationResult;
 import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
@@ -32,14 +31,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-
 /**
  * @author vchella
  */
 @Singleton
-@NdBenchClientPlugin("DynoJedisPlugin")
-public class DynoJedisPlugin implements NdBenchClient{
-    private static final Logger logger = LoggerFactory.getLogger(DynoJedisPlugin.class);
+@NdBenchClientPlugin("DynoJedis")
+public class DynoJedis implements NdBenchClient {
+    private static final Logger logger = LoggerFactory.getLogger(DynoJedis.class);
 
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
@@ -49,7 +47,6 @@ public class DynoJedisPlugin implements NdBenchClient{
     private DataGenerator dataGenerator;
 
     private final AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<DynoJedisClient>(null);
-
 
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
@@ -61,7 +58,6 @@ public class DynoJedisPlugin implements NdBenchClient{
         logger.info("Initing dyno jedis client");
 
         logger.info("\nDynomite Cluster: " + ClusterName);
-
 
         HostSupplier hSupplier = new HostSupplier() {
 
@@ -76,13 +72,8 @@ public class DynoJedisPlugin implements NdBenchClient{
 
         };
 
-
-
-        DynoJedisClient jClient = new DynoJedisClient.Builder()
-                .withApplicationName(ClusterName)
-                .withDynomiteClusterName(ClusterName)
-                .withHostSupplier(hSupplier)
-                .build();
+        DynoJedisClient jClient = new DynoJedisClient.Builder().withApplicationName(ClusterName)
+                .withDynomiteClusterName(ClusterName).withHostSupplier(hSupplier).build();
 
         jedisClient.set(jClient);
 
@@ -93,15 +84,11 @@ public class DynoJedisPlugin implements NdBenchClient{
 
         String res = jedisClient.get().get(key);
 
-        if(res!=null)
-        {
-            if(res.isEmpty())
-            {
+        if (res != null) {
+            if (res.isEmpty()) {
                 throw new Exception("Data retrieved is not ok ");
             }
-        }
-        else
-        {
+        } else {
             return CacheMiss;
         }
 
@@ -111,15 +98,15 @@ public class DynoJedisPlugin implements NdBenchClient{
 
     @Override
     public String writeSingle(String key) throws Exception {
-        OperationResult<String> result = jedisClient.get().d_set(key, dataGenerator.getRandomValue());
+        String result = jedisClient.get().set(key, dataGenerator.getRandomValue());
 
-        if (!"OK".equals(result.getResult())) {
-            logger.error("SET_ERROR: GOT " + result.getResult() + " for SET operation");
+        if (!"OK".equals(result)) {
+            logger.error("SET_ERROR: GOT " + result + " for SET operation");
             throw new RuntimeException(String.format("DynoJedis: value %s for SET operation is NOT VALID", key));
 
         }
 
-        return result.getResult();
+        return result;
     }
 
     /**
