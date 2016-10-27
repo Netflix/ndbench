@@ -40,7 +40,8 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     private DataGenerator dataGenerator;
 
     private String ClusterName = "Localhost", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
-    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
+    // private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
+    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.ONE, ReadConsistencyLevel=ConsistencyLevel.ONE;
 
     private PreparedStatement readPstmt;
     private PreparedStatement writePstmt;
