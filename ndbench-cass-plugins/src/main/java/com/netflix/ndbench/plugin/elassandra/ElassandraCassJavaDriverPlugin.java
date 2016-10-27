@@ -43,7 +43,6 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     private String ClusterName = "Test Cluster", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
         
     // private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
-    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.ONE, ReadConsistencyLevel=ConsistencyLevel.ONE;
 
     private PreparedStatement readPstmt;
     private PreparedStatement writePstmt;
@@ -87,7 +86,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     public String readSingle(String key) throws Exception {
         BoundStatement bStmt = readPstmt.bind();
         bStmt.setString("\"_id\"", key);
-        bStmt.setConsistencyLevel(this.ReadConsistencyLevel);
+        //bStmt.setConsistencyLevel(this.ReadConsistencyLevel);
         ResultSet rs = session.execute(bStmt);
 
         List<Row> result=rs.all();
@@ -116,7 +115,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         BoundStatement bStmt = writePstmt.bind();
         bStmt.setString("\"_id\"", key);
         bStmt.setList("name", Arrays.asList(this.dataGenerator.getRandomValue())) ;
-        bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
+        //bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
 
         session.execute(bStmt);
         return ResultOK;
@@ -136,7 +135,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public String getConnectionInfo() throws Exception {
-        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ", ClusterName, KeyspaceName, TableName, ReadConsistencyLevel, WriteConsistencyLevel);
+        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ", ClusterName, KeyspaceName, TableName, "", ""); //ReadConsistencyLevel, WriteConsistencyLevel);
     }
 
     /**
@@ -151,7 +150,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
 
     void upsertKeyspace(Session session) {
         //session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;");
-        session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor':1};");
+        session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor': 2};");
         session.execute("Use " + KeyspaceName);
     }
     
