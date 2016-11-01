@@ -48,7 +48,8 @@ public class NdBenchGuiceModule extends AbstractModule
     {
         bind(IConfiguration.class).to(NdBenchConfiguration.class);
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
-        bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
+        //bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
+        bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
         bind(DataGenerator.class).to(StringDataGenerator.class);
 
         //Get all implementations of NdBenchClient Interface and install them as Plugins
