@@ -86,7 +86,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     public String readSingle(String key) throws Exception {
         BoundStatement bStmt = readPstmt.bind();
         bStmt.setString("\"_id\"", key);
-        //bStmt.setConsistencyLevel(this.ReadConsistencyLevel);
+        bStmt.setConsistencyLevel(this.ReadConsistencyLevel);
         ResultSet rs = session.execute(bStmt);
 
         List<Row> result=rs.all();
