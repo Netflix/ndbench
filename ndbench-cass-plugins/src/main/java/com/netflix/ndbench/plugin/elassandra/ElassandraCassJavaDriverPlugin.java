@@ -39,10 +39,10 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
 
     private DataGenerator dataGenerator;
 
-    //private String ClusterName = "Localhost", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
-    private String ClusterName = "Test Cluster", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
+    private String ClusterName = "Localhost", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
+    //private String ClusterName = "Test Cluster", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
         
-    // private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
+    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
     private PreparedStatement readPstmt;
     private PreparedStatement writePstmt;
@@ -115,7 +115,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         BoundStatement bStmt = writePstmt.bind();
         bStmt.setString("\"_id\"", key);
         bStmt.setList("name", Arrays.asList(this.dataGenerator.getRandomValue())) ;
-        //bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
+        bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
 
         session.execute(bStmt);
         return ResultOK;
@@ -149,8 +149,8 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     }
 
     void upsertKeyspace(Session session) {
-        //session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;");
-        session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor': 2};");
+        session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;");
+        //session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor': 2};");
         session.execute("Use " + KeyspaceName);
     }
     
@@ -168,6 +168,6 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         		       " AND min_index_interval = 128 " + 
         		       " AND read_repair_chance = 0.0 " + 
         		       " AND speculative_retry = '99.0PERCENTILE'; ");
-        //session.execute("CREATE CUSTOM INDEX IF NOT EXISTS elastic_external_name_idx ON customer.external (name) USING 'org.elasticsearch.cassandra.index.ExtendedElasticSecondaryIndex';");
+        session.execute("CREATE CUSTOM INDEX IF NOT EXISTS elastic_external_name_idx ON customer.external (name) USING 'org.elasticsearch.cassandra.index.ExtendedElasticSecondaryIndex';");
     }
 }
