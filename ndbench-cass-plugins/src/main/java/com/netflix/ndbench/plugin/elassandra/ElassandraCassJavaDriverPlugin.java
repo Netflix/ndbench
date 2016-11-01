@@ -135,7 +135,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public String getConnectionInfo() throws Exception {
-        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ", ClusterName, KeyspaceName, TableName, "", ""); //ReadConsistencyLevel, WriteConsistencyLevel);
+        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ", ClusterName, KeyspaceName, TableName, ReadConsistencyLevel, WriteConsistencyLevel);
     }
 
     /**
