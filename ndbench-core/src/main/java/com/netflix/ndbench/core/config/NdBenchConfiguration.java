@@ -34,8 +34,8 @@ public class NdBenchConfiguration implements IConfiguration {
     private static final Integer DEFAULT_NUM_KEYS = 1000;
     private static final Integer DEFAULT_NUM_VALUES = 100;
     private static final Integer DEFAULT_DATA_SIZE = 128;
-    private static final Integer DEFAULT_NUM_WRITERS = 1;
-    private static final Integer DEFAULT_NUM_READERS = 1;
+    private static final Integer DEFAULT_NUM_WRITERS = Runtime.getRuntime().availableProcessors() * 4;
+    private static final Integer DEFAULT_NUM_READERS = Runtime.getRuntime().availableProcessors() * 4;
     private static final Integer DEFAULT_NUM_BACKFILL = 1;
     private static final Integer DEFAULT_BACKFILL_START_KEY = 1;
     private static final Boolean DEFAULT_WRITE_ENABLED = true;
@@ -48,8 +48,6 @@ public class NdBenchConfiguration implements IConfiguration {
     private static final Integer DEFAULT_DATASIZE_LOWERBOUND = 1000;
     private static final Integer DEFAULT_DATASIZE_UPPERBOUND = 5000;
     private static final Boolean DEFAULT_USE_STATIC_DATA = false;
-
-
 
     //Config Prop Names
     private static final String CONFIG_NUM_KEYS = NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_KEYS;
