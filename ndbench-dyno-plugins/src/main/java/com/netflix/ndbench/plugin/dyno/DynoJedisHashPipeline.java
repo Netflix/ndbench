@@ -67,32 +67,9 @@ public class DynoJedisHashPipeline implements NdBenchClient {
 
     @Override
     public String readSingle(String key) throws Exception {
-        // return pipelineRead(key);
         return pipelineReadHGETALL(key);
     }
 
-    private String pipelineRead(String key) throws Exception {
-        DynoJedisPipeline pipeline = jedisClient.get().pipelined();
-        Response<String> resp = pipeline.get(key);
-        pipeline.sync();
-
-        if (resp == null || resp.get() == null) {
-            logger.info("Cache Miss: key:" + key);
-            return null;
-        } else {
-            if (resp.get().startsWith("ERR")) {
-                throw new Exception(String.format("DynoJedisPipeline: error %s", resp.get()));
-            }
-
-            if (!isValidResponse(key, resp.get())) {
-                throw new Exception(String.format("DynoJedisPipeline: pipeline read: value %s does not contain key %s",
-                        resp.get(), key));
-            }
-
-            return resp.get();
-        }
-
-    }
 
     private String pipelineReadHGETALL(String key) throws Exception {
         DynoJedisPipeline pipeline = jedisClient.get().pipelined();
@@ -111,25 +88,6 @@ public class DynoJedisHashPipeline implements NdBenchClient {
             }
             return "HGETALL:" + sb.toString();
         }
-    }
-
-    private String nonPipelineRead(String key) throws Exception {
-        OperationResult<String> result = jedisClient.get().d_get(key);
-
-        String value = result.getResult();
-
-        if (value == null) {
-            logger.info("Cache Miss: key:" + key + ", hash:" + result.getMetadata().get(KeyHash) + ", host:"
-                    + result.getNode());
-        } else {
-            if (!isValidResponse(key, value)) {
-                throw new Exception(String
-                        .format("DynoJedisPipeline: non-pipeline read: value %s does not contain key %s", value, key));
-            }
-
-        }
-
-        return value;
     }
 
     private boolean isValidResponse(String key, String value) {
