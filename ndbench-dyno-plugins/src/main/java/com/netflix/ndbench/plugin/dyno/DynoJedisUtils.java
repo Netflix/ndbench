@@ -16,17 +16,17 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 
 import redis.clients.jedis.Response;
 
-public class JedisUtils {
+public class DynoJedisUtils {
     // private final AtomicReference<DynoJedisClient> jedisClient = new
     // AtomicReference<DynoJedisClient>(null);
     private AtomicReference<DynoJedisClient> jedisClient;
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
-    private final static Logger logger = LoggerFactory.getLogger(JedisUtils.class);
+    private final static Logger logger = LoggerFactory.getLogger(DynoJedisUtils.class);
     private static Random randomGenerator = new Random();
 
-    public JedisUtils(AtomicReference<DynoJedisClient> jedisClient) {
+    public DynoJedisUtils(AtomicReference<DynoJedisClient> jedisClient) {
         this.jedisClient = jedisClient;
     }
 

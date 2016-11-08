@@ -50,7 +50,7 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
     public String readSingle(String key) throws Exception {
         StringBuilder sb = new StringBuilder();
         String correct = null;
-        JedisUtils jedisUtils = new JedisUtils(jedisClient);
+        DynoJedisUtils jedisUtils = new DynoJedisUtils(jedisClient);
 
         correct = jedisUtils.nonPipelineRead(key);
         if (correct == null)
@@ -83,7 +83,7 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
     public String writeSingle(String key) throws Exception {
         StringBuilder sb = new StringBuilder();
         String correct = null;
-        JedisUtils jedisUtils = new JedisUtils(jedisClient);
+        DynoJedisUtils jedisUtils = new DynoJedisUtils(jedisClient);
 
         correct = jedisUtils.nonpipelineWrite(key, dataGenerator);
         if (correct == null) {

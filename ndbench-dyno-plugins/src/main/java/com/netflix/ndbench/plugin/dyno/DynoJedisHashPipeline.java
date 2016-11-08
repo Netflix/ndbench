@@ -3,30 +3,31 @@ package com.netflix.ndbench.plugin.dyno;
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
-import com.netflix.dyno.connectionpool.OperationResult;
 import com.netflix.dyno.jedis.DynoJedisClient;
-import com.netflix.dyno.jedis.DynoJedisPipeline;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * This pluging performs hash operations (HMSET/HGETALL) inside a pipeline of
+ * size MAX_PIPE_KEYS against Dynomite.
+ * 
+ * @author ipapapa
+ *
+ */
 @Singleton
 @NdBenchClientPlugin("DynoHashPipeline")
 public class DynoJedisHashPipeline implements NdBenchClient {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DynoJedisHashPipeline.class);
 
-    private static final String KeyHash = "KeyHash";
     private static final String HM_KEY_PREFIX = "HM__";
 
     private static final String ClusterName = "dynomite_redis";
@@ -67,52 +68,14 @@ public class DynoJedisHashPipeline implements NdBenchClient {
 
     @Override
     public String readSingle(String key) throws Exception {
-        return pipelineReadHGETALL(key);
-    }
-
-
-    private String pipelineReadHGETALL(String key) throws Exception {
-        DynoJedisPipeline pipeline = jedisClient.get().pipelined();
-        Response<Map<byte[], byte[]>> resp = pipeline.hgetAll((HM_KEY_PREFIX + key).getBytes());
-        pipeline.sync();
-        if (resp == null || resp.get() == null) {
-            logger.info("Cache Miss: key:" + key);
-            return null;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (byte[] bytes : resp.get().keySet()) {
-                if (sb.length() > 0) {
-                    sb.append(",");
-                }
-                sb.append(new String(bytes));
-            }
-            return "HGETALL:" + sb.toString();
-        }
-    }
-
-    private boolean isValidResponse(String key, String value) {
-        return value.startsWith(key) && value.endsWith(key);
+        DynoJedisUtils jedisUtils = new DynoJedisUtils(jedisClient);
+        return jedisUtils.pipelineReadHGETALL(key, HM_KEY_PREFIX);
     }
 
     @Override
     public String writeSingle(String key) throws Exception {
-        return pipelineWriteHMSET(key);
-    }
-
-    public String pipelineWriteHMSET(String key) {
-        Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
-        String hmKey = HM_KEY_PREFIX + key;
-        map.put((hmKey + "__1").getBytes(),
-                (key + "__" + this.dataGenerator.getRandomValue() + "__" + key).getBytes());
-        map.put((hmKey + "__2").getBytes(),
-                (key + "__" + this.dataGenerator.getRandomValue() + "__" + key).getBytes());
-
-        DynoJedisPipeline pipeline = jedisClient.get().pipelined();
-        pipeline.hmset(hmKey.getBytes(), map);
-        pipeline.expire(hmKey, 3600);
-        pipeline.sync();
-
-        return "HMSET:" + hmKey;
+        DynoJedisUtils jedisUtils = new DynoJedisUtils(jedisClient);
+        return jedisUtils.pipelineWriteHMSET(key, dataGenerator, HM_KEY_PREFIX);
     }
 
     @Override
