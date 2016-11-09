@@ -1,7 +1,6 @@
 dependencies {
     compile project(':ndbench-api')
-    compile 'com.netflix.dyno:dyno-core:1.4.7-rc.2'
-    compile 'com.netflix.dyno:dyno-jedis:1.4.7-rc.2'
-
-
+    compile 'com.netflix.dyno:dyno-core:latest.release'
+    compile 'com.netflix.dyno:dyno-jedis:latest.release'
+    compile 'com.netflix.dyno:dyno-contrib:latest.release'
 }

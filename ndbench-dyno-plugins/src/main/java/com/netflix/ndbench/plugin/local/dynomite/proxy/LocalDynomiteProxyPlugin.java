@@ -46,7 +46,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
-    private static final String ClusterName = "dynomite_redis_puneet";
+    private static final String ClusterName = "dynomite_redis";
 
     private DataGenerator dataGenerator;
 
@@ -71,7 +71,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
             public Collection<Host> getHosts() {
 
                 List<Host> hosts = new ArrayList<Host>();
-                hosts.add(new Host("localhost", 8102, Host.Status.Up).setRack("local-dc"));
+                hosts.add(new Host("localhost", 8102, "local-dc", Host.Status.Up));
 
                 return hosts;
             }
