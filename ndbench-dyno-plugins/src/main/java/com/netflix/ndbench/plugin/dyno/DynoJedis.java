@@ -65,7 +65,7 @@ public class DynoJedis implements NdBenchClient {
             public Collection<Host> getHosts() {
 
                 List<Host> hosts = new ArrayList<Host>();
-                hosts.add(new Host("localhost", 8102, Host.Status.Up).setRack("local-dc"));
+                hosts.add(new Host("localhost", 8102, "local-dc", Host.Status.Up));
 
                 return hosts;
             }
