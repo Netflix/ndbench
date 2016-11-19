@@ -51,9 +51,9 @@ public class EsPlugin implements NdBenchClient {
     private static final String CacheMiss = null;
     private String EsIndexName ="blog_index_";
 
-    private String ClusterName="es_gchuyeshov",
-            HostName="es_gchuyeshov.us-east-1.dyntest.netflix.net";
-    private int Port = 7102;
+    private String ClusterName="Localhost",
+            HostName="127.0.0.1";
+    private int Port = 9300;
 
 
     @Override
