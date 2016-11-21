@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':ndbench-api')
+    compile 'org.elasticsearch:elasticsearch:2.3.3'
+}
