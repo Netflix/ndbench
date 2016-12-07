@@ -53,7 +53,7 @@ public class NdBenchConfiguration implements IConfiguration {
     private static final String CONFIG_NUM_KEYS = NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_KEYS;
     private static final String CONFIG_NUM_VALUES = NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_VALUES;
     private static final String CONFIG_DATA_SIZE =  NdBenchConstants.PROP_PREFIX + NdBenchConstants.DATA_SIZE;
-    private static final String CONFIG_NUM_WRITERS =  NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_VALUES;
+    private static final String CONFIG_NUM_WRITERS =  NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_WRITERS;
     private static final String CONFIG_NUM_READERS =  NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_READERS;
     private static final String CONFIG_NUM_BACKFILL =  NdBenchConstants.PROP_PREFIX + NdBenchConstants.NUM_BACKFILL;
     private static final String CONFIG_BACKFILL_START_KEY =  NdBenchConstants.PROP_PREFIX + NdBenchConstants.BACKFILL_START_KEY;
