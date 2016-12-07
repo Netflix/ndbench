@@ -5,8 +5,10 @@
 [![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/Netflix/ndbench/blob/master/LICENSE)
 
 
-**About NdBench**
-Netflix Data Benchmark (NDBench) is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for several data stores and can be extended to other client APIs.
+**Netflix Data Benchmark (NDBench)** is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for several data stores and can be extended to other client APIs.
+
+<center>![NDBench logo](img/ndbench-blend-type.png?raw=true =300x300)</center>
+
 
 ## Client APIs
 * Cassandra (Thrift and CQL)
@@ -39,7 +41,7 @@ NdBench comes with a Gradle wrapper
 
 The gradlew script will pull down all necessary gradle components/infrastructure automatically, then run the build.
 
-NdBench provides several default implementations ( LocalClusConfiguration, credentials etc). You can use these or choose to create your own. NdBench is currently working on AWS and your local environment. We are open to contributions to support other platforms as well.
+NdBench provides several default implementations ( NdBenchConfiguration, LocalClusterDiscovery etc). You can use these or choose to create your own. NdBench currently works on AWS or your local environment. We are open to contributions to support other platforms as well.
 
 ## How to
 

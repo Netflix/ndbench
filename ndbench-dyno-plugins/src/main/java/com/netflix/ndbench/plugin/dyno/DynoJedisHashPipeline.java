@@ -1,32 +1,48 @@
+/**
+ * Copyright 2016 Netflix, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.netflix.ndbench.plugin.dyno;
 
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
-import com.netflix.dyno.connectionpool.OperationResult;
 import com.netflix.dyno.jedis.DynoJedisClient;
-import com.netflix.dyno.jedis.DynoJedisPipeline;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 
 import org.slf4j.LoggerFactory;
-import redis.clients.jedis.Response;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * This pluging performs hash operations (HMSET/HGETALL) inside a pipeline of
+ * size MAX_PIPE_KEYS against Dynomite.
+ * 
+ * @author ipapapa
+ *
+ */
 @Singleton
 @NdBenchClientPlugin("DynoHashPipeline")
 public class DynoJedisHashPipeline implements NdBenchClient {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DynoJedisHashPipeline.class);
 
-    private static final String KeyHash = "KeyHash";
     private static final String HM_KEY_PREFIX = "HM__";
 
     private static final String ClusterName = "dynomite_redis";
@@ -52,7 +68,7 @@ public class DynoJedisHashPipeline implements NdBenchClient {
             public Collection<Host> getHosts() {
 
                 List<Host> hosts = new ArrayList<Host>();
-                hosts.add(new Host("localhost", 8102, Host.Status.Up).setRack("local-dc"));
+                hosts.add(new Host("localhost", 8102, "local-dc", Host.Status.Up));
 
                 return hosts;
             }
@@ -67,94 +83,14 @@ public class DynoJedisHashPipeline implements NdBenchClient {
 
     @Override
     public String readSingle(String key) throws Exception {
-        // return pipelineRead(key);
-        return pipelineReadHGETALL(key);
-    }
-
-    private String pipelineRead(String key) throws Exception {
-        DynoJedisPipeline pipeline = jedisClient.get().pipelined();
-        Response<String> resp = pipeline.get(key);
-        pipeline.sync();
-
-        if (resp == null || resp.get() == null) {
-            logger.info("Cache Miss: key:" + key);
-            return null;
-        } else {
-            if (resp.get().startsWith("ERR")) {
-                throw new Exception(String.format("DynoJedisPipeline: error %s", resp.get()));
-            }
-
-            if (!isValidResponse(key, resp.get())) {
-                throw new Exception(String.format("DynoJedisPipeline: pipeline read: value %s does not contain key %s",
-                        resp.get(), key));
-            }
-
-            return resp.get();
-        }
-
-    }
-
-    private String pipelineReadHGETALL(String key) throws Exception {
-        DynoJedisPipeline pipeline = jedisClient.get().pipelined();
-        Response<Map<byte[], byte[]>> resp = pipeline.hgetAll((HM_KEY_PREFIX + key).getBytes());
-        pipeline.sync();
-        if (resp == null || resp.get() == null) {
-            logger.info("Cache Miss: key:" + key);
-            return null;
-        } else {
-            StringBuilder sb = new StringBuilder();
-            for (byte[] bytes : resp.get().keySet()) {
-                if (sb.length() > 0) {
-                    sb.append(",");
-                }
-                sb.append(new String(bytes));
-            }
-            return "HGETALL:" + sb.toString();
-        }
-    }
-
-    private String nonPipelineRead(String key) throws Exception {
-        OperationResult<String> result = jedisClient.get().d_get(key);
-
-        String value = result.getResult();
-
-        if (value == null) {
-            logger.info("Cache Miss: key:" + key + ", hash:" + result.getMetadata().get(KeyHash) + ", host:"
-                    + result.getNode());
-        } else {
-            if (!isValidResponse(key, value)) {
-                throw new Exception(String
-                        .format("DynoJedisPipeline: non-pipeline read: value %s does not contain key %s", value, key));
-            }
-
-        }
-
-        return value;
-    }
-
-    private boolean isValidResponse(String key, String value) {
-        return value.startsWith(key) && value.endsWith(key);
+        DynoJedisUtils jedisUtils = new DynoJedisUtils(jedisClient);
+        return jedisUtils.pipelineReadHGETALL(key, HM_KEY_PREFIX);
     }
 
     @Override
     public String writeSingle(String key) throws Exception {
-        return pipelineWriteHMSET(key);
-    }
-
-    public String pipelineWriteHMSET(String key) {
-        Map<byte[], byte[]> map = new HashMap<byte[], byte[]>();
-        String hmKey = HM_KEY_PREFIX + key;
-        map.put((hmKey + "__1").getBytes(),
-                (key + "__" + this.dataGenerator.getRandomValue() + "__" + key).getBytes());
-        map.put((hmKey + "__2").getBytes(),
-                (key + "__" + this.dataGenerator.getRandomValue() + "__" + key).getBytes());
-
-        DynoJedisPipeline pipeline = jedisClient.get().pipelined();
-        pipeline.hmset(hmKey.getBytes(), map);
-        pipeline.expire(hmKey, 3600);
-        pipeline.sync();
-
-        return "HMSET:" + hmKey;
+        DynoJedisUtils jedisUtils = new DynoJedisUtils(jedisClient);
+        return jedisUtils.pipelineWriteHMSET(key, dataGenerator, HM_KEY_PREFIX);
     }
 
     @Override

@@ -30,5 +30,7 @@ For minor fixes just open a pull request to the [dev]( https://github.com/Netfli
 
 ## Questions
 
-If you have questions or want to report a bug please create an [Issue]( https://github.com/Netflix/ndbench/issues ) or send us an email: ndbench [at] netflix [DOT] com
+If you have questions or want to report a bug 
+   * Submit a Github [issue](https://github.com/Netflix/ndbench/issues)
+   * Chat with us on [![Dev chat at https://gitter.im/Netflix/ndbench](https://badges.gitter.im/Netflix/ndbench.svg)](https://gitter.im/Netflix/ndbench?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
