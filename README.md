@@ -5,8 +5,10 @@
 [![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/Netflix/ndbench/blob/master/LICENSE)
 
 
-**About NdBench**
-Netflix Data Benchmark (NDBench) is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for several data stores and can be extended to other client APIs.
+**Netflix Data Benchmark (NDBench)** is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for several data stores and can be extended to other client APIs.
+
+<center>![NDBench logo](img/ndbench-blend-type.png?raw=true =300x300)</center>
+
 
 ## Client APIs
 * Cassandra (Thrift and CQL)
