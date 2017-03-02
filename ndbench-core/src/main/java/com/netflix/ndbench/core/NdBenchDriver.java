@@ -222,6 +222,20 @@ public class NdBenchDriver {
                                 operation.process(ndBenchMonitor, keyGenerator.getNextKey());
                             }
                         }
+                        if (!keyGenerator.hasNextKey())
+                        {
+                            Logger.info("No more keys to process, hence stopping the process.");
+                            if(operation.isReadType())
+                            {
+                                stopReads();
+                            }
+                            else if (operation.isWriteType())
+                            {
+                                stopWrites();
+                            }
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
                     }
                     Logger.info("NdBenchWorker shutting down");
                     return null;
@@ -246,11 +260,13 @@ public class NdBenchDriver {
 
     public void stopReads() {
         readsStarted.set(false);
+        keyGeneratorReadRef.set(null);
         stopOperation(tpReadRef);
     }
 
     public void stopWrites() {
         writesStarted.set(false);
+        keyGeneratorWriteRef.set(null);
         stopOperation(tpWriteRef);
     }
 
@@ -277,9 +293,12 @@ public class NdBenchDriver {
                     if (!tp.awaitTermination(5, TimeUnit.SECONDS))
                         Logger.error("Error while shutting down executor service : ");
                 }
-
+                Logger.info("Threadpool has terminated!");
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();//preserve the message
                 tp.shutdownNow();
+                Logger.info("Failed to terminate Threadpool! Ignoring.");
+                break;
             }
         }
         Logger.info("Threadpool has terminated!");

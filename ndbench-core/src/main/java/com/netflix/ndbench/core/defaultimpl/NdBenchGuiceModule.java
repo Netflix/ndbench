@@ -16,22 +16,20 @@
  */
 package com.netflix.ndbench.core.defaultimpl;
 
-import java.util.Set;
-
-import org.reflections.Reflections;
+import com.google.inject.Provides;
+import com.netflix.archaius.ConfigProxyFactory;
+import com.netflix.ndbench.core.config.NdbenchConfigListener;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.multibindings.MapBinder;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
-import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.config.IConfiguration;
-import com.netflix.ndbench.core.config.NdBenchConfiguration;
-import com.netflix.ndbench.core.discovery.AWSLocalClusterDiscovery;
+//import com.netflix.ndbench.core.config.NdBenchConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import com.netflix.ndbench.core.discovery.LocalClusterDiscovery;
-import com.netflix.ndbench.core.generators.StringDataGenerator;
+import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.core.monitoring.FakeMonitor;
 import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 
@@ -40,53 +38,20 @@ import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
  */
 public class NdBenchGuiceModule extends AbstractModule
 {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchGuiceModule.class);
-    private MapBinder<String, NdBenchClient> maps;
-
     @Override
     protected void configure()
     {
-        bind(IConfiguration.class).to(NdBenchConfiguration.class);
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
         //bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
         bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
-        bind(DataGenerator.class).to(StringDataGenerator.class);
+        bind(DataGenerator.class).to(DefaultDataGenerator.class);
+        bind(NdbenchConfigListener.class).asEagerSingleton();
 
-        //Get all implementations of NdBenchClient Interface and install them as Plugins
-        Reflections reflections = new Reflections("com.netflix.ndbench");
-        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(NdBenchClientPlugin.class);
-        for (Class<?> ndb: classes) {
-            installNdBenchClientPlugin(ndb);
-        }
     }
 
-//    @Provides
-//    IConfiguration getIConfiguration(ConfigProxyFactory proxyFactory) {
-//       return proxyFactory.newProxy(FakeConfiguration.class);
-//    }
-
-    @SuppressWarnings("unchecked")
-	private <T> void installNdBenchClientPlugin(Class<?> ndBenchClientImple) {
-        if (maps == null) {
-            maps = MapBinder.newMapBinder(binder(), String.class, NdBenchClient.class);
-        }
-
-        String name = getAnnotationValue(ndBenchClientImple);
-
-        maps.addBinding(name).to((Class<? extends NdBenchClient>) ndBenchClientImple);
+    @Provides
+    IConfiguration getIConfiguration(ConfigProxyFactory proxyFactory) {
+       return proxyFactory.newProxy(IConfiguration.class);
     }
 
-    private String getAnnotationValue(Class<?> ndBenchClientImple) {
-        String name=ndBenchClientImple.getName();
-        try {
-            NdBenchClientPlugin annot = ndBenchClientImple.getAnnotation(NdBenchClientPlugin.class);
-            name = annot.value();
-            Logger.info("Installing NdBenchClientPlugin: "+ndBenchClientImple.getName()+" with Annotation: "+name);
-        }
-        catch (Exception e)
-        {
-            Logger.warn("No Annotation found for class :"+ name +", so loading default class name");
-        }
-        return name;
-    }
 }

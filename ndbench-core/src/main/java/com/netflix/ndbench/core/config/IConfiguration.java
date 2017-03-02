@@ -16,39 +16,76 @@
  */
 package com.netflix.ndbench.core.config;
 
+import com.netflix.archaius.api.annotations.Configuration;
+import com.netflix.archaius.api.annotations.DefaultValue;
+
 /**
  * @author vchella
  */
+@Configuration(prefix = "ndbench.config")
 public interface IConfiguration {
     void initialize();
 
     // SAMPLE DATA CONFIG
+    @DefaultValue("1000")
     int getNumKeys();
+
+    @DefaultValue("100")
     int getNumValues();
+
+    @DefaultValue("128")
     int getDataSize();
 
-
     // NUM WORKERS
-    int getNumWriters();
-    int getNumReaders();
+    default int getNumWriters() {
+        return Runtime.getRuntime().availableProcessors() * 4;
+    }
+
+    default int getNumReaders() {
+        return Runtime.getRuntime().availableProcessors() * 4;
+    }
+
+    @DefaultValue("1")
     int getNumBackfill();
+
+    @DefaultValue("1")
     int getBackfillStartKey();
 
+
     // TEST CASE CONFIG
+    @DefaultValue("true")
     boolean getWriteEnabled();
+
+    @DefaultValue("true")
     boolean getReadEnabled();
 
+
     //Workers Config
+    @DefaultValue("5")
     int getStatsUpdateFreqSeconds();
+
+    @DefaultValue("200")
     int getStatsResetFreqSeconds();
 
-    //Tunable configs
-    int getReadRateLimit();
-    int getWriteRateLimit();
 
     //DataGenerator Configs
+    @DefaultValue("false")
     boolean getUseVariableDataSize();
+
+    @DefaultValue("1000")
     int getDataSizeLowerBound();
+
+    @DefaultValue("5000")
     int getDataSizeUpperBound();
+
+    @DefaultValue("false")
     boolean getUseStaticData();
+
+
+    //Tunable configs
+    @DefaultValue("100")
+    int getReadRateLimit();
+
+    @DefaultValue("100")
+    int getWriteRateLimit();
 }

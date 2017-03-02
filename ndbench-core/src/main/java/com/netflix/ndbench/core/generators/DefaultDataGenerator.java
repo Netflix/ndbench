@@ -34,8 +34,8 @@ import java.util.Random;
  */
 
 @Singleton
-public class StringDataGenerator implements DataGenerator {
-    private static Logger logger = LoggerFactory.getLogger(StringDataGenerator.class);
+public class DefaultDataGenerator implements DataGenerator {
+    private static Logger logger = LoggerFactory.getLogger(DefaultDataGenerator.class);
     protected final IConfiguration config;
 
 
@@ -49,14 +49,14 @@ public class StringDataGenerator implements DataGenerator {
 
 
     @Inject
-    public StringDataGenerator(IConfiguration config) {
+    public DefaultDataGenerator(IConfiguration config) {
         this.config = config;
         if (config.getUseVariableDataSize()) {
             initialize(config.getDataSizeLowerBound(), config.getDataSizeUpperBound());
         } else {
             initialize();
         }
-        StaticValue =getRandomString();
+        StaticValue = getRandomString();
     }
 
     @Override
@@ -64,6 +64,16 @@ public class StringDataGenerator implements DataGenerator {
         int randomValueIndex = vRandom.nextInt(config.getNumValues());
         return values.get(randomValueIndex);
     }
+
+    @Override
+    public Integer getRandomInteger() {
+        return vRandom.nextInt();
+    }
+    @Override
+    public Integer getRandomIntegerValue() {
+        return vRandom.nextInt(config.getNumValues());
+    }
+
 
     @Override
     public String getRandomString()
