@@ -21,7 +21,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.inject.Singleton;
-import com.netflix.ndbench.core.util.NdBenchConstants;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -28,6 +28,11 @@ subprojects {
 
     group = "com.netflix.${githubProjectName}"
 
+
+    compileJava {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
     repositories {
         jcenter()
     }
@@ -48,9 +53,6 @@ subprojects {
         //Unit Testing
       testCompile 'org.jmockit:jmockit:1.19'
       testCompile 'junit:junit:latest.release'
-
-        //Properties
-        compile 'com.netflix.archaius:archaius-core:0.7.4' //Archaius
 
         //Google Injections
         compile  'com.google.inject:guice:4.0'

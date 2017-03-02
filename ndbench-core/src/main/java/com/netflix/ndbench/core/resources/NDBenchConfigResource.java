@@ -17,11 +17,12 @@
 package com.netflix.ndbench.core.resources;
 
 import com.google.inject.Inject;
+import com.netflix.archaius.api.config.SettableConfig;
+import com.netflix.archaius.api.inject.RuntimeLayer;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
-import com.netflix.ndbench.core.config.MemoryConfigSource;
 import com.netflix.ndbench.core.config.TunableConfig;
-import com.netflix.ndbench.core.util.NdBenchConstants;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
@@ -31,6 +32,7 @@ import java.util.Map;
 
 import static com.netflix.ndbench.core.util.RestUtil.*;
 
+
 /**
  * @author vchella
  */
@@ -39,15 +41,18 @@ public class NDBenchConfigResource {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NDBenchConfigResource.class);
 
     private final IConfiguration config;
-    private final MemoryConfigSource memoryConfigSource;
     private final NdBenchDriver ndBenchDriver;
+    private final SettableConfig settableConfig;
+
     @Inject
     public NDBenchConfigResource(IConfiguration config,
-                                 MemoryConfigSource memoryConfigSource,
-                                 NdBenchDriver ndBenchDriver) {
+                                 NdBenchDriver ndBenchDriver,
+                                 @RuntimeLayer SettableConfig settableConfig
+                                 ) {
         this.config = config;
-        this.memoryConfigSource = memoryConfigSource;
         this.ndBenchDriver = ndBenchDriver;
+        this.settableConfig = settableConfig;
+
     }
     @Path("/list")
     @GET
@@ -76,7 +81,8 @@ public class NDBenchConfigResource {
             {
                 if (entry.getKey()!=null && !entry.getKey().isEmpty()
                         && entry.getValue()!=null && !entry.getValue().isEmpty()) {
-                    memoryConfigSource.set(NdBenchConstants.PROP_PREFIX + entry.getKey(), entry.getValue());
+                    settableConfig.setProperty(NdBenchConstants.PROP_PREFIX + entry.getKey(), entry.getValue());
+
                 }
             }
             return sendSuccessResponse("Properties have been applied");
@@ -122,8 +128,7 @@ public class NDBenchConfigResource {
                 if (entry.getKey()!=null && !entry.getKey().isEmpty()
                         && entry.getValue()!=null && !entry.getValue().isEmpty()) {
 
-                    memoryConfigSource.set(NdBenchConstants.PROP_PREFIX + entry.getKey(), entry.getValue());
-
+                        settableConfig.setProperty(NdBenchConstants.PROP_PREFIX +entry.getKey(), entry.getValue());
                     switch (entry.getKey())
                     {
                         case NdBenchConstants.READ_RATE_LIMIT:

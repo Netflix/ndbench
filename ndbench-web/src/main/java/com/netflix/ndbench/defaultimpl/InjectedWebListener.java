@@ -22,7 +22,9 @@ import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.ndbench.core.config.IConfiguration;
+import com.netflix.ndbench.core.defaultimpl.NdBenchClientModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
@@ -44,7 +46,8 @@ public class InjectedWebListener extends GuiceServletContextListener
         List<Module> moduleList = Lists.newArrayList();
         moduleList.add(new JaxServletModule());
         moduleList.add(new NdBenchGuiceModule());
-//        moduleList.add(new ArchaiusModule()); //Archaius-2
+        moduleList.add(new NdBenchClientModule());
+        moduleList.add(new ArchaiusModule()); //Archaius-2
 
 
 

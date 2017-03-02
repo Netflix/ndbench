@@ -14,15 +14,15 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.core.util;
+package com.netflix.ndbench.api.plugin.common;
 
 
 /**
  * @author vchella
  */
 public final class NdBenchConstants {
-    public static final String WEBAPP_NAME = "NdBench";
-    public static final String PROP_PREFIX = "NdBench.";
+    public static final String WEBAPP_NAME = "ndbench";
+    public static final String PROP_PREFIX = WEBAPP_NAME+".config.";
 
 
     public static final String NUM_KEYS="numKeys";
