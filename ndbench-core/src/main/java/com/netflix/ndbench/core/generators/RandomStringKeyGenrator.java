@@ -16,6 +16,11 @@
  */
 package com.netflix.ndbench.core.generators;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 
@@ -23,23 +28,39 @@ import java.util.Random;
  * @author vchella
  */
 public class RandomStringKeyGenrator implements KeyGenerator<String> {
+    private static Logger logger = LoggerFactory.getLogger(RandomStringKeyGenrator.class);
+
     private final Random kRandom = new Random();
 
-    private final int numKeys;
+    private final List<String> keys = new ArrayList<String>();
 
-    public RandomStringKeyGenrator(int numKeys)
+    private final int numKeys;
+    private final boolean preLoadKeys;
+
+    public RandomStringKeyGenrator(boolean preLoadKeys, int numKeys)
     {
+        this.preLoadKeys = preLoadKeys;
         this.numKeys = numKeys;
     }
     @Override
     public void init() {
-
+        if (this.isPreLoadKeys()) {
+            for (int i = 0; i < getNumKeys(); i++) {
+                if (i % 10000 == 0)
+                    logger.info("Still initializing sample data for Keys. So far: "+ i+" /"+numKeys);
+                keys.add("T" + i);
+            }
+        }
     }
 
     @Override
     public String getNextKey() {
         int randomKeyIndex = kRandom.nextInt(getNumKeys());
-        return "T" + randomKeyIndex;
+        if (isPreLoadKeys()) {
+            return keys.get(randomKeyIndex);
+        } else {
+            return "T" + randomKeyIndex;
+        }
     }
 
     @Override
@@ -47,6 +68,10 @@ public class RandomStringKeyGenrator implements KeyGenerator<String> {
         return true;
     }
 
+    @Override
+    public boolean isPreLoadKeys() {
+        return preLoadKeys;
+    }
 
     @Override
     public int getNumKeys() {
