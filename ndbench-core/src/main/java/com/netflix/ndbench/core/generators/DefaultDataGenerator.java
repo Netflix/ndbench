@@ -51,7 +51,7 @@ public class DefaultDataGenerator implements DataGenerator {
     @Inject
     public DefaultDataGenerator(IConfiguration config) {
         this.config = config;
-        if (config.getUseVariableDataSize()) {
+        if (config.isUseVariableDataSize()) {
             initialize(config.getDataSizeLowerBound(), config.getDataSizeUpperBound());
         } else {
             initialize();
@@ -83,10 +83,10 @@ public class DefaultDataGenerator implements DataGenerator {
 
 
     private void initialize(int lowerBound, int upperBound) {
-        if (config.getUseVariableDataSize()) {
+        if (config.isUseVariableDataSize()) {
             for (int i = 0; i < config.getNumKeys(); i++) {
                 if(i%1000==0) {
-                    logger.info("Still initializing sample data for variable data size values");
+                    logger.info("Still initializing sample data for variable data size values. So far: "+ i+" /"+config.getNumKeys());
                 }
                 int valueSize = upperBound;
                 if (upperBound > lowerBound) {
@@ -103,7 +103,7 @@ public class DefaultDataGenerator implements DataGenerator {
     private void initialize() {
         for (int i = 0; i < config.getNumValues(); i++) {
             if(i%1000==0) {
-                logger.info("Still initializing sample data for values");
+                logger.info("Still initializing sample data for values. So far: "+ i+" /"+config.getNumValues());
             }
             values.add(constructRandomValue());
         }
@@ -112,7 +112,7 @@ public class DefaultDataGenerator implements DataGenerator {
 
     private String constructRandomValue() {
 
-        if (config.getUseStaticData()) {
+        if (config.isUseStaticData()) {
             return StaticValue;
         }
 

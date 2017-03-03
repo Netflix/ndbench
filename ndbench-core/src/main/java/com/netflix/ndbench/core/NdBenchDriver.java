@@ -128,11 +128,11 @@ public class NdBenchDriver {
         KeyGeneratorFactory keyGeneratorFactory = new KeyGeneratorFactory();
 
         KeyGenerator<String> keyGenerator = keyGeneratorFactory.getKeyGenerator(loadPattern,
-                config.getNumKeys(), windowSize, windowDurationInSec);
+                config.getNumKeys(), windowSize, windowDurationInSec, config.isPreloadKeys());
 
         keyGeneratorReadRef.set(keyGenerator);
 
-        startOperation(config.getReadEnabled(),
+        startOperation(config.isReadEnabled(),
                 config.getNumReaders(),
                 readWorkers,
                 tpReadRef,
@@ -160,11 +160,11 @@ public class NdBenchDriver {
         KeyGeneratorFactory keyGeneratorFactory = new KeyGeneratorFactory();
 
         KeyGenerator<String> keyGenerator = keyGeneratorFactory.getKeyGenerator(loadPattern,
-                config.getNumKeys(), windowSize, windowDurationInSec);
+                config.getNumKeys(), windowSize, windowDurationInSec, config.isPreloadKeys());
 
         keyGeneratorWriteRef.set(keyGenerator);
 
-        startOperation(config.getWriteEnabled(),
+        startOperation(config.isWriteEnabled(),
                 config.getNumWriters(),
                 writeWorkers,
                 tpWriteRef,

@@ -36,6 +36,9 @@ public interface IConfiguration {
     @DefaultValue("128")
     int getDataSize();
 
+    @DefaultValue("false")
+    boolean isPreloadKeys();
+
     // NUM WORKERS
     default int getNumWriters() {
         return Runtime.getRuntime().availableProcessors() * 4;
@@ -54,10 +57,10 @@ public interface IConfiguration {
 
     // TEST CASE CONFIG
     @DefaultValue("true")
-    boolean getWriteEnabled();
+    boolean isWriteEnabled();
 
     @DefaultValue("true")
-    boolean getReadEnabled();
+    boolean isReadEnabled();
 
 
     //Workers Config
@@ -70,7 +73,7 @@ public interface IConfiguration {
 
     //DataGenerator Configs
     @DefaultValue("false")
-    boolean getUseVariableDataSize();
+    boolean isUseVariableDataSize();
 
     @DefaultValue("1000")
     int getDataSizeLowerBound();
@@ -79,7 +82,7 @@ public interface IConfiguration {
     int getDataSizeUpperBound();
 
     @DefaultValue("false")
-    boolean getUseStaticData();
+    boolean isUseStaticData();
 
 
     //Tunable configs
@@ -88,4 +91,5 @@ public interface IConfiguration {
 
     @DefaultValue("100")
     int getWriteRateLimit();
+
 }

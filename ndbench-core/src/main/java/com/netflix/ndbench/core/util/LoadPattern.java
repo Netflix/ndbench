@@ -21,8 +21,8 @@ package com.netflix.ndbench.core.util;
  */
 public enum LoadPattern {
     RANDOM("random"),
-    SLIDING_WINDOW("sliding_window");
-
+    SLIDING_WINDOW("sliding_window"),
+    SLIDING_WINDOW_FLIP("sliding_window_flip");
     private String text;
 
     LoadPattern(String text) {

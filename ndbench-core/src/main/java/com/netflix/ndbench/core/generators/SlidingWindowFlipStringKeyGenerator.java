@@ -26,27 +26,25 @@ import java.util.Random;
 /**
  * @author vchella
  */
-public class SlidingWindowStringKeyGenerator implements KeyGenerator<String> {
+public class SlidingWindowFlipStringKeyGenerator implements KeyGenerator<String> {
 
-    private static Logger logger = LoggerFactory.getLogger(SlidingWindowStringKeyGenerator.class);
+    private static Logger logger = LoggerFactory.getLogger(SlidingWindowFlipStringKeyGenerator.class);
 
     private final int windowSize;
-    private final long testDurationInSeconds;
+    private final long windowDurationInMs;
     private final int numKeys;
     private final boolean preLoadKeys;
 
     private final Random kRandom = new Random();
 
     private long startTime;
-    private long endTime;
 
     private final List<String> keys = new ArrayList<String>();
 
-    public SlidingWindowStringKeyGenerator(int windowSize, long testDurationInSeconds, boolean preLoadKeys, int numKeys)
+    public SlidingWindowFlipStringKeyGenerator(int windowSize, long windowDurationInMs, boolean preLoadKeys, int numKeys)
     {
-        logger.info("Initialized SlidingWindowKeyGenerator with WindowSize: "+windowSize+", Test Duration (Secs): "+testDurationInSeconds+", NumKeys: "+numKeys);
         this.windowSize = windowSize;
-        this.testDurationInSeconds = testDurationInSeconds;
+        this.windowDurationInMs = windowDurationInMs;
         this.numKeys = numKeys;
         this.preLoadKeys = preLoadKeys;
     }
@@ -62,30 +60,26 @@ public class SlidingWindowStringKeyGenerator implements KeyGenerator<String> {
             }
         }
         startTime = System.currentTimeMillis();
-        endTime = startTime + (testDurationInSeconds*1000);
     }
-
-
 
     @Override
     public String getNextKey() {
 
-
-        int min = getCurrentRecord();
-//        int max = Math.max(min + this.windowSize,numKeys);
+        //Algo:
+        // 1) Calculate my CurrentKeySet[min-max]
+        // 1.1) CurrentKeySet calculation: min=currentWindow*windowSize, max=min+windowSize
+        // 2) Get the Random number in my CurrentKeySet
+        int currentWindow = getCurrentWindowIndex();
+        int min = currentWindow * this.windowSize;
         int max = min + this.windowSize;
+
         int nextKey = randomnum(min, max);
-        logger.debug("NumKeys: "+numKeys+" | CurrentKeySet: [" +min +" - " +max+"] | getNextKey(): "+nextKey);
+        logger.debug("Current Window: "+currentWindow+"" + "| CurrentKeySet: [" +min +" - " +max+"] | getNextKey(): "+nextKey);
         return "T"+nextKey;
     }
 
     @Override
     public boolean hasNextKey() {
-        long currentTime = System.currentTimeMillis();
-        if ( endTime < currentTime ) {
-            logger.info("No more keys to process since endtime :"+endTime+" < currentTime: "+currentTime);
-            return false;
-        }
         return true;
     }
 
@@ -106,21 +100,10 @@ public class SlidingWindowStringKeyGenerator implements KeyGenerator<String> {
     /*
         Gets the currentWindow, Window number starts from 0.
      */
-    private int getCurrentRecord()
+    private int getCurrentWindowIndex()
     {
-        //Get the current time
         long currentTime = System.currentTimeMillis();
-
-        //How far along has the test run?
-        long currentDuration=currentTime-startTime;
-        //How far along the test are we?
-        double currentRelativePosition=(currentDuration/1000d)/testDurationInSeconds;
-        //determine the position of the test window
-        double currentRecordRaw=currentRelativePosition*(numKeys-windowSize);
-
-        Long currentRecord=Math.round(currentRecordRaw);
-
-        return currentRecord.intValue();
+        long currentWindow =((currentTime - startTime) / windowDurationInMs);
+        return (int) currentWindow%(numKeys/windowSize);
     }
-
 }
