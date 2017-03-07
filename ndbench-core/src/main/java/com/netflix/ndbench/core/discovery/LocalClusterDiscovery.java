@@ -37,14 +37,7 @@ public class LocalClusterDiscovery implements IClusterDiscovery {
     }
 
     private String getLocalhostName() {
-        String localhost = "localhost";
-        try {
-            localhost = InetAddress.getLocalHost().getHostName();
-        }
-        catch (UnknownHostException e) {
-            logger.error("Unable to get the localhost name. ",e);
-        }
-        return localhost;
+        return "127.0.0.1";
     }
 
     @Override

@@ -6,9 +6,7 @@ dependencies {
     compile 'com.sun.jersey:jersey-bundle:1.19.1'
     compile 'com.sun.jersey.contribs:jersey-multipart:1.19.1'
     compile 'com.sun.jersey.contribs:jersey-guice:1.19.1'
-
-    compile group: 'com.owlike', name: 'genson', version: '1.4'
-
+    
 
     // For getting all implementations of an Interface
     compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
