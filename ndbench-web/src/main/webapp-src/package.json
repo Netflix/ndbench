@@ -4,12 +4,14 @@
   "version": "0.5.0",
   "license": "https://github.com/Netflix/ndbench/blob/master/LICENSE",
   "scripts": {
+    "postinstall": "bower install",
     "dev": "node browsersync.js",
     "build": "npm run copy; npm run vulcanize",
     "vulcanize": "vulcanize --inline-scripts --inline-css app/elements/ndbench-ui-app.html > ../webapp/elements/ndbench-ui-app.html",
     "copy": "rsync -a --filter='protect WEB-INF' --delete --delete-excluded --exclude='bower_components/*' --exclude='elements/*' app/ ../webapp; mkdir ../webapp/bower_components/webcomponentsjs; cp -r app/bower_components/webcomponentsjs/webcomponents-lite.min.js ../webapp/bower_components/webcomponentsjs/"
   },
   "devDependencies": {
+    "bower": "^1.7.9",
     "browser-sync": "~2.11.1",
     "connect-modrewrite": "~0.9.0",
     "eslint": "~1.10.3",
