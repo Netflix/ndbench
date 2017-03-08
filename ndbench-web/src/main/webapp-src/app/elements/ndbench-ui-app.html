@@ -43,9 +43,13 @@
 
             paper-toolbar {
                 --paper-toolbar-background: var(--ndb-gray);
+                --paper-toolbar-height: 50px;
+                --paper-toolbar-title: {
+                    font-weight: 500;
+                }
             }
             paper-toolbar > paper-icon-button {
-                margin-right: 1em;
+                margin-right: 0.5em;
             }
 
             .content {
@@ -55,7 +59,7 @@
             }
             .col-left {
                 min-width: 700px;
-                flex: 1 1 auto;
+                flex: 1;
                 margin-right: var(--ndb-standard-space);
             }
             .col-right {

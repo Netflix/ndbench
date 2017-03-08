@@ -20,6 +20,30 @@
 -->
 </head><body><div hidden="" by-vulcanize=""><!--
 @license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
 Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
@@ -732,21 +756,7 @@ _initFeatures: function () {
 this._marshalHostAttributes();
 this._marshalBehaviors();
 }
-});</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>Polymer.Base._addFeature({
+});</script><script>Polymer.Base._addFeature({
 _prepTemplate: function () {
 if (this._template === undefined) {
 this._template = Polymer.DomModule.import(this.is, 'template');
@@ -2883,30 +2893,7 @@ this._tryReady();
 },
 _marshalBehavior: function (b) {
 }
-});</script><!--
-@license
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>Polymer.nar = [];
+});</script><script>Polymer.nar = [];
 Polymer.Annotations = {
 parseAnnotations: function (template) {
 var list = [];
@@ -8220,53 +8207,6 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-@license
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!-- Most common used flex styles-->
 <dom-module id="iron-flex" assetpath="../bower_components/iron-flex-layout/">
   <template>
@@ -8300,6 +8240,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         -ms-flex-wrap: wrap;
         -webkit-flex-wrap: wrap;
         flex-wrap: wrap;
+      }
+
+      .layout.no-wrap {
+        -ms-flex-wrap: nowrap;
+        -webkit-flex-wrap: nowrap;
+        flex-wrap: nowrap;
       }
 
       .layout.center,
@@ -8468,7 +8414,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         -ms-align-self: baseline;
         -webkit-align-self: baseline;
         align-self: baseline;
-      };
+      }
 
       /**
        * multi-line alignment in main axis.
@@ -8674,6 +8620,146 @@ The complete set of contributors may be found at http://polymer.github.io/CONTRI
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!--
+`paper-header-panel` contains a header section and a content panel section.
+
+__Important:__ The `paper-header-panel` will not display if its parent does not have a height.
+
+Using layout classes, you can make the `paper-header-panel` fill the screen
+
+    <body class="fullbleed layout vertical">
+      <paper-header-panel class="flex">
+        <paper-toolbar>
+          <div>Hello World!</div>
+        </paper-toolbar>
+      </paper-header-panel>
+    </body>
+
+Special support is provided for scrolling modes when one uses a paper-toolbar or equivalent for the
+header section.
+
+Example:
+
+    <paper-header-panel>
+      <paper-toolbar>Header</paper-toolbar>
+      <div>Content goes here...</div>
+    </paper-header-panel>
+
+If you want to use other than `paper-toolbar` for the header, add `paper-header` class to that
+element.
+
+Example:
+
+    <paper-header-panel>
+      <div class="paper-header">Header</div>
+      <div>Content goes here...</div>
+    </paper-header-panel>
+
+To have the content fit to the main area, use the `fit` class.
+
+    <paper-header-panel>
+      <div class="paper-header">standard</div>
+      <div class="fit">content fits 100% below the header</div>
+    </paper-header-panel>
+
+### Modes
+
+Controls header and scrolling behavior. Options are `standard`, `seamed`, `waterfall`, `waterfall-tall`, `scroll` and
+`cover`. Default is `standard`.
+
+Mode | Description
+----------------|-------------
+`standard` | The header is a step above the panel. The header will consume the panel at the point of entry, preventing it from passing through to the opposite side.
+`seamed` | The header is presented as seamed with the panel.
+`waterfall` | Similar to standard mode, but header is initially presented as seamed with panel, but then separates to form the step.
+`waterfall-tall` | The header is initially taller (`tall` class is added to the header). As the user scrolls, the header separates (forming an edge) while condensing (`tall` class is removed from the header).
+`scroll` | The header keeps its seam with the panel, and is pushed off screen.
+`cover` | The panel covers the whole `paper-header-panel` including the header. This allows user to style the panel in such a way that the panel is partially covering the header.
+
+Example:
+
+    <paper-header-panel mode="waterfall">
+      <div class="paper-header">standard</div>
+      <div class="content fit">content fits 100% below the header</div>
+    </paper-header-panel>
+
+
+### Styling
+
+To change the shadow that shows up underneath the header:
+
+    paper-header-panel {
+      --paper-header-panel-shadow: {
+          height: 6px;
+          bottom: -6px;
+          box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
+      };
+    }
+
+To change the panel container:
+
+    paper-header-panel {
+      --paper-header-panel-container: {
+        border: 1px solid gray;
+      };
+
+To change the panel container in different modes:
+
+    paper-header-panel {
+      --paper-header-panel-standard-container: {
+        border: 1px solid gray;
+      };
+
+      --paper-header-panel-seamed-container: {
+        border: 1px solid gray;
+      };
+
+      --paper-header-panel-waterfall-container: {
+        border: 1px solid gray;
+      };
+
+      --paper-header-panel-waterfall-tall-container: {
+        border: 1px solid gray;
+      };
+
+      --paper-header-panel-scroll-container: {
+        border: 1px solid gray;
+      };
+
+      --paper-header-panel-cover-container: {
+        border: 1px solid gray;
+      };
+    }
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-header-panel` | Mixin applied to the element | `{}`
+`--paper-header-panel-body` | Mixin applied to the element's body (i.e. everything below the toolbar) | `{}`
+`--paper-header-panel-container` | Mixin applied to the container in any mode | `{}`
+`--paper-header-panel-scroll-container` | Mixin applied to the container when in scroll mode | `{}`
+`--paper-header-panel-cover-container` | Mixin applied to the container when in cover mode | `{}`
+`--paper-header-panel-standard-container` | Mixin applied to the container when in standard mode | `{}`
+`--paper-header-panel-seamed-container` | Mixin applied to the container when in seamed mode | `{}`
+`--paper-header-panel-waterfall-container` | Mixin applied to the container when in waterfall mode | `{}`
+`--paper-header-panel-waterfall-tall-container` | Mixin applied to the container when in tall waterfall mode | `{}`
+`--paper-header-panel-shadow` | Mixin applied to the waterfall shadow | `{}`
+
+@group Paper Elements
+@element paper-header-panel
+@demo demo/index.html
+@hero hero.svg
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 The `<iron-flex-layout>` component provides simple ways to use
 [CSS flexible box layout](https://developer.mozilla.org/en-US/docs/Web/Guide/CSS/Flexible_boxes),
 also known as flexbox. This component provides two different ways to use flexbox:
@@ -8767,6 +8853,12 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
       -ms-flex-wrap: wrap;
       -webkit-flex-wrap: wrap;
       flex-wrap: wrap;
+    };
+    
+    --layout-no-wrap: {
+      -ms-flex-wrap: nowrap;
+      -webkit-flex-wrap: nowrap;
+      flex-wrap: nowrap;
     };
 
     --layout-wrap-reverse: {
@@ -9060,138 +9152,6 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
   }
 
 </style>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-`paper-header-panel` contains a header section and a content panel section.
-
-__Important:__ The `paper-header-panel` will not display if its parent does not have a height.
-
-Using layout classes, you can make the `paper-header-panel` fill the screen
-
-    <body class="fullbleed layout vertical">
-      <paper-header-panel class="flex">
-        <paper-toolbar>
-          <div>Hello World!</div>
-        </paper-toolbar>
-      </paper-header-panel>
-    </body>
-
-Special support is provided for scrolling modes when one uses a paper-toolbar or equivalent for the
-header section.
-
-Example:
-
-    <paper-header-panel>
-      <paper-toolbar>Header</paper-toolbar>
-      <div>Content goes here...</div>
-    </paper-header-panel>
-
-If you want to use other than `paper-toolbar` for the header, add `paper-header` class to that
-element.
-
-Example:
-
-    <paper-header-panel>
-      <div class="paper-header">Header</div>
-      <div>Content goes here...</div>
-    </paper-header-panel>
-
-To have the content fit to the main area, use the `fit` class.
-
-    <paper-header-panel>
-      <div class="paper-header">standard</div>
-      <div class="fit">content fits 100% below the header</div>
-    </paper-header-panel>
-
-### Modes
-
-Controls header and scrolling behavior. Options are `standard`, `seamed`, `waterfall`, `waterfall-tall`, `scroll` and
-`cover`. Default is `standard`.
-
-Mode | Description
-----------------|-------------
-`standard` | The header is a step above the panel. The header will consume the panel at the point of entry, preventing it from passing through to the opposite side.
-`seamed` | The header is presented as seamed with the panel.
-`waterfall` | Similar to standard mode, but header is initially presented as seamed with panel, but then separates to form the step.
-`waterfall-tall` | The header is initially taller (`tall` class is added to the header). As the user scrolls, the header separates (forming an edge) while condensing (`tall` class is removed from the header).
-`scroll` | The header keeps its seam with the panel, and is pushed off screen.
-`cover` | The panel covers the whole `paper-header-panel` including the header. This allows user to style the panel in such a way that the panel is partially covering the header.
-
-Example:
-
-    <paper-header-panel mode="waterfall">
-      <div class="paper-header">standard</div>
-      <div class="content fit">content fits 100% below the header</div>
-    </paper-header-panel>
-
-
-### Styling
-
-To change the shadow that shows up underneath the header:
-
-    paper-header-panel {
-      --paper-header-panel-shadow: {
-          height: 6px;
-          bottom: -6px;
-          box-shadow: inset 0px 5px 6px -3px rgba(0, 0, 0, 0.4);
-      };
-    }
-
-To change the panel container in different modes:
-
-    paper-header-panel {
-      --paper-header-panel-standard-container: {
-        border: 1px solid gray;
-      };
-
-      --paper-header-panel-seamed-container: {
-        border: 1px solid gray;
-      };
-
-      --paper-header-panel-waterfall-container: {
-        border: 1px solid gray;
-      };
-
-      --paper-header-panel-waterfall-tall-container: {
-        border: 1px solid gray;
-      };
-
-      --paper-header-panel-scroll-container: {
-        border: 1px solid gray;
-      };
-
-      --paper-header-panel-cover-container: {
-        border: 1px solid gray;
-      };
-    }
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-header-panel` | Mixin applied to the element | `{}`
-`--paper-header-panel-body` | Mixin applied to the element's body (i.e. everything below the toolbar) | `{}`
-`--paper-header-panel-scroll-container` | Mixin applied to the container when in scroll mode | `{}`
-`--paper-header-panel-cover-container` | Mixin applied to the container when in cover mode | `{}`
-`--paper-header-panel-standard-container` | Mixin applied to the container when in standard mode | `{}`
-`--paper-header-panel-seamed-container` | Mixin applied to the container when in seamed mode | `{}`
-`--paper-header-panel-waterfall-container` | Mixin applied to the container when in waterfall mode | `{}`
-`--paper-header-panel-waterfall-tall-container` | Mixin applied to the container when in tall waterfall mode | `{}`
-`--paper-header-panel-shadow` | Mixin applied to the waterfall shadow | `{}`
-
-@group Paper Elements
-@element paper-header-panel
-@demo demo/index.html
-@hero hero.svg
--->
-
 <dom-module id="paper-header-panel" assetpath="../bower_components/paper-header-panel/">
   <template>
     <style>
@@ -9221,6 +9181,10 @@ Custom property | Description | Default
         min-height: 0;
 
         @apply(--paper-header-panel-body);
+      }
+
+      #mainContainer {
+        @apply(--paper-header-panel-container);
       }
 
       /*
@@ -9563,6 +9527,170 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Toolbars](https://www.google.com/design/spec/components/toolbars.html)
+
+`paper-toolbar` is a horizontal bar containing items that can be used for
+label, navigation, search and actions.  The items placed inside the
+`paper-toolbar` are projected into a `class="horizontal center layout"` container inside of
+`paper-toolbar`'s Shadow DOM.  You can use flex attributes to control the items'
+sizing.
+
+Example:
+
+```html
+<paper-toolbar>
+  <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
+  <div class="title">Title</div>
+  <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
+</paper-toolbar>
+```
+
+`paper-toolbar` has a standard height, but can made be taller by setting `tall`
+class on the `paper-toolbar`. This will make the toolbar 3x the normal height.
+
+```html
+<paper-toolbar class="tall">
+  <paper-icon-button icon="menu"></paper-icon-button>
+</paper-toolbar>
+```
+
+Apply `medium-tall` class to make the toolbar medium tall.  This will make the
+toolbar 2x the normal height.
+
+```html
+<paper-toolbar class="medium-tall">
+  <paper-icon-button icon="menu"></paper-icon-button>
+</paper-toolbar>
+```
+
+When `tall`, items can pin to either the top (default), middle or bottom.  Use
+`middle` class for middle content and `bottom` class for bottom content.
+
+```html
+<paper-toolbar class="tall">
+  <paper-icon-button icon="menu"></paper-icon-button>
+  <div class="middle title">Middle Title</div>
+  <div class="bottom title">Bottom Title</div>
+</paper-toolbar>
+```
+
+For `medium-tall` toolbar, the middle and bottom contents overlap and are
+pinned to the bottom.  But `middleJustify` and `bottomJustify` attributes are
+still honored separately.
+
+To make an element completely fit at the bottom of the toolbar, use `fit` along
+with `bottom`.
+
+```html
+<paper-toolbar class="tall">
+  <div id="progressBar" class="bottom fit"></div>
+</paper-toolbar>
+```
+
+When inside a `paper-header-panel` element with `mode="waterfall-tall"`, 
+the class `.animate` is toggled to animate the height change in the toolbar. 
+
+### Styling
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-toolbar-title`      | Mixin applied to the title of the toolbar | `{}`
+`--paper-toolbar-background` | Toolbar background color     | `--primary-color`
+`--paper-toolbar-color`      | Toolbar foreground color     | `--dark-theme-text-color`
+`--paper-toolbar-height`     | Custom height for toolbar    | `64px`
+`--paper-toolbar-sm-height`  | Custom height for small screen toolbar | `56px`
+`--paper-toolbar`            | Mixin applied to the toolbar | `{}`
+`--paper-toolbar-content`    | Mixin applied to the content section of the toolbar | `{}`
+`--paper-toolbar-medium`     | Mixin applied to medium height toolbar | `{}`
+`--paper-toolbar-tall`       | Mixin applied to tall height toolbar | `{}`
+`--paper-toolbar-transition` | Transition applied to the `.animate` class | `height 0.18s ease-in`
+
+### Accessibility
+
+`<paper-toolbar>` has `role="toolbar"` by default. Any elements with the class `title` will
+be used as the label of the toolbar via `aria-labelledby`.
+
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!-- Taken from https://www.google.com/design/spec/style/color.html#color-ui-color-application -->
+
+<style is="custom-style">
+
+  :root {
+    /*
+     * You can use these generic variables in your elements for easy theming.
+     * For example, if all your elements use `--primary-text-color` as its main
+     * color, then switching from a light to a dark theme is just a matter of
+     * changing the value of `--primary-text-color` in your application.
+     */
+    --primary-text-color: var(--light-theme-text-color);
+    --primary-background-color: var(--light-theme-background-color);
+    --secondary-text-color: var(--light-theme-secondary-color);
+    --disabled-text-color: var(--light-theme-disabled-color);
+    --divider-color: var(--light-theme-divider-color);
+    --error-color: var(--paper-deep-orange-a700);
+
+    /*
+     * Primary and accent colors. Also see color.html for more colors.
+     */
+    --primary-color: var(--paper-indigo-500);
+    --light-primary-color: var(--paper-indigo-100);
+    --dark-primary-color: var(--paper-indigo-700);
+
+    --accent-color: var(--paper-pink-a200);
+    --light-accent-color: var(--paper-pink-a100);
+    --dark-accent-color: var(--paper-pink-a400);
+
+
+    /*
+     * Material Design Light background theme
+     */
+    --light-theme-background-color: #ffffff;
+    --light-theme-base-color: #000000;
+    --light-theme-text-color: var(--paper-grey-900);
+    --light-theme-secondary-color: #737373;  /* for secondary text and icons */
+    --light-theme-disabled-color: #9b9b9b;  /* disabled/hint text */
+    --light-theme-divider-color: #dbdbdb;
+
+    /*
+     * Material Design Dark background theme
+     */
+    --dark-theme-background-color: var(--paper-grey-900);
+    --dark-theme-base-color: #ffffff;
+    --dark-theme-text-color: #ffffff;
+    --dark-theme-secondary-color: #bcbcbc;  /* for secondary text and icons */
+    --dark-theme-disabled-color: #646464;  /* disabled/hint text */
+    --dark-theme-divider-color: #3c3c3c;
+
+    /*
+     * Deprecated values because of their confusing names.
+     */
+    --text-primary-color: var(--dark-theme-text-color);
+    --default-primary-color: var(--primary-color);
+
+  }
+
+</style>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><style is="custom-style">
 
   :root {
@@ -9892,83 +10020,6 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!-- Taken from https://www.google.com/design/spec/style/color.html#color-ui-color-application -->
-
-<style is="custom-style">
-
-  :root {
-    /*
-     * You can use these generic variables in your elements for easy theming.
-     * For example, if all your elements use `--primary-text-color` as its main
-     * color, then switching from a light to a dark theme is just a matter of
-     * changing the value of `--primary-text-color` in your application.
-     */
-    --primary-text-color: var(--light-theme-text-color);
-    --primary-background-color: var(--light-theme-background-color);
-    --secondary-text-color: var(--light-theme-secondary-color);
-    --disabled-text-color: var(--light-theme-disabled-color);
-    --divider-color: var(--light-theme-divider-color);
-    --error-color: var(--paper-deep-orange-a700);
-
-    /*
-     * Primary and accent colors. Also see color.html for more colors.
-     */
-    --primary-color: var(--paper-indigo-500);
-    --light-primary-color: var(--paper-indigo-100);
-    --dark-primary-color: var(--paper-indigo-700);
-
-    --accent-color: var(--paper-pink-a200);
-    --light-accent-color: var(--paper-pink-a100);
-    --dark-accent-color: var(--paper-pink-a400);
-
-
-    /*
-     * Material Design Light background theme
-     */
-    --light-theme-background-color: #ffffff;
-    --light-theme-base-color: #000000;
-    --light-theme-text-color: var(--paper-grey-900);
-    --light-theme-secondary-color: #737373;  /* for secondary text and icons */
-    --light-theme-disabled-color: #9b9b9b;  /* disabled/hint text */
-    --light-theme-divider-color: #dbdbdb;
-
-    /*
-     * Material Design Dark background theme
-     */
-    --dark-theme-background-color: var(--paper-grey-900);
-    --dark-theme-base-color: #ffffff;
-    --dark-theme-text-color: #ffffff;
-    --dark-theme-secondary-color: #bcbcbc;  /* for secondary text and icons */
-    --dark-theme-disabled-color: #646464;  /* disabled/hint text */
-    --dark-theme-divider-color: #3c3c3c;
-
-    /*
-     * Deprecated values because of their confusing names.
-     */
-    --text-primary-color: var(--dark-theme-text-color);
-    --default-primary-color: var(--primary-color);
-
-  }
-
-</style>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700">
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><style is="custom-style">
 
   :root {
@@ -10133,96 +10184,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Toolbars](https://www.google.com/design/spec/components/toolbars.html)
-
-`paper-toolbar` is a horizontal bar containing items that can be used for
-label, navigation, search and actions.  The items placed inside the
-`paper-toolbar` are projected into a `class="horizontal center layout"` container inside of
-`paper-toolbar`'s Shadow DOM.  You can use flex attributes to control the items'
-sizing.
-
-Example:
-
-```html
-<paper-toolbar>
-  <paper-icon-button icon="menu" on-tap="menuAction"></paper-icon-button>
-  <div class="title">Title</div>
-  <paper-icon-button icon="more-vert" on-tap="moreAction"></paper-icon-button>
-</paper-toolbar>
-```
-
-`paper-toolbar` has a standard height, but can made be taller by setting `tall`
-class on the `paper-toolbar`. This will make the toolbar 3x the normal height.
-
-```html
-<paper-toolbar class="tall">
-  <paper-icon-button icon="menu"></paper-icon-button>
-</paper-toolbar>
-```
-
-Apply `medium-tall` class to make the toolbar medium tall.  This will make the
-toolbar 2x the normal height.
-
-```html
-<paper-toolbar class="medium-tall">
-  <paper-icon-button icon="menu"></paper-icon-button>
-</paper-toolbar>
-```
-
-When `tall`, items can pin to either the top (default), middle or bottom.  Use
-`middle` class for middle content and `bottom` class for bottom content.
-
-```html
-<paper-toolbar class="tall">
-  <paper-icon-button icon="menu"></paper-icon-button>
-  <div class="middle title">Middle Title</div>
-  <div class="bottom title">Bottom Title</div>
-</paper-toolbar>
-```
-
-For `medium-tall` toolbar, the middle and bottom contents overlap and are
-pinned to the bottom.  But `middleJustify` and `bottomJustify` attributes are
-still honored separately.
-
-To make an element completely fit at the bottom of the toolbar, use `fit` along
-with `bottom`.
-
-```html
-<paper-toolbar class="tall">
-  <div id="progressBar" class="bottom fit"></div>
-</paper-toolbar>
-```
-
-When inside a `paper-header-panel` element, the class `.animate` is toggled to animate
-the height change in the toolbar.
-
-### Styling
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-toolbar-title`      | Mixin applied to the title of the toolbar | `{}`
-`--paper-toolbar-background` | Toolbar background color     | `--primary-color`
-`--paper-toolbar-color`      | Toolbar foreground color     | `--dark-theme-text-color`
-`--paper-toolbar-height`     | Custom height for toolbar    | `64px`
-`--paper-toolbar-sm-height`  | Custom height for small screen toolbar | `56px`
-`--paper-toolbar`            | Mixin applied to the toolbar | `{}`
-`--paper-toolbar-content`    | Mixin applied to the content section of the toolbar | `{}`
-`--paper-toolbar-medium`     | Mixin applied to medium height toolbar | `{}`
-`--paper-toolbar-tall`       | Mixin applied to tall height toolbar | `{}`
-`--paper-toolbar-transition` | Transition applied to the `.animate` class | `height 0.18s ease-in`
-
-### Accessibility
-
-`<paper-toolbar>` has `role="toolbar"` by default. Any elements with the class `title` will
-be used as the label of the toolbar via `aria-labelledby`.
-
-@demo demo/index.html
--->
-
-<dom-module id="paper-toolbar" assetpath="../bower_components/paper-toolbar/">
+--><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700"><dom-module id="paper-toolbar" assetpath="../bower_components/paper-toolbar/">
   <template>
     <style>
       :host {
@@ -10501,6 +10463,147 @@ be used as the label of the toolbar via `aria-labelledby`.
     });
   </script>
 </dom-module>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Icon toggles](https://www.google.com/design/spec/components/buttons.html#buttons-toggle-buttons)
+
+`paper-icon-button` is a button with an image placed at the center. When the user touches
+the button, a ripple effect emanates from the center of the button.
+
+`paper-icon-button` includes a default icon set.  Use `icon` to specify which icon
+from the icon set to use.
+
+    <paper-icon-button icon="menu"></paper-icon-button>
+
+See [`iron-iconset`](iron-iconset) for more information about
+how to use a custom icon set.
+
+Example:
+
+    <link href="path/to/iron-icons/iron-icons.html" rel="import">
+
+    <paper-icon-button icon="favorite"></paper-icon-button>
+    <paper-icon-button src="star.png"></paper-icon-button>
+
+To use `paper-icon-button` as a link, wrap it in an anchor tag. Since `paper-icon-button`
+will already receive focus, you may want to prevent the anchor tag from receiving focus
+as well by setting its tabindex to -1.
+
+    <a href="https://www.polymer-project.org" tabindex="-1">
+      <paper-icon-button icon="polymer"></paper-icon-button>
+    </a>
+
+### Styling
+
+Style the button with CSS as you would a normal DOM element. If you are using the icons
+provided by `iron-icons`, they will inherit the foreground color of the button.
+
+    /* make a red "favorite" button */
+    <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
+
+By default, the ripple is the same color as the foreground at 25% opacity. You may
+customize the color using the `--paper-icon-button-ink-color` custom property.
+
+The following custom properties and mixins are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-icon-button-disabled-text` | The color of the disabled button | `--disabled-text-color`
+`--paper-icon-button-ink-color` | Selected/focus ripple color | `--primary-text-color`
+`--paper-icon-button` | Mixin for a button | `{}`
+`--paper-icon-button-disabled` | Mixin for a disabled button | `{}`
+`--paper-icon-button-hover` | Mixin for button on hover | `{}`
+
+@group Paper Elements
+@element paper-icon-button
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+
+The `iron-icon` element displays an icon. By default an icon renders as a 24px square.
+
+Example using src:
+
+    <iron-icon src="star.png"></iron-icon>
+
+Example setting size to 32px x 32px:
+
+    <iron-icon class="big" src="big_star.png"></iron-icon>
+
+    <style is="custom-style">
+      .big {
+        --iron-icon-height: 32px;
+        --iron-icon-width: 32px;
+      }
+    </style>
+
+The iron elements include several sets of icons.
+To use the default set of icons, import `iron-icons.html` and use the `icon` attribute to specify an icon:
+
+    <link rel="import" href="/components/iron-icons/iron-icons.html">
+
+    <iron-icon icon="menu"></iron-icon>
+
+To use a different built-in set of icons, import the specific `iron-icons/<iconset>-icons.html`, and
+specify the icon as `<iconset>:<icon>`. For example, to use a communication icon, you would
+use:
+
+    <link rel="import" href="/components/iron-icons/communication-icons.html">
+
+    <iron-icon icon="communication:email"></iron-icon>
+
+You can also create custom icon sets of bitmap or SVG icons.
+
+Example of using an icon named `cherry` from a custom iconset with the ID `fruit`:
+
+    <iron-icon icon="fruit:cherry"></iron-icon>
+
+See [iron-iconset](iron-iconset) and [iron-iconset-svg](iron-iconset-svg) for more information about
+how to create a custom iconset.
+
+See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
+in the various iconsets.
+
+To load a subset of icons from one of the default `iron-icons` sets, you can
+use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
+to select individual icons, and creates an iconset from them that you can
+use directly in your elements.
+
+### Styling
+
+The following custom properties are available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--iron-icon` | Mixin applied to the icon | {}
+`--iron-icon-width` | Width of the icon | `24px`
+`--iron-icon-height` | Height of the icon | `24px`
+`--iron-icon-fill-color` | Fill color of the svg icon | `currentcolor`
+`--iron-icon-stroke-color` | Stroke color of the svg icon | none
+
+@group Iron Elements
+@element iron-icon
+@demo demo/index.html
+@hero hero.svg
+@homepage polymer.github.io
+-->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -10829,86 +10932,7 @@ Or, in a Polymer element, you can include a meta in your template:
     });
 
   })();
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-
-The `iron-icon` element displays an icon. By default an icon renders as a 24px square.
-
-Example using src:
-
-    <iron-icon src="star.png"></iron-icon>
-
-Example setting size to 32px x 32px:
-
-    <iron-icon class="big" src="big_star.png"></iron-icon>
-
-    <style is="custom-style">
-      .big {
-        --iron-icon-height: 32px;
-        --iron-icon-width: 32px;
-      }
-    </style>
-
-The iron elements include several sets of icons.
-To use the default set of icons, import `iron-icons.html` and use the `icon` attribute to specify an icon:
-
-    <link rel="import" href="/components/iron-icons/iron-icons.html">
-
-    <iron-icon icon="menu"></iron-icon>
-
-To use a different built-in set of icons, import the specific `iron-icons/<iconset>-icons.html`, and
-specify the icon as `<iconset>:<icon>`. For example, to use a communication icon, you would
-use:
-
-    <link rel="import" href="/components/iron-icons/communication-icons.html">
-
-    <iron-icon icon="communication:email"></iron-icon>
-
-You can also create custom icon sets of bitmap or SVG icons.
-
-Example of using an icon named `cherry` from a custom iconset with the ID `fruit`:
-
-    <iron-icon icon="fruit:cherry"></iron-icon>
-
-See [iron-iconset](iron-iconset) and [iron-iconset-svg](iron-iconset-svg) for more information about
-how to create a custom iconset.
-
-See the [iron-icons demo](iron-icons?view=demo:demo/index.html) to see the icons available
-in the various iconsets.
-
-To load a subset of icons from one of the default `iron-icons` sets, you can
-use the [poly-icon](https://poly-icon.appspot.com/) tool. It allows you
-to select individual icons, and creates an iconset from them that you can
-use directly in your elements.
-
-### Styling
-
-The following custom properties are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--iron-icon` | Mixin applied to the icon | {}
-`--iron-icon-width` | Width of the icon | `24px`
-`--iron-icon-height` | Height of the icon | `24px`
-`--iron-icon-fill-color` | Fill color of the svg icon | `currentcolor`
-`--iron-icon-stroke-color` | Stroke color of the svg icon | none
-
-@group Iron Elements
-@element iron-icon
-@demo demo/index.html
-@hero hero.svg
-@homepage polymer.github.io
--->
-
-<dom-module id="iron-icon" assetpath="../bower_components/iron-icon/">
+</script><dom-module id="iron-icon" assetpath="../bower_components/iron-icon/">
   <template>
     <style>
       :host {
@@ -10941,8 +10965,7 @@ Custom property | Description | Default
          * `iconset_name:icon_name`.
          */
         icon: {
-          type: String,
-          observer: '_iconChanged'
+          type: String
         },
 
         /**
@@ -10950,8 +10973,7 @@ Custom property | Description | Default
          * iconset.
          */
         theme: {
-          type: String,
-          observer: '_updateIcon'
+          type: String
         },
 
         /**
@@ -10960,19 +10982,24 @@ Custom property | Description | Default
          * precedence over a given icon attribute.
          */
         src: {
-          type: String,
-          observer: '_srcChanged'
+          type: String
         },
 
         /**
          * @type {!Polymer.IronMeta}
          */
         _meta: {
-          value: Polymer.Base.create('iron-meta', {type: 'iconset'}),
-          observer: '_updateIcon'
+          value: Polymer.Base.create('iron-meta', {type: 'iconset'})
         }
 
       },
+
+      observers: [
+        '_updateIcon(_meta, isAttached)',
+        '_updateIcon(theme, isAttached)',
+        '_srcChanged(src, isAttached)',
+        '_iconChanged(icon, isAttached)'
+      ],
 
       _DEFAULT_ICONSET: 'icons',
 
@@ -11032,6 +11059,22 @@ Custom property | Description | Default
 
 </dom-module>
 <!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -11205,12 +11248,16 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       * To get @ returned, set noSpecialChars = false
      */
     function normalizedKeyForEvent(keyEvent, noSpecialChars) {
-      // Fall back from .key, to .keyIdentifier, to .keyCode, and then to
-      // .detail.key to support artificial keyboard events.
-      return transformKey(keyEvent.key, noSpecialChars) ||
-        transformKeyIdentifier(keyEvent.keyIdentifier) ||
-        transformKeyCode(keyEvent.keyCode) ||
-        transformKey(keyEvent.detail ? keyEvent.detail.key : keyEvent.detail, noSpecialChars) || '';
+      // Fall back from .key, to .detail.key for artifical keyboard events,
+      // and then to deprecated .keyIdentifier and .keyCode.
+      if (keyEvent.key) {
+        return transformKey(keyEvent.key, noSpecialChars);
+      }
+      if (keyEvent.detail && keyEvent.detail.key) {
+        return transformKey(keyEvent.detail.key, noSpecialChars);
+      }
+      return transformKeyIdentifier(keyEvent.keyIdentifier) ||
+        transformKeyCode(keyEvent.keyCode) || '';
     }
 
     function keyComboMatchesEvent(keyCombo, event) {
@@ -11342,7 +11389,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       /**
        * To be used to express what combination of keys  will trigger the relative
        * callback. e.g. `keyBindings: { 'esc': '_onEscPressed'}`
-       * @type {Object}
+       * @type {!Object}
        */
       keyBindings: {},
 
@@ -11518,8 +11565,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     };
   })();
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -11624,8 +11670,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<script>
+</script><script>
 
   /**
    * @demo demo/index.html
@@ -11846,8 +11891,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
+--><!--
 @license
 Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -12537,6 +12581,11 @@ Apply `circle` class to make the rippling effect within a circle.
         }
       },
 
+      /**
+       * This conflicts with Element#antimate().
+       * https://developer.mozilla.org/en-US/docs/Web/API/Element/animate
+       * @suppress {checkTypes}
+       */
       animate: function() {
         if (!this._animating) {
           return;
@@ -12712,16 +12761,7 @@ Apply `circle` class to make the rippling effect within a circle.
       }
     }
   };
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<script>
+</script><script>
   /**
    * `Polymer.PaperInkyFocusBehavior` implements a ripple when the element has keyboard focus.
    *
@@ -12757,79 +12797,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.PaperRippleBehavior,
     Polymer.PaperInkyFocusBehaviorImpl
   ];
-</script><!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Icon toggles](https://www.google.com/design/spec/components/buttons.html#buttons-toggle-buttons)
-
-`paper-icon-button` is a button with an image placed at the center. When the user touches
-the button, a ripple effect emanates from the center of the button.
-
-`paper-icon-button` includes a default icon set.  Use `icon` to specify which icon
-from the icon set to use.
-
-    <paper-icon-button icon="menu"></paper-icon-button>
-
-See [`iron-iconset`](iron-iconset) for more information about
-how to use a custom icon set.
-
-Example:
-
-    <link href="path/to/iron-icons/iron-icons.html" rel="import">
-
-    <paper-icon-button icon="favorite"></paper-icon-button>
-    <paper-icon-button src="star.png"></paper-icon-button>
-
-To use `paper-icon-button` as a link, wrap it in an anchor tag. Since `paper-icon-button`
-will already receive focus, you may want to prevent the anchor tag from receiving focus
-as well by setting its tabindex to -1.
-
-    <a href="https://www.polymer-project.org" tabindex="-1">
-      <paper-icon-button icon="polymer"></paper-icon-button>
-    </a>
-
-### Styling
-
-Style the button with CSS as you would a normal DOM element. If you are using the icons
-provided by `iron-icons`, they will inherit the foreground color of the button.
-
-    /* make a red "favorite" button */
-    <paper-icon-button icon="favorite" style="color: red;"></paper-icon-button>
-
-By default, the ripple is the same color as the foreground at 25% opacity. You may
-customize the color using the `--paper-icon-button-ink-color` custom property.
-
-The following custom properties and mixins are available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-icon-button-disabled-text` | The color of the disabled button | `--disabled-text-color`
-`--paper-icon-button-ink-color` | Selected/focus ripple color | `--primary-text-color`
-`--paper-icon-button` | Mixin for a button | `{}`
-`--paper-icon-button-disabled` | Mixin for a disabled button | `{}`
-`--paper-icon-button-hover` | Mixin for button on hover | `{}`
-
-@group Paper Elements
-@element paper-icon-button
-@demo demo/index.html
--->
-
-<dom-module id="paper-icon-button" assetpath="../bower_components/paper-icon-button/">
+</script><dom-module id="paper-icon-button" assetpath="../bower_components/paper-icon-button/">
   <template strip-whitespace="">
     <style>
       :host {
@@ -12998,8 +12966,21 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       size: {
         type: Number,
         value: 24
-      }
+      },
 
+      /**
+       * Set to true to enable mirroring of icons where specified when they are
+       * stamped. Icons that should be mirrored should be decorated with a
+       * `mirror-in-rtl` attribute.
+       *
+       * NOTE: For performance reasons, direction will be resolved once per
+       * document per iconset, so moving icons in and out of RTL subtrees will
+       * not cause their mirrored state to change.
+       */
+      rtlMirroring: {
+        type: Boolean,
+        value: false
+      }
     },
 
     attached: function() {
@@ -13024,6 +13005,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * An svg icon is prepended to the element's shadowRoot if it exists,
      * otherwise to the element itself.
      *
+     * If RTL mirroring is enabled, and the icon is marked to be mirrored in
+     * RTL, the element will be tested (once and only once ever for each
+     * iconset) to determine the direction of the subtree the element is in.
+     * This direction will apply to all future icon applications, although only
+     * icons marked to be mirrored will be affected.
+     *
      * @method applyIcon
      * @param {Element} element Element to which the icon is applied.
      * @param {string} iconName Name of the icon to apply.
@@ -13035,7 +13022,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // Remove old svg element
       this.removeIcon(element);
       // install new svg element
-      var svg = this._cloneIcon(iconName);
+      var svg = this._cloneIcon(iconName,
+          this.rtlMirroring && this._targetIsRTL(element));
       if (svg) {
         var pde = Polymer.dom(element);
         pde.insertBefore(svg, pde.childNodes[0]);
@@ -13052,10 +13040,29 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     removeIcon: function(element) {
       // Remove old svg element
+      element = element.root || element;
       if (element._svgIcon) {
         Polymer.dom(element).removeChild(element._svgIcon);
         element._svgIcon = null;
       }
+    },
+
+    /**
+     * Measures and memoizes the direction of the element. Note that this
+     * measurement is only done once and the result is memoized for future
+     * invocations.
+     */
+    _targetIsRTL: function(target) {
+      if (this.__targetIsRTL == null) {
+        if (target && target.nodeType !== Node.ELEMENT_NODE) {
+          target = target.host;
+        }
+
+        this.__targetIsRTL = target &&
+            window.getComputedStyle(target)['direction'] === 'rtl';
+      }
+
+      return this.__targetIsRTL;
     },
 
     /**
@@ -13094,28 +13101,35 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * @return {Element} Returns an installable clone of the SVG element
      * matching `id`.
      */
-    _cloneIcon: function(id) {
+    _cloneIcon: function(id, mirrorAllowed) {
       // create the icon map on-demand, since the iconset itself has no discrete
       // signal to know when it's children are fully parsed
       this._icons = this._icons || this._createIconMap();
-      return this._prepareSvgClone(this._icons[id], this.size);
+      return this._prepareSvgClone(this._icons[id], this.size, mirrorAllowed);
     },
 
     /**
      * @param {Element} sourceSvg
      * @param {number} size
+     * @param {Boolean} mirrorAllowed
      * @return {Element}
      */
-    _prepareSvgClone: function(sourceSvg, size) {
+    _prepareSvgClone: function(sourceSvg, size, mirrorAllowed) {
       if (sourceSvg) {
         var content = sourceSvg.cloneNode(true),
             svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'),
-            viewBox = content.getAttribute('viewBox') || '0 0 ' + size + ' ' + size;
+            viewBox = content.getAttribute('viewBox') || '0 0 ' + size + ' ' + size,
+            cssText = 'pointer-events: none; display: block; width: 100%; height: 100%;';
+
+        if (mirrorAllowed && content.hasAttribute('mirror-in-rtl')) {
+          cssText += '-webkit-transform:scale(-1,1);transform:scale(-1,1);';
+        }
+
         svg.setAttribute('viewBox', viewBox);
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
         // TODO(dfreedm): `pointer-events: none` works around https://crbug.com/370136
         // TODO(sjmiles): inline style may not be ideal, but avoids requiring a shadow-root
-        svg.style.cssText = 'pointer-events: none; display: block; width: 100%; height: 100%;';
+        svg.style.cssText = cssText;
         svg.appendChild(content).removeAttribute('id');
         return svg;
       }
@@ -13123,8 +13137,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 
   });
-</script>
-<iron-iconset-svg name="image" size="24">
+
+</script><iron-iconset-svg name="image" size="24">
 <svg><defs>
 <g id="add-a-photo"><path d="M3 4V1h2v3h3v2H5v3H3V6H0V4h3zm3 6V7h3V4h7l1.83 2H21c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V10h3zm7 9c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-3.2-5c0 1.77 1.43 3.2 3.2 3.2s3.2-1.43 3.2-3.2-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2z"></path></g>
 <g id="add-to-photos"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9h-4v4h-2v-4H9V9h4V5h2v4h4v2z"></path></g>
@@ -13285,6 +13299,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <style is="custom-style">
     :root {
         font-family: 'Roboto', 'Noto', sans-serif;
+        font-size: 14px;
 
         --ndb-red: #B6272B;
         --ndb-green: #8DAC71;
@@ -13305,8 +13320,23 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
 </style>
 
-<script>!function(){"use strict";function t(){var t={parent:document.body,version:"1.0.11",defaultOkLabel:"Ok",okLabel:"Ok",defaultCancelLabel:"Cancel",cancelLabel:"Cancel",defaultMaxLogItems:2,maxLogItems:2,promptValue:"",promptPlaceholder:"",closeLogOnClick:!1,closeLogOnClickDefault:!1,delay:5e3,defaultDelay:5e3,logContainerClass:"alertify-logs",logContainerDefaultClass:"alertify-logs",dialogs:{buttons:{holder:"<nav>{{buttons}}</nav>",ok:"<button class='ok' tabindex='1'>{{ok}}</button>",cancel:"<button class='cancel' tabindex='2'>{{cancel}}</button>"},input:"<input type='text'>",message:"<p class='msg'>{{message}}</p>",log:"<div class='{{class}}'>{{message}}</div>"},defaultDialogs:{buttons:{holder:"<nav>{{buttons}}</nav>",ok:"<button class='ok' tabindex='1'>{{ok}}</button>",cancel:"<button class='cancel' tabindex='2'>{{cancel}}</button>"},input:"<input type='text'>",message:"<p class='msg'>{{message}}</p>",log:"<div class='{{class}}'>{{message}}</div>"},build:function(t){var e=this.dialogs.buttons.ok,o="<div class='dialog'><div>"+this.dialogs.message.replace("{{message}}",t.message);return"confirm"!==t.type&&"prompt"!==t.type||(e=this.dialogs.buttons.cancel+this.dialogs.buttons.ok),"prompt"===t.type&&(o+=this.dialogs.input),o=(o+this.dialogs.buttons.holder+"</div></div>").replace("{{buttons}}",e).replace("{{ok}}",this.okLabel).replace("{{cancel}}",this.cancelLabel)},setCloseLogOnClick:function(t){this.closeLogOnClick=!!t},close:function(t,e){this.closeLogOnClick&&t.addEventListener("click",function(){o(t)}),e=e&&!isNaN(+e)?+e:this.delay,0>e?o(t):e>0&&setTimeout(function(){o(t)},e)},dialog:function(t,e,o,n){return this.setup({type:e,message:t,onOkay:o,onCancel:n})},log:function(t,e,o){var n=document.querySelectorAll(".alertify-logs > div");if(n){var i=n.length-this.maxLogItems;if(i>=0)for(var a=0,l=i+1;l>a;a++)this.close(n[a],-1)}this.notify(t,e,o)},setLogPosition:function(t){this.logContainerClass="alertify-logs "+t},setupLogContainer:function(){var t=document.querySelector(".alertify-logs"),e=this.logContainerClass;return t||(t=document.createElement("div"),t.className=e,this.parent.appendChild(t)),t.className!==e&&(t.className=e),t},notify:function(e,o,n){var i=this.setupLogContainer(),a=document.createElement("div");a.className=o||"default",t.logTemplateMethod?a.innerHTML=t.logTemplateMethod(e):a.innerHTML=e,"function"==typeof n&&a.addEventListener("click",n),i.appendChild(a),setTimeout(function(){a.className+=" show"},10),this.close(a,this.delay)},setup:function(t){function e(e){"function"!=typeof e&&(e=function(){}),i&&i.addEventListener("click",function(i){t.onOkay&&"function"==typeof t.onOkay&&(l?t.onOkay(l.value,i):t.onOkay(i)),e(l?{buttonClicked:"ok",inputValue:l.value,event:i}:{buttonClicked:"ok",event:i}),o(n)}),a&&a.addEventListener("click",function(i){t.onCancel&&"function"==typeof t.onCancel&&t.onCancel(i),e({buttonClicked:"cancel",event:i}),o(n)}),l&&l.addEventListener("keyup",function(t){13===t.which&&i.click()})}var n=document.createElement("div");n.className="alertify hide",n.innerHTML=this.build(t);var i=n.querySelector(".ok"),a=n.querySelector(".cancel"),l=n.querySelector("input"),s=n.querySelector("label");l&&("string"==typeof this.promptPlaceholder&&(s?s.textContent=this.promptPlaceholder:l.placeholder=this.promptPlaceholder),"string"==typeof this.promptValue&&(l.value=this.promptValue));var r;return"function"==typeof Promise?r=new Promise(e):e(),this.parent.appendChild(n),setTimeout(function(){n.classList.remove("hide"),l&&t.type&&"prompt"===t.type?(l.select(),l.focus()):i&&i.focus()},100),r},okBtn:function(t){return this.okLabel=t,this},setDelay:function(t){return t=t||0,this.delay=isNaN(t)?this.defaultDelay:parseInt(t,10),this},cancelBtn:function(t){return this.cancelLabel=t,this},setMaxLogItems:function(t){this.maxLogItems=parseInt(t||this.defaultMaxLogItems)},theme:function(t){switch(t.toLowerCase()){case"bootstrap":this.dialogs.buttons.ok="<button class='ok btn btn-primary' tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel btn btn-default' tabindex='2'>{{cancel}}</button>",this.dialogs.input="<input type='text' class='form-control'>";break;case"purecss":this.dialogs.buttons.ok="<button class='ok pure-button' tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel pure-button' tabindex='2'>{{cancel}}</button>";break;case"mdl":case"material-design-light":this.dialogs.buttons.ok="<button class='ok mdl-button mdl-js-button mdl-js-ripple-effect'  tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel mdl-button mdl-js-button mdl-js-ripple-effect' tabindex='2'>{{cancel}}</button>",this.dialogs.input="<div class='mdl-textfield mdl-js-textfield'><input class='mdl-textfield__input'><label class='md-textfield__label'></label></div>";break;case"angular-material":this.dialogs.buttons.ok="<button class='ok md-primary md-button' tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel md-button' tabindex='2'>{{cancel}}</button>",this.dialogs.input="<div layout='column'><md-input-container md-no-float><input type='text'></md-input-container></div>";break;case"default":default:this.dialogs.buttons.ok=this.defaultDialogs.buttons.ok,this.dialogs.buttons.cancel=this.defaultDialogs.buttons.cancel,this.dialogs.input=this.defaultDialogs.input}},reset:function(){this.parent=document.body,this.theme("default"),this.okBtn(this.defaultOkLabel),this.cancelBtn(this.defaultCancelLabel),this.setMaxLogItems(),this.promptValue="",this.promptPlaceholder="",this.delay=this.defaultDelay,this.setCloseLogOnClick(this.closeLogOnClickDefault),this.setLogPosition("bottom left"),this.logTemplateMethod=null},injectCSS:function(){if(!document.querySelector("#alertifyCSS")){var t=document.getElementsByTagName("head")[0],e=document.createElement("style");e.type="text/css",e.id="alertifyCSS",e.innerHTML=".alertify-logs>*{padding:12px 24px;color:#fff;box-shadow:0 2px 5px 0 rgba(0,0,0,.2);border-radius:1px}.alertify-logs>*,.alertify-logs>.default{background:rgba(0,0,0,.8)}.alertify-logs>.error{background:rgba(244,67,54,.8)}.alertify-logs>.success{background:rgba(76,175,80,.9)}.alertify{position:fixed;background-color:rgba(0,0,0,.3);left:0;right:0;top:0;bottom:0;width:100%;height:100%;z-index:1}.alertify.hide{opacity:0;pointer-events:none}.alertify,.alertify.show{box-sizing:border-box;transition:all .33s cubic-bezier(.25,.8,.25,1)}.alertify,.alertify *{box-sizing:border-box}.alertify .dialog{padding:12px}.alertify .alert,.alertify .dialog{width:100%;margin:0 auto;position:relative;top:50%;transform:translateY(-50%)}.alertify .alert>*,.alertify .dialog>*{width:400px;max-width:95%;margin:0 auto;text-align:center;padding:12px;background:#fff;box-shadow:0 2px 4px -1px rgba(0,0,0,.14),0 4px 5px 0 rgba(0,0,0,.098),0 1px 10px 0 rgba(0,0,0,.084)}.alertify .alert .msg,.alertify .dialog .msg{padding:12px;margin-bottom:12px;margin:0;text-align:left}.alertify .alert input:not(.form-control),.alertify .dialog input:not(.form-control){margin-bottom:15px;width:100%;font-size:100%;padding:12px}.alertify .alert input:not(.form-control):focus,.alertify .dialog input:not(.form-control):focus{outline-offset:-2px}.alertify .alert nav,.alertify .dialog nav{text-align:right}.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button),.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button){background:transparent;box-sizing:border-box;color:rgba(0,0,0,.87);position:relative;outline:0;border:0;display:inline-block;-ms-flex-align:center;-ms-grid-row-align:center;align-items:center;padding:0 6px;margin:6px 8px;line-height:36px;min-height:36px;white-space:nowrap;min-width:88px;text-align:center;text-transform:uppercase;font-size:14px;text-decoration:none;cursor:pointer;border:1px solid transparent;border-radius:2px}.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):active,.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):hover,.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):active,.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):hover{background-color:rgba(0,0,0,.05)}.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):focus,.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):focus{border:1px solid rgba(0,0,0,.1)}.alertify .alert nav button.btn,.alertify .dialog nav button.btn{margin:6px 4px}.alertify-logs{position:fixed;z-index:1}.alertify-logs.bottom,.alertify-logs:not(.top){bottom:16px}.alertify-logs.left,.alertify-logs:not(.right){left:16px}.alertify-logs.left>*,.alertify-logs:not(.right)>*{float:left;transform:translateZ(0);height:auto}.alertify-logs.left>.show,.alertify-logs:not(.right)>.show{left:0}.alertify-logs.left>*,.alertify-logs.left>.hide,.alertify-logs:not(.right)>*,.alertify-logs:not(.right)>.hide{left:-110%}.alertify-logs.right{right:16px}.alertify-logs.right>*{float:right;transform:translateZ(0)}.alertify-logs.right>.show{right:0;opacity:1}.alertify-logs.right>*,.alertify-logs.right>.hide{right:-110%;opacity:0}.alertify-logs.top{top:0}.alertify-logs>*{box-sizing:border-box;transition:all .4s cubic-bezier(.25,.8,.25,1);position:relative;clear:both;backface-visibility:hidden;perspective:1000;max-height:0;margin:0;padding:0;overflow:hidden;opacity:0;pointer-events:none}.alertify-logs>.show{margin-top:12px;opacity:1;max-height:1000px;padding:12px;pointer-events:auto}",t.insertBefore(e,t.firstChild)}},removeCSS:function(){var t=document.querySelector("#alertifyCSS");t&&t.parentNode&&t.parentNode.removeChild(t)}};return t.injectCSS(),{_$$alertify:t,parent:function(e){t.parent=e},reset:function(){return t.reset(),this},alert:function(e,o,n){return t.dialog(e,"alert",o,n)||this},confirm:function(e,o,n){return t.dialog(e,"confirm",o,n)||this},prompt:function(e,o,n){return t.dialog(e,"prompt",o,n)||this},log:function(e,o){return t.log(e,"default",o),this},theme:function(e){return t.theme(e),this},success:function(e,o){return t.log(e,"success",o),this},error:function(e,o){return t.log(e,"error",o),this},cancelBtn:function(e){return t.cancelBtn(e),this},okBtn:function(e){return t.okBtn(e),this},delay:function(e){return t.setDelay(e),this},placeholder:function(e){return t.promptPlaceholder=e,this},defaultValue:function(e){return t.promptValue=e,this},maxLogItems:function(e){return t.setMaxLogItems(e),this},closeLogOnClick:function(e){return t.setCloseLogOnClick(!!e),this},logPosition:function(e){return t.setLogPosition(e||""),this},setLogTemplate:function(e){return t.logTemplateMethod=e,this},clearLogs:function(){return t.setupLogContainer().innerHTML="",this},version:t.version}}var e=500,o=function(t){if(t){var o=function(){t&&t.parentNode&&t.parentNode.removeChild(t)};t.classList.remove("show"),t.classList.add("hide"),t.addEventListener("transitionend",o),setTimeout(o,e)}};if("undefined"!=typeof module&&module&&module.exports){module.exports=function(){return new t};var n=new t;for(var i in n)module.exports[i]=n[i]}else"function"==typeof define&&define.amd?define(function(){return new t}):window.alertify=new t}();</script>
+<script>!function(){"use strict";function t(){var t={parent:document.body,version:"1.0.11",defaultOkLabel:"Ok",okLabel:"Ok",defaultCancelLabel:"Cancel",cancelLabel:"Cancel",defaultMaxLogItems:2,maxLogItems:2,promptValue:"",promptPlaceholder:"",closeLogOnClick:!1,closeLogOnClickDefault:!1,delay:5e3,defaultDelay:5e3,logContainerClass:"alertify-logs",logContainerDefaultClass:"alertify-logs",dialogs:{buttons:{holder:"<nav>{{buttons}}</nav>",ok:"<button class='ok' tabindex='1'>{{ok}}</button>",cancel:"<button class='cancel' tabindex='2'>{{cancel}}</button>"},input:"<input type='text'>",message:"<p class='msg'>{{message}}</p>",log:"<div class='{{class}}'>{{message}}</div>"},defaultDialogs:{buttons:{holder:"<nav>{{buttons}}</nav>",ok:"<button class='ok' tabindex='1'>{{ok}}</button>",cancel:"<button class='cancel' tabindex='2'>{{cancel}}</button>"},input:"<input type='text'>",message:"<p class='msg'>{{message}}</p>",log:"<div class='{{class}}'>{{message}}</div>"},build:function(t){var e=this.dialogs.buttons.ok,o="<div class='dialog'><div>"+this.dialogs.message.replace("{{message}}",t.message);return"confirm"!==t.type&&"prompt"!==t.type||(e=this.dialogs.buttons.cancel+this.dialogs.buttons.ok),"prompt"===t.type&&(o+=this.dialogs.input),o=(o+this.dialogs.buttons.holder+"</div></div>").replace("{{buttons}}",e).replace("{{ok}}",this.okLabel).replace("{{cancel}}",this.cancelLabel)},setCloseLogOnClick:function(t){this.closeLogOnClick=!!t},close:function(t,e){this.closeLogOnClick&&t.addEventListener("click",function(){o(t)}),e=e&&!isNaN(+e)?+e:this.delay,0>e?o(t):e>0&&setTimeout(function(){o(t)},e)},dialog:function(t,e,o,n){return this.setup({type:e,message:t,onOkay:o,onCancel:n})},log:function(t,e,o){var n=document.querySelectorAll(".alertify-logs > div");if(n){var i=n.length-this.maxLogItems;if(i>=0)for(var a=0,l=i+1;l>a;a++)this.close(n[a],-1)}this.notify(t,e,o)},setLogPosition:function(t){this.logContainerClass="alertify-logs "+t},setupLogContainer:function(){var t=document.querySelector(".alertify-logs"),e=this.logContainerClass;return t||(t=document.createElement("div"),t.className=e,this.parent.appendChild(t)),t.className!==e&&(t.className=e),t},notify:function(e,o,n){var i=this.setupLogContainer(),a=document.createElement("div");a.className=o||"default",t.logTemplateMethod?a.innerHTML=t.logTemplateMethod(e):a.innerHTML=e,"function"==typeof n&&a.addEventListener("click",n),i.appendChild(a),setTimeout(function(){a.className+=" show"},10),this.close(a,this.delay)},setup:function(t){function e(e){"function"!=typeof e&&(e=function(){}),i&&i.addEventListener("click",function(i){t.onOkay&&"function"==typeof t.onOkay&&(l?t.onOkay(l.value,i):t.onOkay(i)),e(l?{buttonClicked:"ok",inputValue:l.value,event:i}:{buttonClicked:"ok",event:i}),o(n)}),a&&a.addEventListener("click",function(i){t.onCancel&&"function"==typeof t.onCancel&&t.onCancel(i),e({buttonClicked:"cancel",event:i}),o(n)}),l&&l.addEventListener("keyup",function(t){13===t.which&&i.click()})}var n=document.createElement("div");n.className="alertify hide",n.innerHTML=this.build(t);var i=n.querySelector(".ok"),a=n.querySelector(".cancel"),l=n.querySelector("input"),s=n.querySelector("label");l&&("string"==typeof this.promptPlaceholder&&(s?s.textContent=this.promptPlaceholder:l.placeholder=this.promptPlaceholder),"string"==typeof this.promptValue&&(l.value=this.promptValue));var r;return"function"==typeof Promise?r=new Promise(e):e(),this.parent.appendChild(n),setTimeout(function(){n.classList.remove("hide"),l&&t.type&&"prompt"===t.type?(l.select(),l.focus()):i&&i.focus()},100),r},okBtn:function(t){return this.okLabel=t,this},setDelay:function(t){return t=t||0,this.delay=isNaN(t)?this.defaultDelay:parseInt(t,10),this},cancelBtn:function(t){return this.cancelLabel=t,this},setMaxLogItems:function(t){this.maxLogItems=parseInt(t||this.defaultMaxLogItems)},theme:function(t){switch(t.toLowerCase()){case"bootstrap":this.dialogs.buttons.ok="<button class='ok btn btn-primary' tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel btn btn-default' tabindex='2'>{{cancel}}</button>",this.dialogs.input="<input type='text' class='form-control'>";break;case"purecss":this.dialogs.buttons.ok="<button class='ok pure-button' tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel pure-button' tabindex='2'>{{cancel}}</button>";break;case"mdl":case"material-design-light":this.dialogs.buttons.ok="<button class='ok mdl-button mdl-js-button mdl-js-ripple-effect'  tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel mdl-button mdl-js-button mdl-js-ripple-effect' tabindex='2'>{{cancel}}</button>",this.dialogs.input="<div class='mdl-textfield mdl-js-textfield'><input class='mdl-textfield__input'><label class='md-textfield__label'></label></div>";break;case"angular-material":this.dialogs.buttons.ok="<button class='ok md-primary md-button' tabindex='1'>{{ok}}</button>",this.dialogs.buttons.cancel="<button class='cancel md-button' tabindex='2'>{{cancel}}</button>",this.dialogs.input="<div layout='column'><md-input-container md-no-float><input type='text'></md-input-container></div>";break;case"default":default:this.dialogs.buttons.ok=this.defaultDialogs.buttons.ok,this.dialogs.buttons.cancel=this.defaultDialogs.buttons.cancel,this.dialogs.input=this.defaultDialogs.input}},reset:function(){this.parent=document.body,this.theme("default"),this.okBtn(this.defaultOkLabel),this.cancelBtn(this.defaultCancelLabel),this.setMaxLogItems(),this.promptValue="",this.promptPlaceholder="",this.delay=this.defaultDelay,this.setCloseLogOnClick(this.closeLogOnClickDefault),this.setLogPosition("bottom left"),this.logTemplateMethod=null},injectCSS:function(){if(!document.querySelector("#alertifyCSS")){var t=document.getElementsByTagName("head")[0],e=document.createElement("style");e.type="text/css",e.id="alertifyCSS",e.innerHTML=".alertify-logs>*{padding:12px 24px;color:#fff;box-shadow:0 2px 5px 0 rgba(0,0,0,.2);border-radius:1px}.alertify-logs>*,.alertify-logs>.default{background:rgba(0,0,0,.8)}.alertify-logs>.error{background:rgba(244,67,54,.8)}.alertify-logs>.success{background:rgba(76,175,80,.9)}.alertify{position:fixed;background-color:rgba(0,0,0,.3);left:0;right:0;top:0;bottom:0;width:100%;height:100%;z-index:1}.alertify.hide{opacity:0;pointer-events:none}.alertify,.alertify.show{box-sizing:border-box;transition:all .33s cubic-bezier(.25,.8,.25,1)}.alertify,.alertify *{box-sizing:border-box}.alertify .dialog{padding:12px}.alertify .alert,.alertify .dialog{width:100%;margin:0 auto;position:relative;top:50%;transform:translateY(-50%)}.alertify .alert>*,.alertify .dialog>*{width:400px;max-width:95%;margin:0 auto;text-align:center;padding:12px;background:#fff;box-shadow:0 2px 4px -1px rgba(0,0,0,.14),0 4px 5px 0 rgba(0,0,0,.098),0 1px 10px 0 rgba(0,0,0,.084)}.alertify .alert .msg,.alertify .dialog .msg{padding:12px;margin-bottom:12px;margin:0;text-align:left}.alertify .alert input:not(.form-control),.alertify .dialog input:not(.form-control){margin-bottom:15px;width:100%;font-size:100%;padding:12px}.alertify .alert input:not(.form-control):focus,.alertify .dialog input:not(.form-control):focus{outline-offset:-2px}.alertify .alert nav,.alertify .dialog nav{text-align:right}.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button),.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button){background:transparent;box-sizing:border-box;color:rgba(0,0,0,.87);position:relative;outline:0;border:0;display:inline-block;-ms-flex-align:center;-ms-grid-row-align:center;align-items:center;padding:0 6px;margin:6px 8px;line-height:36px;min-height:36px;white-space:nowrap;min-width:88px;text-align:center;text-transform:uppercase;font-size:14px;text-decoration:none;cursor:pointer;border:1px solid transparent;border-radius:2px}.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):active,.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):hover,.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):active,.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):hover{background-color:rgba(0,0,0,.05)}.alertify .alert nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):focus,.alertify .dialog nav button:not(.btn):not(.pure-button):not(.md-button):not(.mdl-button):focus{border:1px solid rgba(0,0,0,.1)}.alertify .alert nav button.btn,.alertify .dialog nav button.btn{margin:6px 4px}.alertify-logs{position:fixed;z-index:1}.alertify-logs.bottom,.alertify-logs:not(.top){bottom:16px}.alertify-logs.left,.alertify-logs:not(.right){left:16px}.alertify-logs.left>*,.alertify-logs:not(.right)>*{float:left;transform:translateZ(0);height:auto}.alertify-logs.left>.show,.alertify-logs:not(.right)>.show{left:0}.alertify-logs.left>*,.alertify-logs.left>.hide,.alertify-logs:not(.right)>*,.alertify-logs:not(.right)>.hide{left:-110%}.alertify-logs.right{right:16px}.alertify-logs.right>*{float:right;transform:translateZ(0)}.alertify-logs.right>.show{right:0;opacity:1}.alertify-logs.right>*,.alertify-logs.right>.hide{right:-110%;opacity:0}.alertify-logs.top{top:0}.alertify-logs>*{box-sizing:border-box;transition:all .4s cubic-bezier(.25,.8,.25,1);position:relative;clear:both;backface-visibility:hidden;perspective:1000;max-height:0;margin:0;padding:0;overflow:hidden;opacity:0;pointer-events:none}.alertify-logs>.show{margin-top:12px;opacity:1;max-height:1000px;padding:12px;pointer-events:auto}",t.insertBefore(e,t.firstChild)}},removeCSS:function(){var t=document.querySelector("#alertifyCSS");t&&t.parentNode&&t.parentNode.removeChild(t)}};return t.injectCSS(),{_$$alertify:t,parent:function(e){t.parent=e},reset:function(){return t.reset(),this},alert:function(e,o,n){return t.dialog(e,"alert",o,n)||this},confirm:function(e,o,n){return t.dialog(e,"confirm",o,n)||this},prompt:function(e,o,n){return t.dialog(e,"prompt",o,n)||this},log:function(e,o){return t.log(e,"default",o),this},theme:function(e){return t.theme(e),this},success:function(e,o){return t.log(e,"success",o),this},error:function(e,o){return t.log(e,"error",o),this},cancelBtn:function(e){return t.cancelBtn(e),this},okBtn:function(e){return t.okBtn(e),this},delay:function(e){return t.setDelay(e),this},placeholder:function(e){return t.promptPlaceholder=e,this},defaultValue:function(e){return t.promptValue=e,this},maxLogItems:function(e){return t.setMaxLogItems(e),this},closeLogOnClick:function(e){return t.setCloseLogOnClick(!!e),this},logPosition:function(e){return t.setLogPosition(e||""),this},setLogTemplate:function(e){return t.logTemplateMethod=e,this},clearLogs:function(){return t.setupLogContainer().innerHTML="",this},version:t.version}}var e=500,o=function(t){if(t){var o=function(){t&&t.parentNode&&t.parentNode.removeChild(t)};t.classList.remove("show"),t.classList.add("hide"),t.addEventListener("transitionend",o),setTimeout(o,e)}};if("undefined"!=typeof module&&module&&module.exports){module.exports=function(){return new t};var n=new t;for(var i in n)module.exports[i]=n[i]}else"function"==typeof define&&define.amd?define(function(){return new t}):window.alertify=new t}();</script><!--
+@element ndb-cluster-selector
+@author kunalkundaje
+-->
 <!--
+@license
+Copyright (c) 2015 Vaadin Ltd.
+This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
+--><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -13569,8 +13599,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     }
   };
 
-</script>
-<script>
+</script><script>
 
 /*
 `<iron-input>` adds two-way binding and custom validators using `Polymer.IronValidatorBehavior`
@@ -13869,18 +13898,9 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
--->
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><!--
 `<paper-input-container>` is a container for a `<label>`, an `<input is="iron-input">` or
-`<iron-autogrow-textarea>` and optional add-on elements such as an error message or character
+`<textarea>` and optional add-on elements such as an error message or character
 counter, used to implement Material Design text fields.
 
 For example:
@@ -13955,6 +13975,7 @@ Custom property | Description | Default
 `--paper-input-container-label-focus` | Mixin applied to the label when the input is focused | `{}`
 `--paper-input-container-label-floating` | Mixin applied to the label when floating | `{}`
 `--paper-input-container-input` | Mixin applied to the input | `{}`
+`--paper-input-container-input-webkit-spinner` | Mixin applied to the webkit spinner | `{}`
 `--paper-input-container-underline` | Mixin applied to the underline | `{}`
 `--paper-input-container-underline-focus` | Mixin applied to the underline when the input is focused | `{}`
 `--paper-input-container-underline-disabled` | Mixin applied to the underline when the input is disabled | `{}`
@@ -13995,14 +14016,14 @@ This element is `display:block` by default, but you can set the `inline` attribu
       }
 
       .underline {
+        height: 2px;
         position: relative;
       }
 
       .focused-line {
         @apply(--layout-fit);
 
-        background: var(--paper-input-container-focus-color, --primary-color);
-        height: 2px;
+        border-bottom: 2px solid var(--paper-input-container-focus-color, --primary-color);
 
         -webkit-transform-origin: center center;
         transform-origin: center center;
@@ -14022,7 +14043,7 @@ This element is `display:block` by default, but you can set the `inline` attribu
       }
 
       .underline.is-invalid .focused-line {
-        background: var(--paper-input-container-invalid-color, --error-color);
+        border-color: var(--paper-input-container-invalid-color, --error-color);
         -webkit-transform: none;
         transform: none;
         -webkit-transition: -webkit-transform 0.25s;
@@ -14034,8 +14055,7 @@ This element is `display:block` by default, but you can set the `inline` attribu
       .unfocused-line {
         @apply(--layout-fit);
 
-        background: var(--paper-input-container-color, --secondary-text-color);
-        height: 1px;
+        border-bottom: 1px solid var(--paper-input-container-color, --secondary-text-color);
 
         @apply(--paper-input-container-underline);
       }
@@ -14043,7 +14063,6 @@ This element is `display:block` by default, but you can set the `inline` attribu
       :host([disabled]) .unfocused-line {
         border-bottom: 1px dashed;
         border-color: var(--paper-input-container-color, --secondary-text-color);
-        background: transparent;
 
         @apply(--paper-input-container-underline-disabled);
       }
@@ -14137,9 +14156,15 @@ This element is `display:block` by default, but you can set the `inline` attribu
         color: var(--paper-input-container-input-color, --primary-text-color);
         -webkit-appearance: none;
         text-align: inherit;
+        vertical-align: bottom;
 
         @apply(--paper-font-subhead);
         @apply(--paper-input-container-input);
+      }
+
+      .input-content ::content input::-webkit-outer-spin-button,
+      .input-content ::content input::-webkit-inner-spin-button {
+        @apply(--paper-input-container-input-webkit-spinner);
       }
 
       ::content [prefix] {
@@ -14565,8 +14590,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<script>
+</script><script>
   window.vaadin = window.vaadin || {};
   vaadin.elements = vaadin.elements || {};
   vaadin.elements.combobox = vaadin.elements.combobox || {};
@@ -14710,8 +14734,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       }
     }
   };
-</script>
-<script>
+</script><script>
   window.vaadin = window.vaadin || {};
   vaadin.elements = vaadin.elements || {};
   vaadin.elements.combobox = vaadin.elements.combobox || {};
@@ -15023,6 +15046,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _onOpened: function() {
       this.$.overlay.hidden = !this._hasItems(this.$.overlay._items);
+
+      // With iron-list v1.3.9, calling `notifyResize()` no longer renders
+      // the items synchonously. It is required to have the items rendered
+      // before we update the overlay and the list positions and sizes.
+      this.$.overlay.ensureItemsRendered();
+
       this.$.overlay.notifyResize();
       this.$.overlay.adjustScrollPosition();
     },
@@ -15247,10 +15276,231 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   /**
    * Fired when value changes.
-   * To comply with http://www.w3schools.com/jsref/event_onchange.asp
+   * To comply with https://developer.mozilla.org/en-US/docs/Web/Events/change
    * @event change
    */
-</script>
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+
+`iron-list` displays a virtual, 'infinite' list. The template inside
+the iron-list element represents the DOM to create for each list item.
+The `items` property specifies an array of list item data.
+
+For performance reasons, not every item in the list is rendered at once;
+instead a small subset of actual template elements *(enough to fill the viewport)*
+are rendered and reused as the user scrolls. As such, it is important that all
+state of the list template be bound to the model driving it, since the view may
+be reused with a new model at any time. Particularly, any state that may change
+as the result of a user interaction with the list item must be bound to the model
+to avoid view state inconsistency.
+
+### Sizing iron-list
+
+`iron-list` must either be explicitly sized, or delegate scrolling to an
+explicitly sized parent. By "explicitly sized", we mean it either has an explicit
+CSS `height` property set via a class or inline style, or else is sized by other
+layout means (e.g. the `flex` or `fit` classes).
+
+#### Flexbox - [jsbin](http://jsbin.com/kokaki/edit?html,output)
+
+```html
+<template is="x-list">
+  <style>
+    :host {
+      display: block;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    iron-list {
+      flex: 1 1 auto;
+    }
+  </style>
+
+  <app-toolbar>App name</app-toolbar>
+  <iron-list items="[[items]]">
+    <template>
+      ...
+    </template>
+  </iron-list>
+</template>
+```
+#### Explicit size - [jsbin](http://jsbin.com/pibefo/edit?html,output)
+```html
+<template is="x-list">
+  <style>
+    :host {
+      display: block;
+    }
+
+    iron-list {
+      height: 100vh; /* don't use % values unless the parent element is sized. */
+    }
+  </style>
+  <iron-list items="[[items]]">
+    <template>
+      ...
+    </template>
+  </iron-list>
+</template>
+```
+#### Main document scrolling - [jsbin](http://jsbin.com/cojuli/edit?html,output)
+```html
+<head>
+  <style>
+    body {
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    app-toolbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+
+    iron-list {
+      /* add padding since the app-toolbar is fixed at the top */
+      padding-top: 64px;
+    }
+  </style>
+</head>
+<body>
+  <template is="dom-bind">
+    <app-toolbar>App name</app-toolbar>
+    <iron-list scroll-target="document" items="[[items]]">
+      <template>
+        ...
+      </template>
+    </iron-list>
+  </template>
+</body>
+```
+
+### Template model
+
+List item templates should bind to template models of the following structure:
+
+```js
+{
+  index: 0,        // index in the item array
+  selected: false, // true if the current item is selected
+  tabIndex: -1,    // a dynamically generated tabIndex for focus management
+  item: {}         // user data corresponding to items[index]
+}
+```
+
+Alternatively, you can change the property name used as data index by changing the
+`indexAs` property. The `as` property defines the name of the variable to add to the binding
+scope for the array.
+
+For example, given the following `data` array:
+
+##### data.json
+
+```js
+[
+  {"name": "Bob"},
+  {"name": "Tim"},
+  {"name": "Mike"}
+]
+```
+
+The following code would render the list (note the name and checked properties are
+bound from the model object provided to the template scope):
+
+```html
+<template is="dom-bind">
+  <iron-ajax url="data.json" last-response="{{data}}" auto></iron-ajax>
+  <iron-list items="[[data]]" as="item">
+    <template>
+      <div>
+        Name: [[item.name]]
+      </div>
+    </template>
+  </iron-list>
+</template>
+```
+
+### Grid layout
+
+`iron-list` supports a grid layout in addition to linear layout by setting
+the `grid` attribute.  In this case, the list template item must have both fixed
+width and height (e.g. via CSS). Based on this, the number of items
+per row are determined automatically based on the size of the list viewport.
+
+### Accessibility
+
+`iron-list` automatically manages the focus state for the items. It also provides
+a `tabIndex` property within the template scope that can be used for keyboard navigation.
+For example, users can press the up and down keys to move to previous and next
+items in the list:
+
+```html
+<iron-list items="[[data]]" as="item">
+  <template>
+    <div tabindex$="[[tabIndex]]">
+      Name: [[item.name]]
+    </div>
+  </template>
+</iron-list>
+```
+
+### Styling
+
+You can use the `--iron-list-items-container` mixin to style the container of items:
+
+```css
+iron-list {
+ --iron-list-items-container: {
+    margin: auto;
+  };
+}
+```
+
+### Resizing
+
+`iron-list` lays out the items when it receives a notification via the `iron-resize` event.
+This event is fired by any element that implements `IronResizableBehavior`.
+
+By default, elements such as `iron-pages`, `paper-tabs` or `paper-dialog` will trigger
+this event automatically. If you hide the list manually (e.g. you use `display: none`)
+you might want to implement `IronResizableBehavior` or fire this event manually right
+after the list became visible again. For example:
+
+```js
+document.querySelector('iron-list').fire('iron-resize');
+```
+
+### When should `<iron-list>` be used?
+
+`iron-list` should be used when a page has significantly more DOM nodes than the ones
+visible on the screen. e.g. the page has 500 nodes, but only 20 are visible at the time.
+This is why we refer to it as a `virtual` list. In this case, a `dom-repeat` will still
+create 500 nodes which could slow down the web app, but `iron-list` will only create 20.
+
+However, having an `iron-list` does not mean that you can load all the data at once.
+Say, you have a million records in the database, you want to split the data into pages
+so you can bring a page at the time. The page could contain 500 items, and iron-list
+will only render 20.
+
+@group Iron Element
+@element iron-list
+@demo demo/index.html
+
+-->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -15440,9 +15690,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this._notifyingDescendant = false;
     }
   };
-</script>
-
-<!--
+</script><!--
 @license
 Copyright (c) 2016 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -15499,10 +15747,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
        * appHeader.scrollTarget = document.querySelector('#scrollable-element');
        *```
        *
-       * @type {HTMLElement}
+       * @type {Element}
        */
       scrollTarget: {
-        type: HTMLElement,
+        type: Object,
         value: function() {
           return this._defaultScrollTarget;
         }
@@ -15513,15 +15761,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       '_scrollTargetChanged(scrollTarget, isAttached)'
     ],
 
+    /**
+     * True if the event listener should be installed.
+     */
+    _shouldHaveListener: true,
+
     _scrollTargetChanged: function(scrollTarget, isAttached) {
       var eventTarget;
 
       if (this._oldScrollTarget) {
-        eventTarget = this._oldScrollTarget === this._doc ? window : this._oldScrollTarget;
-        eventTarget.removeEventListener('scroll', this._boundScrollHandler);
+        this._toggleScrollListener(false, this._oldScrollTarget);
         this._oldScrollTarget = null;
       }
-
       if (!isAttached) {
         return;
       }
@@ -15537,11 +15788,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       } else if (this._isValidScrollTarget()) {
 
-        eventTarget = scrollTarget === this._doc ? window : scrollTarget;
         this._boundScrollHandler = this._boundScrollHandler || this._scrollHandler.bind(this);
         this._oldScrollTarget = scrollTarget;
+        this._toggleScrollListener(this._shouldHaveListener, scrollTarget);
 
-        eventTarget.addEventListener('scroll', this._boundScrollHandler);
       }
     },
 
@@ -15668,156 +15918,38 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      */
     _isValidScrollTarget: function() {
       return this.scrollTarget instanceof HTMLElement;
+    },
+
+    _toggleScrollListener: function(yes, scrollTarget) {
+      if (!this._boundScrollHandler) {
+        return;
+      }
+      var eventTarget = scrollTarget === this._doc ? window : scrollTarget;
+
+      if (yes) {
+        eventTarget.addEventListener('scroll', this._boundScrollHandler);
+      } else {
+        eventTarget.removeEventListener('scroll', this._boundScrollHandler);
+      }
+    },
+
+    /**
+     * Enables or disables the scroll event listener.
+     *
+     * @param {boolean} yes True to add the event, False to remove it.
+     */
+    toggleScrollListener: function(yes) {
+      this._shouldHaveListener = yes;
+      this._toggleScrollListener(yes, this.scrollTarget);
     }
+
   };
 
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-
-`iron-list` displays a virtual, 'infinite' list. The template inside
-the iron-list element represents the DOM to create for each list item.
-The `items` property specifies an array of list item data.
-
-For performance reasons, not every item in the list is rendered at once;
-instead a small subset of actual template elements *(enough to fill the viewport)*
-are rendered and reused as the user scrolls. As such, it is important that all
-state of the list template be bound to the model driving it, since the view may
-be reused with a new model at any time. Particularly, any state that may change
-as the result of a user interaction with the list item must be bound to the model
-to avoid view state inconsistency.
-
-__Important:__ `iron-list` must either be explicitly sized, or delegate scrolling to an
-explicitly sized parent. By "explicitly sized", we mean it either has an explicit
-CSS `height` property set via a class or inline style, or else is sized by other
-layout means (e.g. the `flex` or `fit` classes).
-
-### Template model
-
-List item templates should bind to template models of the following structure:
-
-```js
-{
-  index: 0,        // index in the item array
-  selected: false, // true if the current item is selected
-  tabIndex: -1,    // a dynamically generated tabIndex for focus management
-  item: {}         // user data corresponding to items[index]
-}
-```
-
-Alternatively, you can change the property name used as data index by changing the
-`indexAs` property. The `as` property defines the name of the variable to add to the binding
-scope for the array.
-
-For example, given the following `data` array:
-
-##### data.json
-
-```js
-[
-  {"name": "Bob"},
-  {"name": "Tim"},
-  {"name": "Mike"}
-]
-```
-
-The following code would render the list (note the name and checked properties are
-bound from the model object provided to the template scope):
-
-```html
-<template is="dom-bind">
-  <iron-ajax url="data.json" last-response="{{data}}" auto></iron-ajax>
-  <iron-list items="[[data]]" as="item">
-    <template>
-      <div>
-        Name: [[item.name]]
-      </div>
-    </template>
-  </iron-list>
-</template>
-```
-
-### Grid layout
-
-`iron-list` supports a grid layout in addition to linear layout by setting
-the `grid` attribute.  In this case, the list template item must have both fixed
-width and height (e.g. via CSS). Based on this, the number of items
-per row are determined automatically based on the size of the list viewport.
-
-### Accessibility
-
-`iron-list` automatically manages the focus state for the items. It also provides
-a `tabIndex` property within the template scope that can be used for keyboard navigation.
-For example, users can press the up and down keys to move to previous and next
-items in the list:
-
-```html
-<iron-list items="[[data]]" as="item">
-  <template>
-    <div tabindex$="[[tabIndex]]">
-      Name: [[item.name]]
-    </div>
-  </template>
-</iron-list>
-```
-
-### Styling
-
-You can use the `--iron-list-items-container` mixin to style the container of items:
-
-```css
-iron-list {
- --iron-list-items-container: {
-    margin: auto;
-  };
-}
-```
-
-### Resizing
-
-`iron-list` lays out the items when it receives a notification via the `iron-resize` event.
-This event is fired by any element that implements `IronResizableBehavior`.
-
-By default, elements such as `iron-pages`, `paper-tabs` or `paper-dialog` will trigger
-this event automatically. If you hide the list manually (e.g. you use `display: none`)
-you might want to implement `IronResizableBehavior` or fire this event manually right
-after the list became visible again. For example:
-
-```js
-document.querySelector('iron-list').fire('iron-resize');
-```
-
-### When should `<iron-list>` be used?
-
-`iron-list` should be used when a page has significantly more DOM nodes than the ones
-visible on the screen. e.g. the page has 500 nodes, but only 20 are visible at the time.
-This is why we refer to it as a `virtual` list. In this case, a `dom-repeat` will still
-create 500 nodes which could slow down the web app, but `iron-list` will only create 20.
-
-However, having an `iron-list` does not mean that you can load all the data at once.
-Say, you have a million records in the database, you want to split the data into pages
-so you can bring a page at the time. The page could contain 500 items, and iron-list
-will only render 20.
-
-@group Iron Element
-@element iron-list
-@demo demo/index.html
-
--->
-
-<dom-module id="iron-list" assetpath="../bower_components/iron-list/">
+</script><dom-module id="iron-list" assetpath="../bower_components/iron-list/">
   <template>
     <style>
       :host {
         display: block;
-        position: relative;
       }
 
       @media only screen and (-webkit-max-device-pixel-ratio: 1) {
@@ -15833,7 +15965,7 @@ will only render 20.
 
       :host(:not([grid])) #items > ::content > * {
         width: 100%;
-      };
+      }
 
       #items > ::content > * {
         box-sizing: border-box;
@@ -15862,7 +15994,8 @@ will only render 20.
   var IOS_TOUCH_SCROLLING = IOS && IOS[1] >= 8;
   var DEFAULT_PHYSICAL_COUNT = 3;
   var HIDDEN_Y = '-10000px';
-  var DEFAULT_GRID_SIZE = 200;
+  var ITEM_WIDTH = 0;
+  var ITEM_HEIGHT = 1;
   var SECRET_TABINDEX = -100;
 
   Polymer({
@@ -15969,6 +16102,20 @@ will only render 20.
       multiSelection: {
         type: Boolean,
         value: false
+      },
+
+      /**
+       * The offset top from the scrolling element to the iron-list element.
+       * This value can be computed using the position returned by `getBoundingClientRect()`
+       * although it's preferred to use a constant value when possible.
+       *
+       * This property is useful when an external scrolling element is used and there's
+       * some offset between the scrolling element and the list.
+       * For example: a header is placed above the list.
+       */
+      scrollOffset: {
+        type: Number,
+        value: 0
       }
     },
 
@@ -15976,7 +16123,7 @@ will only render 20.
       '_itemsChanged(items.*)',
       '_selectionEnabledChanged(selectionEnabled)',
       '_multiSelectionChanged(multiSelection)',
-      '_setOverflow(scrollTarget)'
+      '_setOverflow(scrollTarget, scrollOffset)'
     ],
 
     behaviors: [
@@ -16092,20 +16239,9 @@ will only render 20.
     _collection: null,
 
     /**
-     * True if the current item list was rendered for the first time
-     * after attached.
-     */
-    _itemsRendered: false,
-
-    /**
-     * The page that is currently rendered.
-     */
-    _lastPage: null,
-
-    /**
      * The max number of pages to render. One page is equivalent to the height of the list.
      */
-    _maxPages: 3,
+    _maxPages: 2,
 
     /**
      * The currently focused physical item.
@@ -16145,6 +16281,11 @@ will only render 20.
     _rowHeight: 0,
 
     /**
+     * The cost of stamping a template in ms.
+     */
+    _templateCost: 0,
+
+    /**
      * The bottom of the physical content.
      */
     get _physicalBottom() {
@@ -16174,10 +16315,17 @@ will only render 20.
     },
 
     /**
+     * The parent node for the _userTemplate.
+     */
+    get _itemsParent() {
+      return Polymer.dom(Polymer.dom(this._userTemplate).parentNode);
+    },
+
+    /**
      * The maximum scroll top value.
      */
     get _maxScrollTop() {
-      return this._estScrollHeight - this._viewportHeight + this._scrollerPaddingTop;
+      return this._estScrollHeight - this._viewportHeight + this._scrollOffset;
     },
 
     /**
@@ -16198,7 +16346,11 @@ will only render 20.
     _virtualStartVal: 0,
 
     set _virtualStart(val) {
-      this._virtualStartVal = Math.min(this._maxVirtualStart, Math.max(this._minVirtualStart, val));
+      val = Math.min(this._maxVirtualStart, Math.max(this._minVirtualStart, val));
+      if (this.grid) {
+        val = val - (val % this._itemsPerRow);
+      }
+      this._virtualStartVal = val;
     },
 
     get _virtualStart() {
@@ -16211,10 +16363,14 @@ will only render 20.
     _physicalStartVal: 0,
 
     set _physicalStart(val) {
-      this._physicalStartVal = val % this._physicalCount;
-      if (this._physicalStartVal < 0) {
-        this._physicalStartVal = this._physicalCount + this._physicalStartVal;
+      val = val % this._physicalCount;
+      if (val < 0) {
+        val = this._physicalCount + val;
       }
+      if (this.grid) {
+        val = val - (val % this._itemsPerRow);
+      }
+      this._physicalStartVal = val;
       this._physicalEnd = (this._physicalStart + this._physicalCount - 1) % this._physicalCount;
     },
 
@@ -16252,18 +16408,14 @@ will only render 20.
       if (this.grid) {
         return this._estRowsInView * this._rowHeight * this._maxPages;
       }
-      return this._viewportHeight * this._maxPages;
-    },
-
-    get _optPhysicalCount() {
-      return this._estRowsInView * this._itemsPerRow * this._maxPages;
+      return this._viewportHeight === 0 ? Infinity : this._viewportHeight * this._maxPages;
     },
 
    /**
     * True if the current list is visible.
     */
     get _isVisible() {
-      return this.scrollTarget && Boolean(this.scrollTarget.offsetWidth || this.scrollTarget.offsetHeight);
+      return Boolean(this.offsetWidth || this.offsetHeight);
     },
 
     /**
@@ -16272,23 +16424,24 @@ will only render 20.
      * @type {number}
      */
     get firstVisibleIndex() {
-      if (this._firstVisibleIndexVal === null) {
-        var physicalOffset = Math.floor(this._physicalTop + this._scrollerPaddingTop);
+      var idx = this._firstVisibleIndexVal;
+      if (idx == null) {
+        var physicalOffset = this._physicalTop + this._scrollOffset;
 
-        this._firstVisibleIndexVal = this._iterateItems(
-          function(pidx, vidx) {
-            physicalOffset += this._getPhysicalSizeIncrement(pidx);
+        idx = this._iterateItems(function(pidx, vidx) {
+          physicalOffset += this._getPhysicalSizeIncrement(pidx);
 
-            if (physicalOffset > this._scrollPosition) {
-              return this.grid ? vidx - (vidx % this._itemsPerRow) : vidx;
-            }
-            // Handle a partially rendered final row in grid mode
-            if (this.grid && this._virtualCount - 1 === vidx) {
-              return vidx - (vidx % this._itemsPerRow);
-            }
-          }) || 0;
+          if (physicalOffset > this._scrollPosition) {
+            return this.grid ? vidx - (vidx % this._itemsPerRow) : vidx;
+          }
+          // Handle a partially rendered final row in grid mode
+          if (this.grid && this._virtualCount - 1 === vidx) {
+            return vidx - (vidx % this._itemsPerRow);
+          }
+        }) || 0;
+        this._firstVisibleIndexVal = idx;
       }
-      return this._firstVisibleIndexVal;
+      return idx;
     },
 
     /**
@@ -16297,29 +16450,29 @@ will only render 20.
      * @type {number}
      */
     get lastVisibleIndex() {
-      if (this._lastVisibleIndexVal === null) {
+      var idx = this._lastVisibleIndexVal;
+      if (idx == null) {
         if (this.grid) {
-          var lastIndex = this.firstVisibleIndex + this._estRowsInView * this._itemsPerRow - 1;
-          this._lastVisibleIndexVal = Math.min(this._virtualCount, lastIndex);
+          idx = Math.min(this._virtualCount,
+              this.firstVisibleIndex + this._estRowsInView * this._itemsPerRow - 1);
         } else {
-          var physicalOffset = this._physicalTop;
+          var physicalOffset = this._physicalTop + this._scrollOffset;
           this._iterateItems(function(pidx, vidx) {
             if (physicalOffset < this._scrollBottom) {
-              this._lastVisibleIndexVal = vidx;
-            } else {
-              // Break _iterateItems
-              return true;
+              idx = vidx;
             }
             physicalOffset += this._getPhysicalSizeIncrement(pidx);
           });
         }
+        this._lastVisibleIndexVal = idx;
       }
-      return this._lastVisibleIndexVal;
+      return idx;
     },
 
     get _defaultScrollTarget() {
       return this;
     },
+
     get _virtualRowCount() {
       return Math.ceil(this._virtualCount / this._itemsPerRow);
     },
@@ -16332,20 +16485,24 @@ will only render 20.
       return Math.ceil(this._physicalCount / this._itemsPerRow);
     },
 
+    get _scrollOffset() {
+      return this._scrollerPaddingTop + this.scrollOffset;
+    },
+
     ready: function() {
       this.addEventListener('focus', this._didFocus.bind(this), true);
     },
 
     attached: function() {
-      this.updateViewportBoundaries();
-      this._render();
+      if (this._physicalCount === 0) {
+        this._debounceTemplate(this._render);
+      }
       // `iron-resize` is fired when the list is attached if the event is added
       // before attached causing unnecessary work.
       this.listen(this, 'iron-resize', '_resizeHandler');
     },
 
     detached: function() {
-      this._itemsRendered = false;
       this.unlisten(this, 'iron-resize', '_resizeHandler');
     },
 
@@ -16355,6 +16512,10 @@ will only render 20.
     _setOverflow: function(scrollTarget) {
       this.style.webkitOverflowScrolling = scrollTarget === this ? 'touch' : '';
       this.style.overflow = scrollTarget === this ? 'auto' : '';
+      // Clear cache.
+      this._lastVisibleIndexVal = null;
+      this._firstVisibleIndexVal = null;
+      this._debounceTemplate(this._render);
     },
 
     /**
@@ -16364,121 +16525,114 @@ will only render 20.
      * @method updateViewportBoundaries
      */
     updateViewportBoundaries: function() {
+      var styles = window.getComputedStyle(this);
       this._scrollerPaddingTop = this.scrollTarget === this ? 0 :
-          parseInt(window.getComputedStyle(this)['padding-top'], 10);
-
+          parseInt(styles['padding-top'], 10);
+      this._isRTL = Boolean(styles.direction === 'rtl');
+      this._viewportWidth = this.$.items.offsetWidth;
       this._viewportHeight = this._scrollTargetHeight;
-      if (this.grid) {
-        this._updateGridMetrics();
+      this.grid && this._updateGridMetrics();
+    },
+
+    /**
+     * Recycles the physical items when needed.
+     */
+    _scrollHandler: function() {
+      var scrollTop = Math.max(0, Math.min(this._maxScrollTop, this._scrollTop));
+      var delta = scrollTop - this._scrollPosition;
+      var isScrollingDown = delta >= 0;
+      // Track the current scroll position.
+      this._scrollPosition = scrollTop;
+      // Clear indexes.
+      this._firstVisibleIndexVal = null;
+      this._lastVisibleIndexVal = null;
+
+      // Random access.
+      if (Math.abs(delta) > this._physicalSize) {
+        delta = delta - this._scrollOffset;
+        var idxAdjustment = Math.round(delta / this._physicalAverage) * this._itemsPerRow;
+        this._physicalTop = this._physicalTop + delta;
+        this._virtualStart = this._virtualStart + idxAdjustment;
+        this._physicalStart = this._physicalStart + idxAdjustment;
+        this._update();
+      } else {
+        var reusables = this._getReusables(isScrollingDown);
+        if (isScrollingDown) {
+          this._physicalTop = reusables.physicalTop;
+          this._virtualStart = this._virtualStart + reusables.indexes.length;
+          this._physicalStart = this._physicalStart + reusables.indexes.length;
+        } else {
+          this._virtualStart = this._virtualStart - reusables.indexes.length;
+          this._physicalStart = this._physicalStart - reusables.indexes.length;
+        }
+        if (reusables.indexes.length === 0) {
+          this._increasePoolIfNeeded();
+        } else {
+          this._update(reusables.indexes, isScrollingDown ? null : reusables.indexes);
+        }
       }
     },
 
     /**
-     * Update the models, the position of the
-     * items in the viewport and recycle tiles as needed.
+     * Returns an object that contains the indexes of the physical items
+     * that might be reused and the physicalTop.
+     *
+     * @param {boolean} fromTop If the potential reusable items are above the scrolling region.
      */
-    _scrollHandler: function() {
-      // clamp the `scrollTop` value
-      var scrollTop = Math.max(0, Math.min(this._maxScrollTop, this._scrollTop));
-      var delta = scrollTop - this._scrollPosition;
-      var tileHeight, tileTop, kth, recycledTileSet, scrollBottom, physicalBottom;
-      var ratio = this._ratio;
-      var recycledTiles = 0;
-      var hiddenContentSize = this._hiddenContentSize;
-      var currentRatio = ratio;
-      var movingUp = [];
+    _getReusables: function(fromTop) {
+      var ith, lastIth, offsetContent, physicalItemHeight;
+      var idxs = [];
+      var protectedOffsetContent = this._hiddenContentSize * this._ratio;
+      var virtualStart = this._virtualStart;
+      var virtualEnd = this._virtualEnd;
+      var physicalCount = this._physicalCount;
+      var top = this._physicalTop + this._scrollOffset;
+      var bottom = this._physicalBottom + this._scrollOffset;
+      var scrollTop = this._scrollTop;
+      var scrollBottom = this._scrollBottom;
 
-      // track the last `scrollTop`
-      this._scrollPosition = scrollTop;
-
-      // clear cached visible indexes
-      this._firstVisibleIndexVal = null;
-      this._lastVisibleIndexVal = null;
-
-      scrollBottom = this._scrollBottom;
-      physicalBottom = this._physicalBottom;
-
-      // random access
-      if (Math.abs(delta) > this._physicalSize) {
-        this._physicalTop += delta;
-        recycledTiles =  Math.round(delta / this._physicalAverage);
-      }
-      // scroll up
-      else if (delta < 0) {
-        var topSpace = scrollTop - this._physicalTop;
-        var virtualStart = this._virtualStart;
-
-        recycledTileSet = [];
-
-        kth = this._physicalEnd;
-        currentRatio = topSpace / hiddenContentSize;
-
-        // move tiles from bottom to top
-        while (
-            // approximate `currentRatio` to `ratio`
-            currentRatio < ratio &&
-            // recycle less physical items than the total
-            recycledTiles < this._physicalCount &&
-            // ensure that these recycled tiles are needed
-            virtualStart - recycledTiles > 0 &&
-            // ensure that the tile is not visible
-            physicalBottom - this._getPhysicalSizeIncrement(kth) > scrollBottom
-        ) {
-
-          tileHeight = this._getPhysicalSizeIncrement(kth);
-          currentRatio += tileHeight / hiddenContentSize;
-          physicalBottom -= tileHeight;
-          recycledTileSet.push(kth);
-          recycledTiles++;
-          kth = (kth === 0) ? this._physicalCount - 1 : kth - 1;
-        }
-
-        movingUp = recycledTileSet;
-        recycledTiles = -recycledTiles;
-      }
-      // scroll down
-      else if (delta > 0) {
-        var bottomSpace = physicalBottom - scrollBottom;
-        var virtualEnd = this._virtualEnd;
-        var lastVirtualItemIndex = this._virtualCount-1;
-
-        recycledTileSet = [];
-
-        kth = this._physicalStart;
-        currentRatio = bottomSpace / hiddenContentSize;
-
-        // move tiles from top to bottom
-        while (
-            // approximate `currentRatio` to `ratio`
-            currentRatio < ratio &&
-            // recycle less physical items than the total
-            recycledTiles < this._physicalCount &&
-            // ensure that these recycled tiles are needed
-            virtualEnd + recycledTiles < lastVirtualItemIndex &&
-            // ensure that the tile is not visible
-            this._physicalTop + this._getPhysicalSizeIncrement(kth) < scrollTop
-          ) {
-
-          tileHeight = this._getPhysicalSizeIncrement(kth);
-          currentRatio += tileHeight / hiddenContentSize;
-
-          this._physicalTop += tileHeight;
-          recycledTileSet.push(kth);
-          recycledTiles++;
-          kth = (kth + 1) % this._physicalCount;
-        }
-      }
-
-      if (recycledTiles === 0) {
-        // Try to increase the pool if the list's client height isn't filled up with physical items
-        if (physicalBottom < scrollBottom || this._physicalTop > scrollTop) {
-          this._increasePoolIfNeeded();
-        }
+      if (fromTop) {
+        ith = this._physicalStart;
+        lastIth = this._physicalEnd;
+        offsetContent = scrollTop - top;
       } else {
-        this._virtualStart = this._virtualStart + recycledTiles;
-        this._physicalStart = this._physicalStart + recycledTiles;
-        this._update(recycledTileSet, movingUp);
+        ith = this._physicalEnd;
+        lastIth = this._physicalStart;
+        offsetContent = bottom - scrollBottom;
       }
+      while (true) {
+        physicalItemHeight = this._getPhysicalSizeIncrement(ith);
+        offsetContent = offsetContent - physicalItemHeight;
+        if (idxs.length >= physicalCount || offsetContent <= protectedOffsetContent) {
+          break;
+        }
+        if (fromTop) {
+          // Check that index is within the valid range.
+          if (virtualEnd + idxs.length + 1 >= this._virtualCount) {
+            break;
+          }
+          // Check that the index is not visible.
+          if (top + physicalItemHeight >= scrollTop - this._scrollOffset) {
+            break;
+          }
+          idxs.push(ith);
+          top = top + physicalItemHeight;
+          ith = (ith + 1) % physicalCount;
+        } else {
+          // Check that index is within the valid range.
+          if (virtualStart - idxs.length <= 0) {
+            break;
+          }
+          // Check that the index is not visible.
+          if (top + this._physicalSize - physicalItemHeight <= scrollBottom) {
+            break;
+          }
+          idxs.push(ith);
+          top = top - physicalItemHeight;
+          ith = (ith === 0) ? physicalCount - 1 : ith - 1;
+        }
+      }
+      return { indexes: idxs, physicalTop: top - this._scrollOffset };
     },
 
     /**
@@ -16487,29 +16641,28 @@ will only render 20.
      * @param {!Array<number>=} movingUp
      */
     _update: function(itemSet, movingUp) {
-      // manage focus
+      if (itemSet && itemSet.length === 0) {
+        return;
+      }
       this._manageFocus();
-      // update models
       this._assignModels(itemSet);
-      // measure heights
       this._updateMetrics(itemSet);
-      // adjust offset after measuring
+      // Adjust offset after measuring.
       if (movingUp) {
         while (movingUp.length) {
           var idx = movingUp.pop();
           this._physicalTop -= this._getPhysicalSizeIncrement(idx);
         }
       }
-      // update the position of the items
       this._positionItems();
-      // set the scroller size
       this._updateScrollerSize();
-      // increase the pool of physical items
       this._increasePoolIfNeeded();
     },
 
     /**
      * Creates a pool of DOM elements and attaches them to the local dom.
+     *
+     * @param {number} size Size of the pool
      */
     _createPool: function(size) {
       var physicalItems = new Array(size);
@@ -16519,9 +16672,9 @@ will only render 20.
       for (var i = 0; i < size; i++) {
         var inst = this.stamp(null);
         // First element child is item; Safari doesn't support children[0]
-        // on a doc fragment
+        // on a doc fragment.
         physicalItems[i] = inst.root.querySelector('*');
-        Polymer.dom(this).appendChild(inst.root);
+        this._itemsParent.appendChild(inst.root);
       }
       return physicalItems;
     },
@@ -16532,34 +16685,36 @@ will only render 20.
      * @return {boolean} True if the pool was increased.
      */
     _increasePoolIfNeeded: function() {
-      // Base case 1: the list has no height.
-      if (this._viewportHeight === 0) {
-        return false;
-      }
-      // Base case 2: If the physical size is optimal and the list's client height is full
+      var self = this;
+      var isClientFull = this._physicalBottom + this._scrollOffset >= this._scrollBottom &&
+          this._physicalTop - this._scrollOffset <= this._scrollPosition;
+      // Base case 1: if the physical size is optimal and the list's client height is full
       // with physical items, don't increase the pool.
-      var isClientHeightFull = this._physicalBottom >= this._scrollBottom && this._physicalTop <= this._scrollPosition;
-      if (this._physicalSize >= this._optPhysicalSize && isClientHeightFull) {
+      if (this._physicalSize >= this._optPhysicalSize && isClientFull) {
         return false;
       }
-      // this value should range between [0 <= `currentPage` <= `_maxPages`]
-      var currentPage = Math.floor(this._physicalSize / this._viewportHeight);
-
-      if (currentPage === 0) {
-        // fill the first page
-        this._debounceTemplate(this._increasePool.bind(this, Math.round(this._physicalCount * 0.5)));
-      } else if (this._lastPage !== currentPage && isClientHeightFull) {
-        // paint the page and defer the next increase
-        // wait 16ms which is rough enough to get paint cycle.
-        Polymer.dom.addDebouncer(this.debounce('_debounceTemplate', this._increasePool.bind(this, this._itemsPerRow), 16));
-      } else {
-        // fill the rest of the pages
-        this._debounceTemplate(this._increasePool.bind(this, this._itemsPerRow));
+      var maxPoolSize = Math.round(this._physicalCount * 0.5);
+      // Increase the pool synchronously until the client is filled.
+      if (!isClientFull) {
+        this._debounceTemplate(this._increasePool.bind(this, maxPoolSize));
+        return true;
       }
-
-      this._lastPage = currentPage;
-
+      this._yield(function() {
+        self._increasePool(Math.min(maxPoolSize, Math.max(1, Math.round(50 / self._templateCost))));
+      });
       return true;
+    },
+
+    _yield: function(cb) {
+      var g = window;
+      var handle = g.requestIdleCallback ? g.requestIdleCallback(cb) : g.setTimeout(cb, 16);
+      // Polymer/issues/3895
+      Polymer.dom.addDebouncer(/** @type {!Polymer.Debouncer} */({
+        complete: function() {
+          g.cancelIdleCallback ? g.cancelIdleCallback(handle) : g.clearTimeout(handle);
+          cb();
+        }
+      }));
     },
 
     /**
@@ -16573,17 +16728,16 @@ will only render 20.
         );
       var prevPhysicalCount = this._physicalCount;
       var delta = nextPhysicalCount - prevPhysicalCount;
+      var ts = window.performance.now();
 
       if (delta <= 0) {
         return;
       }
-
+      // Concat arrays in place.
       [].push.apply(this._physicalItems, this._createPool(delta));
       [].push.apply(this._physicalSizes, new Array(delta));
-
       this._physicalCount = prevPhysicalCount + delta;
-
-      // update the physical start if we need to preserve the model of the focused item.
+      // Update the physical start if it needs to preserve the model of the focused item.
       // In this situation, the focused item is currently rendered and its model would
       // have changed after increasing the pool if the physical start remained unchanged.
       if (this._physicalStart > this._physicalEnd &&
@@ -16592,19 +16746,26 @@ will only render 20.
         this._physicalStart = this._physicalStart + delta;
       }
       this._update();
+      this._templateCost = (window.performance.now() - ts) / delta;
     },
 
     /**
-     * Render a new list of items. This method does exactly the same as `update`,
-     * but it also ensures that only one `update` cycle is created.
+     * Renders the a new list.
      */
     _render: function() {
-      var requiresUpdate = this._virtualCount > 0 || this._physicalCount > 0;
-
-      if (this.isAttached && !this._itemsRendered && this._isVisible && requiresUpdate) {
-        this._lastPage = 0;
-        this._update();
-        this._itemsRendered = true;
+      if (this.isAttached && this._isVisible) {
+        if (this._physicalCount === 0) {
+          this.updateViewportBoundaries();
+          this._increasePool(DEFAULT_PHYSICAL_COUNT);
+        } else {
+          // Try to recycle nodes
+          var reusables = this._getReusables(true);
+          this._physicalTop = reusables.physicalTop;
+          this._virtualStart = this._virtualStart + reusables.indexes.length;
+          this._physicalStart = this._physicalStart + reusables.indexes.length;
+          this._update(reusables.indexes);
+          this._update();
+        }
       }
     },
 
@@ -16620,9 +16781,8 @@ will only render 20.
         props[this.indexAs] = true;
         props[this.selectedAs] = true;
         props.tabIndex = true;
-
         this._instanceProps = props;
-        this._userTemplate = Polymer.dom(this).querySelector('template');
+        this._userTemplate = this.queryEffectiveChildren('template');
 
         if (this._userTemplate) {
           this.templatize(this._userTemplate);
@@ -16657,11 +16817,13 @@ will only render 20.
      * notifying parent path change on each row.
      */
     _forwardParentProp: function(prop, value) {
-      if (this._physicalItems) {
-        this._physicalItems.forEach(function(item) {
-          item._templateInstance[prop] = value;
-        }, this);
-      }
+      (this._physicalItems || [])
+        .concat([this._offscreenFocusedItem, this._focusBackfillItem])
+        .forEach(function(item) {
+          if (item) {
+            item._templateInstance[prop] = value;
+          }
+        });
     },
 
     /**
@@ -16670,11 +16832,13 @@ will only render 20.
      * notifying parent.<path> path change on each row.
      */
     _forwardParentPath: function(path, value) {
-      if (this._physicalItems) {
-        this._physicalItems.forEach(function(item) {
-          item._templateInstance.notifyPath(path, value, true);
-        }, this);
-      }
+      (this._physicalItems || [])
+        .concat([this._offscreenFocusedItem, this._focusBackfillItem])
+        .forEach(function(item) {
+          if (item) {
+            item._templateInstance.notifyPath(path, value, true);
+          }
+        });
     },
 
     /**
@@ -16721,7 +16885,6 @@ will only render 20.
      */
     _itemsChanged: function(change) {
       if (change.path === 'items') {
-        // reset items
         this._virtualStart = 0;
         this._physicalTop = 0;
         this._virtualCount = this.items ? this.items.length : 0;
@@ -16729,31 +16892,24 @@ will only render 20.
         this._physicalIndexForKey = {};
         this._firstVisibleIndexVal = null;
         this._lastVisibleIndexVal = null;
-
-        this._resetScrollPosition(0);
-        this._removeFocusedItem();
-        // create the initial physical items
-        if (!this._physicalItems) {
-          this._physicalCount = Math.max(1, Math.min(DEFAULT_PHYSICAL_COUNT, this._virtualCount));
-          this._physicalItems = this._createPool(this._physicalCount);
-          this._physicalSizes = new Array(this._physicalCount);
-        }
-
+        this._physicalCount = this._physicalCount || 0;
+        this._physicalItems = this._physicalItems || [];
+        this._physicalSizes = this._physicalSizes || [];
         this._physicalStart = 0;
+        if (this._scrollTop > this._scrollOffset) {
+          this._resetScrollPosition(0);
+        }
+        this._removeFocusedItem();
+        this._debounceTemplate(this._render);
 
       } else if (change.path === 'items.splices') {
-
         this._adjustVirtualIndex(change.value.indexSplices);
         this._virtualCount = this.items ? this.items.length : 0;
 
+        this._debounceTemplate(this._render);
       } else {
-        // update a single item
         this._forwardItemPath(change.path.split('.').slice(1).join('.'), change.value);
-        return;
       }
-
-      this._itemsRendered = false;
-      this._debounceTemplate(this._render);
     },
 
     /**
@@ -16843,7 +16999,6 @@ will only render 20.
         var el = this._physicalItems[pidx];
         var inst = el._templateInstance;
         var item = this.items && this.items[vidx];
-
         if (item != null) {
           inst[this.as] = item;
           inst.__key__ = this._collection.getKey(item);
@@ -16866,7 +17021,7 @@ will only render 20.
      */
      _updateMetrics: function(itemSet) {
       // Make sure we distributed all the physical items
-      // so we can measure them
+      // so we can measure them.
       Polymer.dom.flush();
 
       var newPhysicalSize = 0;
@@ -16875,23 +17030,19 @@ will only render 20.
       var prevPhysicalAvg = this._physicalAverage;
 
       this._iterateItems(function(pidx, vidx) {
-
         oldPhysicalSize += this._physicalSizes[pidx] || 0;
         this._physicalSizes[pidx] = this._physicalItems[pidx].offsetHeight;
         newPhysicalSize += this._physicalSizes[pidx];
         this._physicalAverageCount += this._physicalSizes[pidx] ? 1 : 0;
-
       }, itemSet);
 
-      this._viewportHeight = this._scrollTargetHeight;
       if (this.grid) {
         this._updateGridMetrics();
         this._physicalSize = Math.ceil(this._physicalCount / this._itemsPerRow) * this._rowHeight;
       } else {
         this._physicalSize = this._physicalSize + newPhysicalSize - oldPhysicalSize;
       }
-
-      // update the average if we measured something
+      // Update the average if it measured something.
       if (this._physicalAverageCount !== prevAvgCount) {
         this._physicalAverage = Math.round(
             ((prevPhysicalAvg * prevAvgCount) + newPhysicalSize) /
@@ -16900,12 +17051,8 @@ will only render 20.
     },
 
     _updateGridMetrics: function() {
-      this._viewportWidth = this.$.items.offsetWidth;
-      // Set item width to the value of the _physicalItems offsetWidth
-      this._itemWidth = this._physicalCount > 0 ? this._physicalItems[0].getBoundingClientRect().width : DEFAULT_GRID_SIZE;
-      // Set row height to the value of the _physicalItems offsetHeight
-      this._rowHeight = this._physicalCount > 0 ? this._physicalItems[0].offsetHeight : DEFAULT_GRID_SIZE;
-      // If in grid mode compute how many items with exist in each row
+      this._itemWidth = this._physicalCount > 0 ? this._physicalItems[0].getBoundingClientRect().width : 200;
+      this._rowHeight = this._physicalCount > 0 ? this._physicalItems[0].offsetHeight : 200;
       this._itemsPerRow = this._itemWidth ? Math.floor(this._viewportWidth / this._itemWidth) : this._itemsPerRow;
     },
 
@@ -16922,23 +17069,20 @@ will only render 20.
         var rowOffset = (this._viewportWidth - totalItemWidth) / 2;
 
         this._iterateItems(function(pidx, vidx) {
-
           var modulus = vidx % this._itemsPerRow;
           var x = Math.floor((modulus * this._itemWidth) + rowOffset);
-
+          if (this._isRTL) {
+            x = x * -1;
+          }
           this.translate3d(x + 'px', y + 'px', 0, this._physicalItems[pidx]);
-
           if (this._shouldRenderNextRow(vidx)) {
             y += this._rowHeight;
           }
-
         });
       } else {
         this._iterateItems(function(pidx, vidx) {
-
           this.translate3d(0, y + 'px', 0, this._physicalItems[pidx]);
           y += this._physicalSizes[pidx];
-
         });
       }
     },
@@ -16972,10 +17116,10 @@ will only render 20.
       var deltaHeight = this._virtualStart === 0 ? this._physicalTop :
           Math.min(this._scrollPosition + this._physicalTop, 0);
 
-      if (deltaHeight) {
+      if (deltaHeight > 0) {
         this._physicalTop = this._physicalTop - deltaHeight;
         // juking scroll position during interial scrolling on iOS is no bueno
-        if (!IOS_TOUCH_SCROLLING && this._physicalTop !== 0) {
+        if (!IOS_TOUCH_SCROLLING) {
           this._resetScrollPosition(this._scrollTop - deltaHeight);
         }
       }
@@ -17008,7 +17152,7 @@ will only render 20.
       forceUpdate = forceUpdate || this._scrollPosition >= this._estScrollHeight - this._physicalSize;
       forceUpdate = forceUpdate || this.grid && this.$.items.style.height < this._estScrollHeight;
 
-      // amortize height adjustment, so it won't trigger repaints very often
+      // Amortize height adjustment, so it won't trigger large repaints too often.
       if (forceUpdate || Math.abs(this._estScrollHeight - this._scrollHeight) >= this._optPhysicalSize) {
         this.$.items.style.height = this._estScrollHeight + 'px';
         this._scrollHeight = this._estScrollHeight;
@@ -17037,45 +17181,37 @@ will only render 20.
       if (typeof idx !== 'number' || idx < 0 || idx > this.items.length - 1) {
         return;
       }
-
       Polymer.dom.flush();
-
+      // Items should have been rendered prior scrolling to an index.
+      if (this._physicalCount === 0) {
+        return;
+      }
       idx = Math.min(Math.max(idx, 0), this._virtualCount-1);
-      // update the virtual start only when needed
+      // Update the virtual start only when needed.
       if (!this._isIndexRendered(idx) || idx >= this._maxVirtualStart) {
         this._virtualStart = this.grid ? (idx - this._itemsPerRow * 2) : (idx - 1);
       }
-      // manage focus
       this._manageFocus();
-      // assign new models
       this._assignModels();
-      // measure the new sizes
       this._updateMetrics();
-
-      // estimate new physical offset
-      var estPhysicalTop = Math.floor(this._virtualStart / this._itemsPerRow)  * this._physicalAverage;
-      this._physicalTop = estPhysicalTop;
+      // Estimate new physical offset.
+      this._physicalTop = Math.floor(this._virtualStart / this._itemsPerRow)  * this._physicalAverage;
 
       var currentTopItem = this._physicalStart;
       var currentVirtualItem = this._virtualStart;
       var targetOffsetTop = 0;
       var hiddenContentSize = this._hiddenContentSize;
-
-      // scroll to the item as much as we can
+      // scroll to the item as much as we can.
       while (currentVirtualItem < idx && targetOffsetTop <= hiddenContentSize) {
         targetOffsetTop = targetOffsetTop + this._getPhysicalSizeIncrement(currentTopItem);
         currentTopItem = (currentTopItem + 1) % this._physicalCount;
         currentVirtualItem++;
       }
-      // update the scroller size
       this._updateScrollerSize(true);
-      // update the position of the items
       this._positionItems();
-      // set the new scroll position
-      this._resetScrollPosition(this._physicalTop + this._scrollerPaddingTop + targetOffsetTop);
-      // increase the pool of physical items if needed
+      this._resetScrollPosition(this._physicalTop + this._scrollOffset + targetOffsetTop);
       this._increasePoolIfNeeded();
-      // clear cached visible index
+      // clear cached visible index.
       this._firstVisibleIndexVal = null;
       this._lastVisibleIndexVal = null;
     },
@@ -17093,22 +17229,23 @@ will only render 20.
      * when the element is resized.
      */
     _resizeHandler: function() {
-      // iOS fires the resize event when the address bar slides up
-      if (IOS && Math.abs(this._viewportHeight - this._scrollTargetHeight) < 100) {
-        return;
-      }
-      // In Desktop Safari 9.0.3, if the scroll bars are always shown,
-      // changing the scroll position from a resize handler would result in
-      // the scroll position being reset. Waiting 1ms fixes the issue.
-      Polymer.dom.addDebouncer(this.debounce('_debounceTemplate', function() {
+      this._debounceTemplate(function() {
+        // Skip the resize event on touch devices when the address bar slides up.
+        var delta = Math.abs(this._viewportHeight - this._scrollTargetHeight);
         this.updateViewportBoundaries();
-        this._render();
-
-        if (this._itemsRendered && this._physicalItems && this._isVisible) {
-          this._resetAverage();
-          this.scrollToIndex(this.firstVisibleIndex);
+        if (('ontouchstart' in window || navigator.maxTouchPoints > 0) && delta > 0 && delta < 100) {
+          return;
         }
-      }.bind(this), 1));
+        if (this._isVisible) {
+          // Reinstall the scroll event listener.
+          this.toggleScrollListener(true);
+          this._resetAverage();
+          this._render();
+        } else {
+          // Uninstall the scroll event listener.
+          this.toggleScrollListener(false);
+        }
+      }.bind(this));
     },
 
     _getModelFromItem: function(item) {
@@ -17235,7 +17372,8 @@ will only render 20.
       }
       var modelTabIndex, activeElTabIndex;
       var target = Polymer.dom(e).path[0];
-      var activeEl = Polymer.dom(this.domHost ? this.domHost.root : document).activeElement;
+      var itemsHost = this._itemsParent.node.domHost;
+      var activeEl = Polymer.dom(itemsHost ? itemsHost.root : document).activeElement;
       var physicalItem = this._physicalItems[this._getPhysicalIndex(model[this.indexAs])];
       // Safari does not focus certain form controls via mouse
       // https://bugs.webkit.org/show_bug.cgi?id=118043
@@ -17249,7 +17387,6 @@ will only render 20.
       model.tabIndex = SECRET_TABINDEX;
       activeElTabIndex = activeEl ? activeEl.tabIndex : -1;
       model.tabIndex = modelTabIndex;
-
       // Only select the item if the tap wasn't on a focusable child
       // or the element bound to `tabIndex`
       if (activeEl && physicalItem !== activeEl && physicalItem.contains(activeEl) && activeElTabIndex !== SECRET_TABINDEX) {
@@ -17330,7 +17467,6 @@ will only render 20.
       var physicalItem = this._physicalItems[this._getPhysicalIndex(idx)];
       var model = physicalItem._templateInstance;
       var focusable;
-
       // set a secret tab index
       model.tabIndex = SECRET_TABINDEX;
       // check if focusable element is the physical item
@@ -17350,7 +17486,7 @@ will only render 20.
 
     _removeFocusedItem: function() {
       if (this._offscreenFocusedItem) {
-        Polymer.dom(this).removeChild(this._offscreenFocusedItem);
+        this._itemsParent.removeChild(this._offscreenFocusedItem);
       }
       this._offscreenFocusedItem = null;
       this._focusBackfillItem = null;
@@ -17359,27 +17495,24 @@ will only render 20.
     },
 
     _createFocusBackfillItem: function() {
-      var pidx, fidx = this._focusedIndex;
-      if (this._offscreenFocusedItem || fidx < 0) {
+      var fidx = this._focusedIndex;
+      var pidx = this._getPhysicalIndex(fidx);
+
+      if (this._offscreenFocusedItem || pidx == null || fidx < 0) {
         return;
       }
       if (!this._focusBackfillItem) {
-        // create a physical item, so that it backfills the focused item.
+        // Create a physical item.
         var stampedTemplate = this.stamp(null);
         this._focusBackfillItem = stampedTemplate.root.querySelector('*');
-        Polymer.dom(this).appendChild(stampedTemplate.root);
+        this._itemsParent.appendChild(stampedTemplate.root);
       }
-      // get the physical index for the focused index
-      pidx = this._getPhysicalIndex(fidx);
-
-      if (pidx != null) {
-        // set the offcreen focused physical item
-        this._offscreenFocusedItem = this._physicalItems[pidx];
-        // backfill the focused physical item
-        this._physicalItems[pidx] = this._focusBackfillItem;
-        // hide the focused physical
-        this.translate3d(0, HIDDEN_Y, 0, this._offscreenFocusedItem);
-      }
+      // Set the offcreen focused physical item.
+      this._offscreenFocusedItem = this._physicalItems[pidx];
+      this._offscreenFocusedItem._templateInstance.tabIndex = 0;
+      this._physicalItems[pidx] = this._focusBackfillItem;
+      // Hide the focused physical.
+      this.translate3d(0, HIDDEN_Y, 0, this._offscreenFocusedItem);
     },
 
     _restoreFocusedItem: function() {
@@ -17388,19 +17521,20 @@ will only render 20.
       if (!this._offscreenFocusedItem || this._focusedIndex < 0) {
         return;
       }
-      // assign models to the focused index
+      // Assign models to the focused index.
       this._assignModels();
-      // get the new physical index for the focused index
+      // Get the new physical index for the focused index.
       pidx = this._getPhysicalIndex(fidx);
 
       if (pidx != null) {
-        // flip the focus backfill
+        // Flip the focus backfill.
         this._focusBackfillItem = this._physicalItems[pidx];
-        // restore the focused physical item
+        this._focusBackfillItem._templateInstance.tabIndex = -1;
+        // Restore the focused physical item.
         this._physicalItems[pidx] = this._offscreenFocusedItem;
-        // reset the offscreen focused item
+        // Reset the offscreen focused item.
         this._offscreenFocusedItem = null;
-        // hide the physical item that backfills
+        // Hide the physical item that backfills.
         this.translate3d(0, HIDDEN_Y, 0, this._focusBackfillItem);
       }
     },
@@ -17428,7 +17562,6 @@ will only render 20.
         fidx = targetModel[this.indexAs];
         this._focusedIndex = fidx;
         this._focusedItem = this._physicalItems[this._getPhysicalIndex(fidx)];
-
         if (hasOffscreenFocusedItem && !this._offscreenFocusedItem) {
           this._update();
         }
@@ -17518,6 +17651,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                   0  8px 10px -5px rgba(0, 0, 0, 0.4);
     };
 
+    --shadow-elevation-24dp: {
+      box-shadow: 0 24px 38px 3px rgba(0, 0, 0, 0.14),
+                  0 9px 46px 8px rgba(0, 0, 0, 0.12),
+                  0 11px 15px -7px rgba(0, 0, 0, 0.4);
+    };
   }
 
 </style>
@@ -17629,31 +17767,36 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     _setPosition: function(e) {
-      var parent = this._unwrapIfNeeded(this.parentElement);
-      if ((!e || e.target.contains && (e.target.contains(this) || e.target.contains(this.positionTarget))) && parent === document.body) {
-        var targetRect = this.positionTarget.getBoundingClientRect();
-        this._alignedAbove = this._shouldAlignAbove();
-
-        // overlay max height is restrained by the #scroller max height which is set to 65vh in CSS.
-        this.style.maxHeight = this._maxHeight(targetRect);
-
-        // we need to set height for iron-list to make its `firstVisibleIndex` work correctly.
-        this.$.selector.style.maxHeight = this._maxHeight(targetRect);
-
-        var overlayRect = this.getBoundingClientRect();
-        this._translateX = targetRect.left - overlayRect.left + (this._translateX || 0);
-        this._translateY = targetRect.top - overlayRect.top + (this._translateY || 0) +
-          this._verticalOffset(overlayRect, targetRect);
-
-        var _devicePixelRatio = window.devicePixelRatio || 1;
-        this._translateX = Math.round(this._translateX * _devicePixelRatio) / _devicePixelRatio;
-        this._translateY = Math.round(this._translateY * _devicePixelRatio) / _devicePixelRatio;
-        this.translate3d(this._translateX + 'px', this._translateY + 'px', '0');
-
-        this.style.width = this.positionTarget.clientWidth + 'px';
-
-        this.updateViewportBoundaries();
+      if (e && e.target) {
+        var target = e.target === document ? document.body : e.target;
+        var parent = this._unwrapIfNeeded(this.parentElement);
+        if (!(target.contains(this) || target.contains(this.positionTarget)) || parent !== document.body) {
+          return;
+        }
       }
+
+      var targetRect = this.positionTarget.getBoundingClientRect();
+      this._alignedAbove = this._shouldAlignAbove();
+
+      // overlay max height is restrained by the #scroller max height which is set to 65vh in CSS.
+      this.style.maxHeight = this._maxHeight(targetRect);
+
+      // we need to set height for iron-list to make its `firstVisibleIndex` work correctly.
+      this.$.selector.style.maxHeight = this._maxHeight(targetRect);
+
+      var overlayRect = this.getBoundingClientRect();
+      this._translateX = targetRect.left - overlayRect.left + (this._translateX || 0);
+      this._translateY = targetRect.top - overlayRect.top + (this._translateY || 0) +
+        this._verticalOffset(overlayRect, targetRect);
+
+      var _devicePixelRatio = window.devicePixelRatio || 1;
+      this._translateX = Math.round(this._translateX * _devicePixelRatio) / _devicePixelRatio;
+      this._translateY = Math.round(this._translateY * _devicePixelRatio) / _devicePixelRatio;
+      this.translate3d(this._translateX + 'px', this._translateY + 'px', '0');
+
+      this.style.width = this.positionTarget.clientWidth + 'px';
+
+      this.updateViewportBoundaries();
     },
 
     _shouldAlignAbove: function() {
@@ -17672,8 +17815,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronResizableBehavior,
     vaadin.elements.combobox.OverlayBehaviorImpl
   ];
-</script>
-<dom-module id="vaadin-combo-box-overlay" assetpath="../bower_components/vaadin-combo-box/">
+</script><dom-module id="vaadin-combo-box-overlay" assetpath="../bower_components/vaadin-combo-box/">
   <style>
     :host {
       position: absolute;
@@ -17729,7 +17871,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   </style>
 
   <template>
-    <div id="scroller" scroller="[[_getScroller()]]">
+    <div id="scroller" scroller="[[_getScroller()]]" on-tap="_stopPropagation">
       <iron-list id="selector" touch-device$="[[touchDevice]]" role="listbox" data-selection$="[[_ariaActiveIndex]]" on-touchend="_preventDefault" selected-item="{{_selectedItem}}" items="[[_items]]" selection-enabled="" scroll-target="[[_getScroller()]]">
         <template>
           <div class="item" id$="it[[index]]" selected$="[[selected]]" role$="[[_getAriaRole(index)]]" aria-selected$="[[_getAriaSelected(_focusedIndex,index)]]" focused$="[[_isItemFocused(_focusedIndex,index)]]">
@@ -17901,6 +18043,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this.$.selector.scrollToIndex(Math.max(0, targetIndex));
     },
 
+    ensureItemsRendered: function() {
+      this.$.selector.flushDebouncer('_debounceTemplate');
+      this.$.selector._render && this.$.selector._render();
+    },
+
     adjustScrollPosition: function() {
       if (this._items) {
         this._scrollIntoView(this._focusedIndex);
@@ -17987,6 +18134,10 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
     _preventDefault: function(e) {
       e.preventDefault();
+    },
+
+    _stopPropagation: function(e) {
+      e.stopPropagation();
     }
   });
 </script>
@@ -18046,11 +18197,7 @@ This program is available under Apache License Version 2.0, available at https:/
     </defs>
   </svg>
 </iron-iconset-svg>
-<!--
-@license
-Copyright (c) 2015 Vaadin Ltd.
-This program is available under Apache License Version 2.0, available at https://vaadin.com/license/
---><dom-module id="vaadin-combo-box" assetpath="../bower_components/vaadin-combo-box/">
+<dom-module id="vaadin-combo-box" assetpath="../bower_components/vaadin-combo-box/">
   <style include="vaadin-combo-box-shared-styles">
     :host {
        display: block;
@@ -18359,11 +18506,7 @@ This program is available under Apache License Version 2.0, available at https:/
         });
     </script>
 </dom-module>
-<!--
-@element ndb-cluster-selector
-@author kunalkundaje
--->
-<dom-module id="ndb-cluster-selector" assetpath="/">
+<dom-module id="ndb-cluster-selector" assetpath="./">
     <template>
         <style>
             :host {
@@ -18462,6 +18605,10 @@ This program is available under Apache License Version 2.0, available at https:/
         });
     </script>
 </dom-module>
+<!--
+@element ndb-driver-selector
+@author kunalkundaje
+-->
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -18767,6 +18914,82 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Buttons](https://www.google.com/design/spec/components/buttons.html)
+
+`paper-button` is a button. When the user touches the button, a ripple effect emanates
+from the point of contact. It may be flat or raised. A raised button is styled with a
+shadow.
+
+Example:
+
+    <paper-button>Flat button</paper-button>
+    <paper-button raised>Raised button</paper-button>
+    <paper-button noink>No ripple effect</paper-button>
+    <paper-button toggles>Toggle-able button</paper-button>
+
+A button that has `toggles` true will remain `active` after being clicked (and
+will have an `active` attribute set). For more information, see the `Polymer.IronButtonState`
+behavior.
+
+You may use custom DOM in the button body to create a variety of buttons. For example, to
+create a button with an icon and some text:
+
+    <paper-button>
+      <iron-icon icon="favorite"></iron-icon>
+      custom button content
+    </paper-button>
+
+To use `paper-button` as a link, wrap it in an anchor tag. Since `paper-button` will already
+receive focus, you may want to prevent the anchor tag from receiving focus as well by setting
+its tabindex to -1.
+
+    <a href="https://www.polymer-project.org/" tabindex="-1">
+      <paper-button raised>Polymer Project</paper-button>
+    </a>
+
+### Styling
+
+Style the button with CSS as you would a normal DOM element.
+
+    paper-button.fancy {
+      background: green;
+      color: yellow;
+    }
+
+    paper-button.fancy:hover {
+      background: lime;
+    }
+
+    paper-button[disabled],
+    paper-button[toggles][active] {
+      background: red;
+    }
+
+By default, the ripple is the same color as the foreground at 25% opacity. You may
+customize the color using the `--paper-button-ink-color` custom property.
+
+The following custom properties and mixins are also available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-button-ink-color` | Background color of the ripple | `Based on the button's color`
+`--paper-button` | Mixin applied to the button | `{}`
+`--paper-button-disabled` | Mixin applied to the disabled button. Note that you can also use the `paper-button[disabled]` selector | `{}`
+`--paper-button-flat-keyboard-focus` | Mixin applied to a flat button after it's been focused using the keyboard | `{}`
+`--paper-button-raised-keyboard-focus` | Mixin applied to a raised button after it's been focused using the keyboard | `{}`
+
+@demo demo/index.html
+-->
+
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 --><script>
   /** @polymerBehavior Polymer.PaperButtonBehavior */
   Polymer.PaperButtonBehaviorImpl = {
@@ -18849,8 +19072,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.PaperRippleBehavior,
     Polymer.PaperButtonBehaviorImpl
   ];
-</script>
-<!--
+</script><!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -18888,82 +19110,6 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
   </template>
 </dom-module>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Buttons](https://www.google.com/design/spec/components/buttons.html)
-
-`paper-button` is a button. When the user touches the button, a ripple effect emanates
-from the point of contact. It may be flat or raised. A raised button is styled with a
-shadow.
-
-Example:
-
-    <paper-button>Flat button</paper-button>
-    <paper-button raised>Raised button</paper-button>
-    <paper-button noink>No ripple effect</paper-button>
-    <paper-button toggles>Toggle-able button</paper-button>
-
-A button that has `toggles` true will remain `active` after being clicked (and
-will have an `active` attribute set). For more information, see the `Polymer.IronButtonState`
-behavior.
-
-You may use custom DOM in the button body to create a variety of buttons. For example, to
-create a button with an icon and some text:
-
-    <paper-button>
-      <iron-icon icon="favorite"></iron-icon>
-      custom button content
-    </paper-button>
-
-To use `paper-button` as a link, wrap it in an anchor tag. Since `paper-button` will already
-receive focus, you may want to prevent the anchor tag from receiving focus as well by setting
-its tabindex to -1.
-
-    <a href="https://www.polymer-project.org/" tabindex="-1">
-      <paper-button raised>Polymer Project</paper-button>
-    </a>
-
-### Styling
-
-Style the button with CSS as you would a normal DOM element.
-
-    paper-button.fancy {
-      background: green;
-      color: yellow;
-    }
-
-    paper-button.fancy:hover {
-      background: lime;
-    }
-
-    paper-button[disabled],
-    paper-button[toggles][active] {
-      background: red;
-    }
-
-By default, the ripple is the same color as the foreground at 25% opacity. You may
-customize the color using the `--paper-button-ink-color` custom property.
-
-The following custom properties and mixins are also available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-button-ink-color` | Background color of the ripple | `Based on the button's color`
-`--paper-button` | Mixin applied to the button | `{}`
-`--paper-button-disabled` | Mixin applied to the disabled button. Note that you can also use the `paper-button[disabled]` selector | `{}`
-`--paper-button-flat-keyboard-focus` | Mixin applied to a flat button after it's been focused using the keyboard | `{}`
-`--paper-button-raised-keyboard-focus` | Mixin applied to a raised button after it's been focused using the keyboard | `{}`
-
-@demo demo/index.html
--->
-
 <dom-module id="paper-button" assetpath="../bower_components/paper-button/">
   <template strip-whitespace="">
     <style include="paper-material-shared-styles">
@@ -19095,14 +19241,13 @@ Custom property | Description | Default
                 color: var(--ndb-gray);
             }
             p {
-                font-size: 14px;
                 font-weight: 300;
                 color: var(--ndb-gray);
                 margin-right: 1em;
             }
             table {
                 font-family: var(--ndb-monospace-font-face);
-                font-size: 13px;
+                font-size: 12px;
                 margin-right: var(--ndb-standard-space);
             }
             label {
@@ -19110,7 +19255,7 @@ Custom property | Description | Default
             }
             input[type=number] {
                 font-family: var(--ndb-monospace-font-face);
-                font-size: 13px;
+                font-size: 12px;
                 padding: 0.25em 0.5em;
                 width: 84px;
                 border: 1px solid var(--ndb-silver);
@@ -19365,11 +19510,7 @@ Custom property | Description | Default
         });
     </script>
 </dom-module>
-<!--
-@element ndb-driver-selector
-@author kunalkundaje
--->
-<dom-module id="ndb-driver-selector" assetpath="/">
+<dom-module id="ndb-driver-selector" assetpath="./">
     <template>
         <style>
             :host {
@@ -19658,6 +19799,69 @@ Custom property | Description | Default
     </script>
 </dom-module>
 <!--
+@element ndb-runner
+@author kunalkundaje
+-->
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+Material design: [Text fields](https://www.google.com/design/spec/components/text-fields.html)
+
+`<paper-input>` is a single-line text field with Material Design styling.
+
+    <paper-input label="Input label"></paper-input>
+
+It may include an optional error message or character counter.
+
+    <paper-input error-message="Invalid input!" label="Input label"></paper-input>
+    <paper-input char-counter label="Input label"></paper-input>
+
+It can also include custom prefix or suffix elements, which are displayed
+before or after the text input itself. In order for an element to be
+considered as a prefix, it must have the `prefix` attribute (and similarly
+for `suffix`).
+
+    <paper-input label="total">
+      <div prefix>$</div>
+      <paper-icon-button suffix icon="clear"></paper-icon-button>
+    </paper-input>
+
+A `paper-input` can use the native `type=search` or `type=file` features.
+However, since we can't control the native styling of the input (search icon,
+file button, date placeholder, etc.), in these cases the label will be
+automatically floated. The `placeholder` attribute can still be used for
+additional informational text.
+
+    <paper-input label="search!" type="search"
+        placeholder="search for cats" autosave="test" results="5">
+    </paper-input>
+
+See `Polymer.PaperInputBehavior` for more API docs.
+
+### Focus
+
+To focus a paper-input, you can call the native `focus()` method as long as the
+paper input has a tab index.
+
+### Styling
+
+See `Polymer.PaperInputContainer` for a list of custom properties used to
+style this element.
+
+
+@group Paper Elements
+@element paper-input
+@hero hero.svg
+@demo demo/index.html
+-->
+
+<!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
@@ -19906,7 +20110,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
       /**
        * The maximum (numeric or date-time) input value.
-       * Can be a String (e.g. `"2000-1-1"`) or a Number (e.g. `2`).
+       * Can be a String (e.g. `"2000-01-01"`) or a Number (e.g. `2`).
        * If you're using PaperInputBehavior to implement your own paper-input-like
        * element, bind this to the `<input is="iron-input">`'s `max` property.
        */
@@ -20211,7 +20415,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         }
       }
     }
-  }
+  };
 
   /** @polymerBehavior */
   Polymer.PaperInputBehavior = [
@@ -20219,7 +20423,32 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     Polymer.IronA11yKeysBehavior,
     Polymer.PaperInputBehaviorImpl
   ];
-</script>
+</script><!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+--><!--
+`<paper-input-char-counter>` is a character counter for use with `<paper-input-container>`. It
+shows the number of characters entered in the input and the max length if it is specified.
+
+    <paper-input-container>
+      <input is="iron-input" maxlength="20">
+      <paper-input-char-counter></paper-input-char-counter>
+    </paper-input-container>
+
+### Styling
+
+The following mixin is available for styling:
+
+Custom property | Description | Default
+----------------|-------------|----------
+`--paper-input-char-counter` | Mixin applied to the element | `{}`
+-->
+
 <!--
 @license
 Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
@@ -20262,34 +20491,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
   };
 
-</script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-`<paper-input-char-counter>` is a character counter for use with `<paper-input-container>`. It
-shows the number of characters entered in the input and the max length if it is specified.
-
-    <paper-input-container>
-      <input is="iron-input" maxlength="20">
-      <paper-input-char-counter></paper-input-char-counter>
-    </paper-input-container>
-
-### Styling
-
-The following mixin is available for styling:
-
-Custom property | Description | Default
-----------------|-------------|----------
-`--paper-input-char-counter` | Mixin applied to the element | `{}`
--->
-
-<dom-module id="paper-input-char-counter" assetpath="../bower_components/paper-input/">
+</script><dom-module id="paper-input-char-counter" assetpath="../bower_components/paper-input/">
   <template>
     <style>
       :host {
@@ -20443,65 +20645,6 @@ Custom property | Description | Default
     }
   });
 </script>
-<!--
-@license
-Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
-This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
-The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
-The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
-Code distributed by Google as part of the polymer project is also
-subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><!--
-Material design: [Text fields](https://www.google.com/design/spec/components/text-fields.html)
-
-`<paper-input>` is a single-line text field with Material Design styling.
-
-    <paper-input label="Input label"></paper-input>
-
-It may include an optional error message or character counter.
-
-    <paper-input error-message="Invalid input!" label="Input label"></paper-input>
-    <paper-input char-counter label="Input label"></paper-input>
-
-It can also include custom prefix or suffix elements, which are displayed
-before or after the text input itself. In order for an element to be
-considered as a prefix, it must have the `prefix` attribute (and similarly
-for `suffix`).
-
-    <paper-input label="total">
-      <div prefix>$</div>
-      <paper-icon-button suffix icon="clear"></paper-icon-button>
-    </paper-input>
-
-A `paper-input` can use the native `type=search` or `type=file` features.
-However, since we can't control the native styling of the input (search icon,
-file button, date placeholder, etc.), in these cases the label will be
-automatically floated. The `placeholder` attribute can still be used for
-additional informational text.
-
-    <paper-input label="search!" type="search"
-        placeholder="search for cats" autosave="test" results="5">
-    </paper-input>
-
-See `Polymer.PaperInputBehavior` for more API docs.
-
-### Focus
-
-To focus a paper-input, you can call the native `focus()` method as long as the
-paper input has a tab index.
-
-### Styling
-
-See `Polymer.PaperInputContainer` for a list of custom properties used to
-style this element.
-
-
-@group Paper Elements
-@element paper-input
-@hero hero.svg
-@demo demo/index.html
--->
-
 <dom-module id="paper-input" assetpath="../bower_components/paper-input/">
   <template>
     <style>
@@ -20570,6 +20713,10 @@ style this element.
     ]
   });
 </script>
+<!--
+@element ndb-instances
+@author kunalkundaje
+-->
 <iron-iconset-svg name="av" size="24">
 <svg><defs>
 <g id="add-to-queue"><path d="M21 3H3c-1.11 0-2 .89-2 2v12c0 1.1.89 2 2 2h5v2h8v-2h5c1.1 0 1.99-.9 1.99-2L23 5c0-1.11-.9-2-2-2zm0 14H3V5h18v12zm-5-7v2h-3v3h-2v-3H8v-2h3V7h2v3h3z"></path></g>
@@ -20647,10 +20794,6 @@ style this element.
 <g id="web-asset"><path d="M19 4H5c-1.11 0-2 .9-2 2v12c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.89-2-2-2zm0 14H5V8h14v10z"></path></g>
 </defs></svg>
 </iron-iconset-svg>
-<!--
-@element ndb-instances
-@author kunalkundaje
--->
 <dom-module id="ndb-instances" assetpath="/">
     <template>
         <style>
@@ -20930,11 +21073,7 @@ style this element.
         });
     </script>
 </dom-module>
-<!--
-@element ndb-runner
-@author kunalkundaje
--->
-<dom-module id="ndb-runner" assetpath="/">
+<dom-module id="ndb-runner" assetpath="./">
     <template>
         <style>
             :host {
@@ -21139,7 +21278,7 @@ style this element.
 @element ndb-stats
 @author kunalkundaje
 -->
-<dom-module id="ndb-stats" assetpath="/">
+<dom-module id="ndb-stats" assetpath="./">
     <template>
         <style>
             :host {
@@ -21152,7 +21291,7 @@ style this element.
 
             pre {
                 font-family: var(--ndb-monospace-font-face);
-                font-size: 13px;
+                font-size: 12px;
                 margin-top: var(--ndb-standard-space);
                 padding: 0.5em 1em 1em 1em;
                 border: 1px solid var(--ndb-silver);
@@ -21399,9 +21538,13 @@ p.appendChild(r),this.xlabels_.push(r)}}h.strokeStyle=i.getOptionForAxis("axisLi
 
             paper-toolbar {
                 --paper-toolbar-background: var(--ndb-gray);
+                --paper-toolbar-height: 50px;
+                --paper-toolbar-title: {
+                    font-weight: 500;
+                }
             }
             paper-toolbar > paper-icon-button {
-                margin-right: 1em;
+                margin-right: 0.5em;
             }
 
             .content {
@@ -21411,7 +21554,7 @@ p.appendChild(r),this.xlabels_.push(r)}}h.strokeStyle=i.getOptionForAxis("axisLi
             }
             .col-left {
                 min-width: 700px;
-                flex: 1 1 auto;
+                flex: 1;
                 margin-right: var(--ndb-standard-space);
             }
             .col-right {
