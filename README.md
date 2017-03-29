@@ -7,7 +7,7 @@
 
 **Netflix Data Benchmark (NDBench)** is a pluggable cloud-enabled benchmarking tool that can be used across any data store system. NDBench provides plugin support for several data stores and can be extended to other client APIs.
 
-<center>![NDBench logo](img/ndbench-blend-type.png?raw=true =300x300)</center>
+![NDBench logo](img/ndbench-blend-type.png)
 
 
 ## Client APIs
