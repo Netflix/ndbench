@@ -17,6 +17,7 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ColumnListMutation;
 import com.netflix.astyanax.Keyspace;
@@ -72,7 +73,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
+    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
 
