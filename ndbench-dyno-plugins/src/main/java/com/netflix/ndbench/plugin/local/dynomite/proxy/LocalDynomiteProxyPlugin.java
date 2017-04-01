@@ -55,7 +55,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
 
 
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
         if (jedisClient.get() != null) {
             return;

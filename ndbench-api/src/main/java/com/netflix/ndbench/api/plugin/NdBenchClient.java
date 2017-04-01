@@ -28,7 +28,7 @@ import com.netflix.archaius.api.PropertyFactory;
 	 * Initialize the client
 	 * @throws Exception
 	 */
-	 void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception;
+	 void init(DataGenerator dataGenerator) throws Exception;
 	
 	/**
 	 * Perform a single read operation

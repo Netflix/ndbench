@@ -50,7 +50,7 @@ public class DynoJedis implements NdBenchClient {
     private final AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<DynoJedisClient>(null);
 
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
         if (jedisClient.get() != null) {
             return;

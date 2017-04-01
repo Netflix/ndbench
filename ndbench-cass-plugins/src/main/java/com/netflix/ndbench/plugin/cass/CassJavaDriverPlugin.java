@@ -17,6 +17,7 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.*;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
@@ -52,14 +53,18 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
-
+    @Inject
+    public CassJavaDriverPlugin(PropertyFactory propertyFactory)
+    {
+        this.propertyFactory = propertyFactory;
+    }
     /**
      * Initialize the client
      *
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
         this.propertyFactory = propertyFactory;
 

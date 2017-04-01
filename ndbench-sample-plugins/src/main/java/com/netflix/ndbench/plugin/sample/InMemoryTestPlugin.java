@@ -50,7 +50,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
     this.dataGenerator = dataGenerator;
         Logger.info("Initialized InMemoryTestPlugin");
     }

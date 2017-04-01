@@ -73,7 +73,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
         cluster = Cluster.builder()

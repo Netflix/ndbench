@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 @NdBenchClientPlugin("CassAstyanaxPlugin")
 public class CassAstyanaxPlugin implements NdBenchClient{
     private static final Logger Logger = LoggerFactory.getLogger(CassAstyanaxPlugin.class);
+    private final PropertyFactory propertyFactory;
 
     private AstyanaxContext<Keyspace> context;
     private Keyspace keyspace;
@@ -66,6 +67,9 @@ public class CassAstyanaxPlugin implements NdBenchClient{
     private final String CacheMiss = null;
     private final int MaxColCount = 5;
 
+    public CassAstyanaxPlugin(PropertyFactory propertyFactory) {
+        this.propertyFactory = propertyFactory;
+    }
 
     /**
      * Initialize the client
@@ -73,7 +77,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
 
         ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
         ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();

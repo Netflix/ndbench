@@ -58,7 +58,7 @@ public class EsPlugin implements NdBenchClient {
 
 
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
         logger.info("Initializing ElasticSearch Plugin...");
 
