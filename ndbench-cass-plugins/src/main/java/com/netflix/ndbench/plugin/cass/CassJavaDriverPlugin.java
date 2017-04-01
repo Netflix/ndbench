@@ -17,7 +17,9 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.*;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
@@ -34,13 +36,14 @@ import java.util.List;
 @NdBenchClientPlugin("CassJavaDriverPlugin")
 public class CassJavaDriverPlugin implements NdBenchClient{
     private static final Logger Logger = LoggerFactory.getLogger(CassJavaDriverPlugin.class);
+    private final PropertyFactory propertyFactory;
 
     private Cluster cluster;
     private Session session;
 
     private DataGenerator dataGenerator;
 
-    private String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1", KeyspaceName ="dev1", TableName ="emp";
+    private String ClusterName , ClusterContactPoint , KeyspaceName , TableName ;
     private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
     private PreparedStatement readPstmt;
@@ -49,7 +52,11 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
-
+    @Inject
+    public CassJavaDriverPlugin(PropertyFactory propertyFactory)
+    {
+        this.propertyFactory = propertyFactory;
+    }
     /**
      * Initialize the client
      *
@@ -57,6 +64,12 @@ public class CassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
+
+        ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
+        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
+        KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
+        TableName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp").get();
+
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
         cluster = Cluster.builder()

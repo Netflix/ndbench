@@ -80,7 +80,6 @@ public class NdBenchDriver {
     private NdBenchDriver(IConfiguration config, NdBenchMonitor ndBenchMonitor, DataGenerator dataGenerator) {
         this.config = config;
 
-
         this.ndBenchMonitor = ndBenchMonitor;
         this.readLimiter = new AtomicReference<>();
         this.writeLimiter = new AtomicReference<>();
