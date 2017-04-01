@@ -17,6 +17,8 @@
 
 package com.netflix.ndbench.api.plugin;
 
+import com.netflix.archaius.api.PropertyFactory;
+
 /**
  * @author vchella
  */
@@ -26,7 +28,7 @@ package com.netflix.ndbench.api.plugin;
 	 * Initialize the client
 	 * @throws Exception
 	 */
-	 void init(DataGenerator dataGenerator) throws Exception;
+	 void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception;
 	
 	/**
 	 * Perform a single read operation

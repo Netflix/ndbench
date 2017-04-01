@@ -51,12 +51,13 @@ public class DefaultDataGenerator implements DataGenerator {
     @Inject
     public DefaultDataGenerator(IConfiguration config) {
         this.config = config;
+        StaticValue = getRandomString();
+
         if (config.isUseVariableDataSize()) {
             initialize(config.getDataSizeLowerBound(), config.getDataSizeUpperBound());
         } else {
             initialize();
         }
-        StaticValue = getRandomString();
     }
 
     @Override

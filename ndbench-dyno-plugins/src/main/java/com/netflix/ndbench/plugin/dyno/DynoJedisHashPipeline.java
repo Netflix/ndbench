@@ -16,6 +16,7 @@
 package com.netflix.ndbench.plugin.dyno;
 
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
 import com.netflix.dyno.jedis.DynoJedisClient;
@@ -52,7 +53,7 @@ public class DynoJedisHashPipeline implements NdBenchClient {
     private DataGenerator dataGenerator;
 
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
+    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
         this.dataGenerator = dataGenerator;
         if (jedisClient.get() != null) {
             return;

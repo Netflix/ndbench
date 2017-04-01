@@ -20,6 +20,7 @@ package com.netflix.ndbench.core;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.core.config.IConfiguration;
@@ -73,13 +74,15 @@ public class NdBenchDriver {
     private final IConfiguration config;
     private final NdBenchMonitor ndBenchMonitor;
     private final DataGenerator dataGenerator;
+    private final PropertyFactory propertyFactory;
 
 
 
     @Inject
-    private NdBenchDriver(IConfiguration config, NdBenchMonitor ndBenchMonitor, DataGenerator dataGenerator) {
+    private NdBenchDriver(IConfiguration config, NdBenchMonitor ndBenchMonitor, DataGenerator dataGenerator, PropertyFactory propertyFactory) {
         this.config = config;
 
+        this.propertyFactory = propertyFactory;
 
         this.ndBenchMonitor = ndBenchMonitor;
         this.readLimiter = new AtomicReference<>();
@@ -316,7 +319,7 @@ public class NdBenchDriver {
         if (!clientInited.get()) {
             try {
                 if (clientInited.compareAndSet(false, true)) {
-                    client.init(this.dataGenerator); // Exceptions from init method will be caught and clientInited will be reset
+                    client.init(this.dataGenerator, this.propertyFactory); // Exceptions from init method will be caught and clientInited will be reset
                     clientRef.set(client);
                 }
             } catch (Exception e) {

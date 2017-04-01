@@ -18,6 +18,7 @@ package com.netflix.ndbench.plugin.elassandra;
 import java.util.Arrays;
 import java.util.List;
 
+import com.netflix.archaius.api.PropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,7 +73,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
+    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
         cluster = Cluster.builder()

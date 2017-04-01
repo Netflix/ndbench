@@ -18,6 +18,7 @@ package com.netflix.ndbench.plugin.sample;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
@@ -49,7 +50,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
+    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
     this.dataGenerator = dataGenerator;
         Logger.info("Initialized InMemoryTestPlugin");
     }
