@@ -54,14 +54,14 @@ public class CassAstyanaxPlugin implements NdBenchClient{
 
     private DataGenerator dataGenerator;
 
-    private String ClusterName, ClusterContactPoint, KeyspaceName, ColumnFamilyName;
-
+    private String ClusterName, ClusterContactPoint ,
+            KeyspaceName, ColumnFamilyName;
 
     private final ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE,
             ReadConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
 
 
-    private ColumnFamily<String, Integer> CF;
+    private  ColumnFamily<String, Integer> CF;
 
 
     private final String ResultOK = "Ok";
@@ -79,6 +79,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      */
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
+
 
         ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
         ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();

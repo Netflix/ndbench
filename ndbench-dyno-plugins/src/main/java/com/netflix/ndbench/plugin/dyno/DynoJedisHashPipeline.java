@@ -16,7 +16,6 @@
 package com.netflix.ndbench.plugin.dyno;
 
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
 import com.netflix.dyno.jedis.DynoJedisClient;
