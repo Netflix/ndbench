@@ -18,7 +18,6 @@ package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.*;
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
@@ -40,10 +39,8 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     private Session session;
 
     private DataGenerator dataGenerator;
-    private PropertyFactory propertyFactory;
 
-    private String ClusterName, ClusterContactPoint, KeyspaceName, TableName;
-
+    private String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1", KeyspaceName ="dev1", TableName ="emp";
     private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
     private PreparedStatement readPstmt;
@@ -59,23 +56,14 @@ public class CassJavaDriverPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
-        this.dataGenerator = dataGenerator;
-        this.propertyFactory = propertyFactory;
-
-        ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
-        TableName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp").get();
-
+    public void init(DataGenerator dataGenerator) throws Exception {
         Logger.info("Cassandra  Cluster: " + ClusterName);
-
+        this.dataGenerator = dataGenerator;
         cluster = Cluster.builder()
                 .withClusterName(ClusterName)
                 .addContactPoint(ClusterContactPoint)
                 .build();
         session = cluster.connect();
-
 
         upsertKeyspace(this.session);
         upsertCF(this.session);

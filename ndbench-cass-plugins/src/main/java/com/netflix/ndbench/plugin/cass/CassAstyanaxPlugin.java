@@ -17,7 +17,6 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ColumnListMutation;
 import com.netflix.astyanax.Keyspace;
@@ -52,14 +51,14 @@ public class CassAstyanaxPlugin implements NdBenchClient{
 
     private DataGenerator dataGenerator;
 
-    private String ClusterName, ClusterContactPoint, KeyspaceName, ColumnFamilyName;
-
+    private final String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1",
+            KeyspaceName ="dev1", ColumnFamilyName ="emp_thrift";
 
     private final ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE,
             ReadConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
 
 
-    private ColumnFamily<String, Integer> CF;
+    private final ColumnFamily<String, Integer> CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
 
 
     private final String ResultOK = "Ok";
@@ -73,16 +72,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
-
-        ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
-        ColumnFamilyName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp_thrift").get();
-
-        //ColumnFamily Definition
-        CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
-
+    public void init(DataGenerator dataGenerator) throws Exception {
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
 

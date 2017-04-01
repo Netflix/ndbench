@@ -17,7 +17,6 @@
 package com.netflix.ndbench.plugin.es;
 
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
@@ -58,7 +57,7 @@ public class EsPlugin implements NdBenchClient {
 
 
     @Override
-    public void init(DataGenerator dataGenerator, PropertyFactory propertyFactory) throws Exception {
+    public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
         logger.info("Initializing ElasticSearch Plugin...");
 
