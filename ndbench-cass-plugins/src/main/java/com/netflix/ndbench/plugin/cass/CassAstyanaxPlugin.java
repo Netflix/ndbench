@@ -16,6 +16,7 @@
  */
 package com.netflix.ndbench.plugin.cass;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.astyanax.AstyanaxContext;
@@ -66,7 +67,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
     private final String ResultOK = "Ok";
     private final String CacheMiss = null;
     private final int MaxColCount = 5;
-
+    @Inject
     public CassAstyanaxPlugin(PropertyFactory propertyFactory) {
         this.propertyFactory = propertyFactory;
     }
