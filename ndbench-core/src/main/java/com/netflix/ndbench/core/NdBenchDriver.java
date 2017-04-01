@@ -20,7 +20,6 @@ package com.netflix.ndbench.core;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.core.config.IConfiguration;
@@ -80,6 +79,7 @@ public class NdBenchDriver {
     @Inject
     private NdBenchDriver(IConfiguration config, NdBenchMonitor ndBenchMonitor, DataGenerator dataGenerator) {
         this.config = config;
+
         this.ndBenchMonitor = ndBenchMonitor;
         this.readLimiter = new AtomicReference<>();
         this.writeLimiter = new AtomicReference<>();

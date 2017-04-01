@@ -17,7 +17,6 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ColumnListMutation;
 import com.netflix.astyanax.Keyspace;
@@ -53,14 +52,14 @@ public class CassAstyanaxPlugin implements NdBenchClient{
 
     private DataGenerator dataGenerator;
 
-    private String ClusterName, ClusterContactPoint, KeyspaceName, ColumnFamilyName;
-
+    private final String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1",
+            KeyspaceName ="dev1", ColumnFamilyName ="emp_thrift";
 
     private final ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE,
             ReadConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
 
 
-    private ColumnFamily<String, Integer> CF;
+    private final ColumnFamily<String, Integer> CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
 
 
     private final String ResultOK = "Ok";

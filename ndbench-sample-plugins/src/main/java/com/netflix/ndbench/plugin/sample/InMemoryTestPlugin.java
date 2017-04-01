@@ -18,7 +18,6 @@ package com.netflix.ndbench.plugin.sample;
 
 import com.google.common.collect.Maps;
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;

@@ -17,8 +17,6 @@
 
 package com.netflix.ndbench.api.plugin;
 
-import com.netflix.archaius.api.PropertyFactory;
-
 /**
  * @author vchella
  */
