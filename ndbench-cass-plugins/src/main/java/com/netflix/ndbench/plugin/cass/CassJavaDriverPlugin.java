@@ -17,12 +17,15 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.*;
+import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.Row;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,6 +72,12 @@ public class CassJavaDriverPlugin implements NdBenchClient{
         ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
         KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
         TableName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp").get();
+
+
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(com.netflix.astyanax.model.ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(com.netflix.astyanax.model.ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
+
+
 
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
