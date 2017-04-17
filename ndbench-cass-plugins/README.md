@@ -45,3 +45,5 @@ Every config has to be prefixed with configuration prefix mentioned above
 |cass.cluster| 	localhost | Destination C* Cluster Name |
 \|cass.cfname| 	empl | Destination CF Name|
 
+> **Note:**
+Definitions of C* keyspaces and tables used in these plugins are available @ setupCassTables.cql
