@@ -74,8 +74,8 @@ public class CassJavaDriverPlugin implements NdBenchClient{
         TableName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp").get();
 
 
-        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(com.netflix.astyanax.model.ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
-        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(com.netflix.astyanax.model.ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
 
 
 

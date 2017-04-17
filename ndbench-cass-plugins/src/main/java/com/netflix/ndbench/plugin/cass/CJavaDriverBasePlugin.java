@@ -52,7 +52,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
         this.dataGenerator = dataGenerator;
 
         ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
+        ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.host").asString("127.0.0.1").get();
         KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.keyspace").asString("dev1").get();
         TableName =propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname").asString("emp").get();
 
@@ -61,7 +61,10 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
        MaxColCount  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.colsPerRow").asLong(100L).get();
 
-        initDriver();
+       preInit();
+       initDriver();
+       postInit();
+       prepStatements(this.session);
     }
 
 
@@ -90,15 +93,12 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
         upsertKeyspace(this.session);
         upsertCF(this.session);
-
-        prepStatements(this.session);
-        postInit();
-
     }
 
    abstract void prepStatements(Session session);
    abstract void upsertKeyspace(Session session);
    abstract void upsertCF(Session session);
+   abstract void preInit();
    abstract void postInit();
 
    protected void upsertGenereicKeyspace()

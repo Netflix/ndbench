@@ -17,8 +17,8 @@ import java.util.Random;
  * @author vchella
  */
 @Singleton
-@NdBenchClientPlugin("CassBatch")
-public class CassBatch extends CJavaDriverBasePlugin {
+@NdBenchClientPlugin("CassJavaDriverBatch")
+public class CassJavaDriverBatch extends CJavaDriverBasePlugin {
 
     //Settings
     private static String TableName2;
@@ -31,7 +31,7 @@ public class CassBatch extends CJavaDriverBasePlugin {
     protected PreparedStatement writePstmt2;
 
     @Inject
-    public CassBatch(PropertyFactory propertyFactory, CassJavaDriverManager javaDriverManager) {
+    public CassJavaDriverBatch(PropertyFactory propertyFactory, CassJavaDriverManager javaDriverManager) {
         super(propertyFactory, javaDriverManager);
     }
 
@@ -58,11 +58,16 @@ public class CassBatch extends CJavaDriverBasePlugin {
     }
 
     @Override
-    void postInit() {
-      TableName2  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname2").asString("test2").get();
-      batchSize = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.batchSize").asInteger(3).get();
-      useTimeStamp = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.useTimestamp").asBoolean(true).get();
+    void preInit() {
+        TableName2  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname2").asString("test2").get();
+        batchSize = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.batchSize").asInteger(3).get();
+        useTimeStamp = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.useTimestamp").asBoolean(true).get();
         useMultiPartition = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.useMultiPartition").asBoolean(false).get();
+    }
+
+    @Override
+    void postInit() {
+
     }
 
     @Override

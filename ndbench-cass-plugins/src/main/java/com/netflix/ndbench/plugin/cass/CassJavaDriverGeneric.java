@@ -77,6 +77,11 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
     }
 
     @Override
+    void preInit() {
+
+    }
+
+    @Override
     void postInit() {
 
     }
@@ -87,6 +92,5 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
         writePstmt = session.prepare("INSERT INTO "+TableName+" (key, column1 , value ) VALUES (?, ?, ? )");
         readPstmt = session.prepare("Select * From "+TableName+" Where key = ?");
     }
-
 
 }
