@@ -46,4 +46,4 @@ Every config has to be prefixed with configuration prefix mentioned above
 \|cass.cfname| 	empl | Destination CF Name|
 
 > **Note:**
-Definitions of C* keyspaces and tables used in these plugins are available @ setupCassTables.cql
+Definitions of C* keyspaces and tables used in these plugins are available @ setupCassTables.cql (https://github.com/Netflix/ndbench/blob/master/ndbench-cass-plugins/src/main/resources/setupCassTables.cql)
