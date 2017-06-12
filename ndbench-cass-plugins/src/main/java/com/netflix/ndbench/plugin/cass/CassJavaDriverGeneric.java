@@ -52,15 +52,15 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
 
     @Override
     public String writeSingle(String key) throws Exception {
-        BatchStatement batch = new BatchStatement();
+        BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
         for (int i = 0; i < this.MaxColCount; i++) {
             BoundStatement bStmt = writePstmt.bind();
             bStmt.setString("key", key);
             bStmt.setInt("column1", i);
             bStmt.setString("value", this.dataGenerator.getRandomValue());
-            bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
             batch.add(bStmt);
         }
+	batch.setConsistencyLevel(this.WriteConsistencyLevel);
         session.execute(batch);
         batch.clear();
         return ResultOK;
