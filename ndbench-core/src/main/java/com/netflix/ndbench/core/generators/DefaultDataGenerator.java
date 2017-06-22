@@ -18,6 +18,7 @@ package com.netflix.ndbench.core.generators;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.core.config.IConfiguration;
 import org.apache.commons.lang.RandomStringUtils;
@@ -51,12 +52,13 @@ public class DefaultDataGenerator implements DataGenerator {
     @Inject
     public DefaultDataGenerator(IConfiguration config) {
         this.config = config;
+        StaticValue = getRandomString();
+
         if (config.isUseVariableDataSize()) {
             initialize(config.getDataSizeLowerBound(), config.getDataSizeUpperBound());
         } else {
             initialize();
         }
-        StaticValue = getRandomString();
     }
 
     @Override

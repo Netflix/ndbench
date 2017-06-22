@@ -1,0 +1,5 @@
+---
+applications:
+- name: ndbench
+  path: ndbench-web/build/libs/ndbench-web-0.1.0-SNAPSHOT.war
+  health-check-type: none

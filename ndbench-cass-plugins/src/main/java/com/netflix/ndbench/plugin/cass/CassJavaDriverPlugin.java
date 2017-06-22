@@ -17,10 +17,15 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.*;
+import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.Row;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,13 +39,14 @@ import java.util.List;
 @NdBenchClientPlugin("CassJavaDriverPlugin")
 public class CassJavaDriverPlugin implements NdBenchClient{
     private static final Logger Logger = LoggerFactory.getLogger(CassJavaDriverPlugin.class);
+    private final PropertyFactory propertyFactory;
 
     private Cluster cluster;
     private Session session;
 
     private DataGenerator dataGenerator;
 
-    private String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1", KeyspaceName ="dev1", TableName ="emp";
+    private String ClusterName , ClusterContactPoint , KeyspaceName , TableName ;
     private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
     private PreparedStatement readPstmt;
@@ -49,7 +55,11 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
-
+    @Inject
+    public CassJavaDriverPlugin(PropertyFactory propertyFactory)
+    {
+        this.propertyFactory = propertyFactory;
+    }
     /**
      * Initialize the client
      *
@@ -57,6 +67,18 @@ public class CassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
+
+        ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
+        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
+        KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
+        TableName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp").get();
+
+
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+
+
+
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
         cluster = Cluster.builder()

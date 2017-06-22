@@ -16,6 +16,7 @@
 * Dynomite with Redis
 * Elasticsearch
 * Elassandra
+* Geode
 
 ## Features
    * Dynamically change the benchmark configurations while the test is running, hence perform tests along with our production microservices.
@@ -24,6 +25,7 @@
    * Provide pluggable patterns and loads.
    * Support different client APIs.
    * Deploy, manage and monitor multiple instances from a single entry point.
+   * Support multiple cloud platform due to integration with Cloud Foundry
 
 Details about the features can be found in the [Wiki](https://github.com/Netflix/ndbench/wiki)
 
@@ -50,6 +52,11 @@ The first step before building ndbench is to configure the interfaces related to
 1. Build ndbench
 2. Set up Auto-Scale Group (ASG) and spin up instances
 3. Deploy `ndbench-web.war` in your container
+
+#### Deploy to Cloud Foundry
+
+1. Update NdBenchGuiceModule.java to use the CfClusterDiscovery.java class and comment the LocalClusterDiscovery.
+1. Build and upload ndBench war to Cloud Foundry using `cf push`
 
 ## Run
 	    ./gradlew appRun

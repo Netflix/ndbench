@@ -1,0 +1,7 @@
+dependencies {
+    // We have dependency on the main project.
+    compile project(':ndbench-api')
+
+    compile 'org.springframework.data:spring-data-geode:1.0.0.INCUBATING-RELEASE'
+
+}

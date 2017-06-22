@@ -16,7 +16,9 @@
  */
 package com.netflix.ndbench.plugin.cass;
 
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ColumnListMutation;
 import com.netflix.astyanax.Keyspace;
@@ -34,6 +36,7 @@ import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,26 +48,30 @@ import org.slf4j.LoggerFactory;
 @NdBenchClientPlugin("CassAstyanaxPlugin")
 public class CassAstyanaxPlugin implements NdBenchClient{
     private static final Logger Logger = LoggerFactory.getLogger(CassAstyanaxPlugin.class);
+    private final PropertyFactory propertyFactory;
 
     private AstyanaxContext<Keyspace> context;
     private Keyspace keyspace;
 
     private DataGenerator dataGenerator;
 
-    private final String ClusterName = "Localhost", ClusterContactPoint ="127.0.0.1",
-            KeyspaceName ="dev1", ColumnFamilyName ="emp_thrift";
+    private String ClusterName, ClusterContactPoint ,
+            KeyspaceName, ColumnFamilyName;
 
-    private final ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE,
-            ReadConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
+    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
+    private ConsistencyLevel ReadConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
 
 
-    private final ColumnFamily<String, Integer> CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
+    private  ColumnFamily<String, Integer> CF;
 
 
     private final String ResultOK = "Ok";
     private final String CacheMiss = null;
-    private final int MaxColCount = 5;
-
+    private int MaxColCount = 5;
+    @Inject
+    public CassAstyanaxPlugin(PropertyFactory propertyFactory) {
+        this.propertyFactory = propertyFactory;
+    }
 
     /**
      * Initialize the client
@@ -73,6 +80,24 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      */
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
+
+
+        ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
+        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
+        KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
+        ColumnFamilyName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp_thrift").get();
+
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
+
+        MaxColCount = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.colsPerRow")
+                .asInteger(100).get();
+
+
+
+        //ColumnFamily Definition
+        CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
+
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
 

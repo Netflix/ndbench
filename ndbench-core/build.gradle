@@ -6,13 +6,12 @@ dependencies {
     compile 'com.sun.jersey:jersey-bundle:1.19.1'
     compile 'com.sun.jersey.contribs:jersey-multipart:1.19.1'
     compile 'com.sun.jersey.contribs:jersey-guice:1.19.1'
-    
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.8.9'
 
     // For getting all implementations of an Interface
     compile group: 'org.reflections', name: 'reflections', version: '0.9.10'
 
     // Archaius-2
-    compile group: 'com.netflix.archaius', name: 'archaius2-core', version: '2.1.11'
     compile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
 
     compile  project(':ndbench-api')
