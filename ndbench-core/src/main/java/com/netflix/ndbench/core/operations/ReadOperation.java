@@ -17,11 +17,14 @@
 
 package com.netflix.ndbench.core.operations;
 
+import com.google.common.util.concurrent.RateLimiter;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.NdBenchDriver;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author vchella
@@ -36,7 +39,10 @@ public class ReadOperation implements NdBenchDriver.NdBenchOperation {
     }
 
     @Override
-    public boolean process(NdBenchMonitor monitor,  String key) {
+    public boolean process(NdBenchMonitor monitor,
+                           String key,
+                           AtomicReference<RateLimiter> ignoredForNow,
+                           boolean isAutoTuneEnabled) {
         try {
             Long startTime = System.nanoTime();
             String value = client.readSingle(key);
