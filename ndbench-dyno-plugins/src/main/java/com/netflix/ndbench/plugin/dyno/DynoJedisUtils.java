@@ -15,21 +15,15 @@
  */
 package com.netflix.ndbench.plugin.dyno;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.dyno.jedis.DynoJedisPipeline;
 import com.netflix.ndbench.api.plugin.DataGenerator;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Response;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class DynoJedisUtils {
     // private final AtomicReference<DynoJedisClient> jedisClient = new

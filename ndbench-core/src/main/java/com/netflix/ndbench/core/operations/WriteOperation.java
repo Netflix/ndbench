@@ -17,30 +17,45 @@
 
 package com.netflix.ndbench.core.operations;
 
-import com.netflix.ndbench.api.plugin.NdBenchClient;
+import com.google.common.util.concurrent.RateLimiter;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.NdBenchDriver;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author vchella
  */
-public class WriteOperation implements NdBenchDriver.NdBenchOperation {
+public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
     private static final Logger Logger = LoggerFactory.getLogger(WriteOperation.class);
 
-    private final NdBenchClient client;
+    private final NdBenchAbstractClient<W> client;
 
-    public WriteOperation(NdBenchClient pClient) {
+    public WriteOperation(NdBenchAbstractClient<W> pClient) {
         client = pClient;
     }
 
     @Override
-    public boolean process(NdBenchMonitor stats, String key) {
+    public boolean process(NdBenchMonitor stats,
+                           String key,
+                           AtomicReference<RateLimiter> rateLimiter,
+                           boolean isAutoTuneEnabled) {
         try {
             Long startTime = System.nanoTime();
-            client.writeSingle(key);
+            W result = client.writeSingle(key);
             stats.recordWriteLatency((System.nanoTime() - startTime)/1000);
+
+            if (isAutoTuneEnabled) {
+                Double newRateLimit;
+                if ((newRateLimit = client.autoTuneWriteRateLimit(rateLimiter.get().getRate(), result, stats)) > 0) {
+                    Logger.info("updating write rate limit to {}", newRateLimit);  // i can get rid of this later.. TODO
+                    rateLimiter.set(RateLimiter.create(newRateLimit));
+                }
+            }
+
             stats.incWriteSuccess();
             return true;
         } catch (Exception e) {

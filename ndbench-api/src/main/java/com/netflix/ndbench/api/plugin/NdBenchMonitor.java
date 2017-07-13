@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.core.monitoring;
+package com.netflix.ndbench.api.plugin;
 
 /**
  * Monitoring interface to receive notification of NdBench events. A concrete

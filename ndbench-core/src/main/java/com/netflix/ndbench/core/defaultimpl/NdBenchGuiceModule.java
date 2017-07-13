@@ -19,16 +19,17 @@ package com.netflix.ndbench.core.defaultimpl;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.config.NdbenchConfigListener;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import com.netflix.ndbench.core.discovery.LocalClusterDiscovery;
 import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.core.monitoring.FakeMonitor;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
+
+//import com.netflix.ndbench.core.config.NdBenchConfiguration;
 
 //import com.netflix.ndbench.core.config.NdBenchConfiguration;
 
