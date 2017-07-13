@@ -19,13 +19,13 @@ package com.netflix.ndbench.core.resources;
 
 import com.google.inject.Inject;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.DataBackfill;
 import com.netflix.ndbench.core.NdBenchClientFactory;
 import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.generators.KeyGenerator;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 import com.netflix.ndbench.core.util.LoadPattern;
 import com.sun.jersey.multipart.FormDataParam;
 import groovy.lang.GroovyClassLoader;

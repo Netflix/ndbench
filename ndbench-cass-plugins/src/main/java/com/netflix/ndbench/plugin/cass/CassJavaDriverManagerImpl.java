@@ -5,7 +5,6 @@ package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.Session;
-import com.netflix.ndbench.plugin.cass.CassJavaDriverManager;
 
 /**
  * @author vchella

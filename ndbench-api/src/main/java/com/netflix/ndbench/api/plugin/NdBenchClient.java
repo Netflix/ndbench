@@ -20,7 +20,7 @@ package com.netflix.ndbench.api.plugin;
 /**
  * @author vchella
  */
- public interface NdBenchClient {
+ public interface NdBenchClient extends NdBenchAbstractClient<String> {
 
 	/**
 	 * Initialize the client
