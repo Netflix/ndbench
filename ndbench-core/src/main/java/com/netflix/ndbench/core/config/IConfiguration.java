@@ -92,4 +92,8 @@ public interface IConfiguration {
     @DefaultValue("100")
     int getWriteRateLimit();
 
+
+    @DefaultValue("false")
+    Boolean isAutoTuneEnabled();
+
 }

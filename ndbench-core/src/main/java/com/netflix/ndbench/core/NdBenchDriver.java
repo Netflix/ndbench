@@ -22,10 +22,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.generators.KeyGenerator;
 import com.netflix.ndbench.core.generators.KeyGeneratorFactory;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 import com.netflix.ndbench.core.operations.ReadOperation;
 import com.netflix.ndbench.core.operations.WriteOperation;
 import com.netflix.ndbench.core.util.LoadPattern;
@@ -131,13 +131,15 @@ public class NdBenchDriver {
 
         keyGeneratorReadRef.set(keyGenerator);
 
-        startOperation(config.isReadEnabled(),
+        startOperation(
+                config.isReadEnabled(),
                 config.getNumReaders(),
                 readWorkers,
                 tpReadRef,
                 readLimiter,
                 operation,
-                keyGenerator);
+                keyGenerator,
+                config.isAutoTuneEnabled());
         readsStarted.set(true);
     }
 
@@ -169,7 +171,8 @@ public class NdBenchDriver {
                 tpWriteRef,
                 writeLimiter,
                 operation,
-                keyGenerator);
+                keyGenerator,
+                config.isAutoTuneEnabled());
 
         writesStarted.set(true);
     }
@@ -192,8 +195,9 @@ public class NdBenchDriver {
                                 AtomicInteger numWorkers,
                                 AtomicReference<ExecutorService> tpRef,
                                 final AtomicReference<RateLimiter> rateLimiter,
-                                final NdBenchOperation operation
-            , final KeyGenerator<String> keyGenerator) {
+                                final NdBenchOperation operation,
+                                final KeyGenerator<String> keyGenerator,
+                                Boolean isAutoTuneEnabled) {
 
         if (!operationEnabled) {
             Logger.info("Operation : " + operation.getClass().getSimpleName() + " not enabled, ignoring");
@@ -219,7 +223,8 @@ public class NdBenchDriver {
                         if ((operation.isReadType() && readsStarted.get()) ||
                                 (operation.isWriteType() && writesStarted.get())) {
                             if (rateLimiter.get().tryAcquire()) {
-                                operation.process(ndBenchMonitor, keyGenerator.getNextKey());
+                                operation.process(
+                                        ndBenchMonitor, keyGenerator.getNextKey(), rateLimiter, isAutoTuneEnabled);
                             }
                         }
                         if (!keyGenerator.hasNextKey()) {
@@ -301,7 +306,10 @@ public class NdBenchDriver {
     }
 
     public interface NdBenchOperation {
-        boolean process(NdBenchMonitor monitor, String key);
+        boolean process(NdBenchMonitor monitor,
+                        String key,
+                        AtomicReference<RateLimiter> rateLimiter,
+                        boolean isAutoTuneEnabled);
 
         boolean isReadType();
 
