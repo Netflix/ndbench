@@ -62,7 +62,6 @@ public interface IConfiguration {
     @DefaultValue("true")
     boolean isReadEnabled();
 
-
     //Workers Config
     @DefaultValue("5")
     int getStatsUpdateFreqSeconds();
@@ -94,6 +93,6 @@ public interface IConfiguration {
 
 
     @DefaultValue("false")
-    Boolean isAutoTuneEnabled();
+    boolean isAutoTuneEnabled();
 
 }

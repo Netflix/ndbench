@@ -22,11 +22,11 @@ package com.netflix.ndbench.api.plugin;
  *
  * Auto-tuning is a process which automates the task of adjusting read/write rate limits right up to the point
  * where performance starts to fall below a configurable threshold. In a nutshell, the technique involves
- * (1) setting the initial read/write limit for your benchmark run to a low enough level that is guaranteed
- * not to overload the data store  you are benchmarking,  and then (2) providing implementations for  the
- * autoTune[Write/Read]RateLimit methods which will first examine  events which encode the results of read/write
- * operations together with  run time statistics, and the currentRateLimit. After interpretting  these
- * two pieces of information the process will return a new recommended rate limit (which may be higher or
+ * (i) setting the initial read/write limit for your benchmark run to a low enough level that is guaranteed
+ * not to overload the data store  you are benchmarking,  and then (ii) providing implementations for  the
+ * autoTune[Write/Read]RateLimit methods which will first examine  three things: (1) events which encode the results of
+ * read/write operations, (2) run time statistics, and (3) the currentRateLimit. After interpretting  these
+ * three pieces of information the process will return a new recommended rate limit (which may be higher or
  * lower than currentRateLimit.)
  *
  * This interfaces provide backward compatability with legacy client plug-ins  (which do not support auto-tuning)
@@ -78,7 +78,7 @@ package com.netflix.ndbench.api.plugin;
 
 	/**
 	 * Implementations of the  autoTune[Write/Read]RateLimit methods will interpret the information provided by
-	 * 'event' and 'runStats' in order to determine whether or not it is appropriate to auto-tune
+	 * 'event' and 'runStats', and 'currentRateLimit' in order to determine whether or not it is appropriate to auto-tune
 	 * read / write rate limits for the currently running benchmark.
 	 *
 	 * This method will be called by the benchmark driver after every write operation (this applies
@@ -86,7 +86,7 @@ package com.netflix.ndbench.api.plugin;
      *
 	 * Note that if there are multiple read or write workers it is possible that an attempt by one thread to auto-tune
 	 * the rate limit to a particular level might be overwritten by the rate limit value set by another thread. But
-	 * in the case performance degradation or errors occur, the eventual trend of the rate limit should be downward.
+	 * such overwrites should not affect the eventual trend of the rate limit either downward or upward.
 	 *
      *
 	 * @param currentRateLimit - the write rate limit currently in effect.
@@ -99,7 +99,7 @@ package com.netflix.ndbench.api.plugin;
      *
 	 * @param runStats - statistics such as average write/read latency for current benchmark run
 	 *
-	 * @return - the new suggested rate limit -- ignored by driver if <= 0.
+	 * @return - the new suggested rate limit -- ignored by driver if less-than-or-equal-to 0.
 	 */
 
 	default double autoTuneWriteRateLimit(double currentRateLimit, W event,  NdBenchMonitor runStats) { return -1D;}

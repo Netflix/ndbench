@@ -19,6 +19,7 @@ package com.netflix.ndbench.core;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.core.config.IConfiguration;
 import org.slf4j.Logger;
@@ -49,19 +50,19 @@ public class DataBackfill {
         this.config = config;
     }
 
-    public void backfill(final NdBenchClient client) throws Exception {
+    public void backfill(final NdBenchAbstractClient<?> client) throws Exception {
         backfill(client, new NormalBackfill());
     }
 
-    public void conditionalBackfill(final NdBenchClient client) throws Exception {
+    public void conditionalBackfill(final NdBenchAbstractClient<?> client) throws Exception {
         backfill(client, new ConditionalBackfill());
     }
 
-    public void verifyBackfill(final NdBenchClient client) throws Exception {
+    public void verifyBackfill(final NdBenchAbstractClient<?> client) throws Exception {
         backfill(client, new VerifyBackfill());
     }
 
-    private void backfill(final NdBenchClient client, final BackfillOperation backfillOperation) throws Exception {
+    private void backfill(final NdBenchAbstractClient<?> client, final BackfillOperation backfillOperation) throws Exception {
 
         long start = System.currentTimeMillis();
 
@@ -72,11 +73,11 @@ public class DataBackfill {
         Logger.info("Backfiller latch done! in " + (System.currentTimeMillis() - start) + " ms");
     }
 
-    public void backfillAsync(final NdBenchClient client) {
+    public void backfillAsync(final NdBenchAbstractClient<?> client) {
         backfillAsync(client, new NormalBackfill());
     }
 
-    private void backfillAsync(final NdBenchClient client, final BackfillOperation backfillOperation) {
+    private void backfillAsync(final NdBenchAbstractClient<?> client, final BackfillOperation backfillOperation) {
         stop.set(false);
 
         final int numThreads = config.getNumBackfill();
@@ -159,25 +160,27 @@ public class DataBackfill {
     }
 
     private interface BackfillOperation {
-        String process(final NdBenchClient client, final String key) throws Exception;
+        String process(final NdBenchAbstractClient<?> client, final String key) throws Exception;
     }
 
     private class NormalBackfill implements BackfillOperation {
 
         @Override
-        public String process(NdBenchClient client, String key) throws Exception {
-            return client.writeSingle(key);
+        public String process(NdBenchAbstractClient<?> client, String key) throws Exception {
+            Object result =  client.writeSingle(key);
+            return result == null ? "<null>"  : result.toString();
         }
     }
 
     private class ConditionalBackfill implements BackfillOperation {
 
         @Override
-        public String process(NdBenchClient client, String key) throws Exception {
+        public String process(NdBenchAbstractClient<?> client, String key) throws Exception {
             String result = client.readSingle(key);
             if (result == null) {
                 missCount.incrementAndGet();
-                return client.writeSingle(key);
+                Object writeResult =  client.writeSingle(key);
+                return writeResult == null ? "<null>"  : writeResult.toString();
             }
             return "done";
         }
@@ -186,15 +189,14 @@ public class DataBackfill {
     private class VerifyBackfill implements BackfillOperation {
 
         @Override
-        public String process(NdBenchClient client, String key) throws Exception {
-
-            String result = client.writeSingle(key);
+        public String process(NdBenchAbstractClient<?> client, String key) throws Exception {
+            Object result =  client.writeSingle(key);
             String value = client.readSingle(key);
             if (value == null) {
                 missCount.incrementAndGet();
                 return "backfill miss: " + result;
             } else {
-                return result;
+                return result == null ? "<null>"  : result.toString();
             }
         }
     }

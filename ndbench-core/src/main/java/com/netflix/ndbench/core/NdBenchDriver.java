@@ -20,7 +20,10 @@ package com.netflix.ndbench.core;
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.archaius.api.config.SettableConfig;
+import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.DataGenerator;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
@@ -32,6 +35,7 @@ import com.netflix.ndbench.core.util.LoadPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,7 +68,8 @@ public class NdBenchDriver {
     private final AtomicReference<ExecutorService> timerRef = new AtomicReference<ExecutorService>(null);
     private final RPSCount rpsCount;
 
-    private final AtomicReference<NdBenchClient> clientRef = new AtomicReference<NdBenchClient>(null);
+    private final AtomicReference<NdBenchAbstractClient<?>> clientRef =
+            new AtomicReference<NdBenchAbstractClient<?>>(null);
 
     private final AtomicReference<KeyGenerator> keyGeneratorWriteRef = new AtomicReference<>(null);
     private final AtomicReference<KeyGenerator> keyGeneratorReadRef = new AtomicReference<>(null);
@@ -76,7 +81,11 @@ public class NdBenchDriver {
 
 
     @Inject
-    private NdBenchDriver(IConfiguration config, NdBenchMonitor ndBenchMonitor, DataGenerator dataGenerator) {
+    private NdBenchDriver(IConfiguration config,
+                          NdBenchMonitor ndBenchMonitor,
+                          DataGenerator dataGenerator,
+                          @RuntimeLayer SettableConfig settableConfig) {
+
         this.config = config;
 
         this.ndBenchMonitor = ndBenchMonitor;
@@ -223,6 +232,8 @@ public class NdBenchDriver {
                         if ((operation.isReadType() && readsStarted.get()) ||
                                 (operation.isWriteType() && writesStarted.get())) {
                             if (rateLimiter.get().tryAcquire()) {
+                                // TODO - remove this
+                                Logger.info("operating at rate {} at {}", rateLimiter.get().getRate(), new Date().getTime());
                                 operation.process(
                                         ndBenchMonitor, keyGenerator.getNextKey(), rateLimiter, isAutoTuneEnabled);
                             }
@@ -316,7 +327,7 @@ public class NdBenchDriver {
         boolean isWriteType();
     }
 
-    public void init(NdBenchClient client) throws Exception {
+    public void init(NdBenchAbstractClient<?> client) throws Exception {
         if (!clientInited.get()) {
             try {
                 if (clientInited.compareAndSet(false, true)) {
@@ -407,11 +418,11 @@ public class NdBenchDriver {
 
 
     public String writeSingle(String key) throws Exception {
-        String result = clientRef.get().writeSingle(key);
-        return result;
+        Object result = clientRef.get().writeSingle(key);
+        return result == null ? "<null>" : result.toString();
     }
 
-    public NdBenchClient getClient() {
+    public NdBenchAbstractClient<?> getClient() {
         return clientRef.get();
     }
 

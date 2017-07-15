@@ -51,11 +51,13 @@ public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
             if (isAutoTuneEnabled) {
                 Double newRateLimit;
                 if ((newRateLimit = client.autoTuneWriteRateLimit(rateLimiter.get().getRate(), result, stats)) > 0) {
-                    Logger.info("updating write rate limit to {}", newRateLimit);  // i can get rid of this later.. TODO
+                    Logger.info("Updating write rate limit to {}", newRateLimit);  // i can get rid of this later.. TODO
                     rateLimiter.set(RateLimiter.create(newRateLimit));
                 }
             }
 
+            //TODO - should eventually remove this..
+            Logger.info("updating write success now have success={} and fails={}",stats.getWriteSuccess(), stats.getWriteFailure());
             stats.incWriteSuccess();
             return true;
         } catch (Exception e) {

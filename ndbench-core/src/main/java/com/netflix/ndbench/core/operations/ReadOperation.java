@@ -18,6 +18,7 @@
 package com.netflix.ndbench.core.operations;
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.NdBenchDriver;
@@ -32,9 +33,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ReadOperation implements NdBenchDriver.NdBenchOperation {
     private static final Logger Logger = LoggerFactory.getLogger(ReadOperation.class);
 
-    private final NdBenchClient client;
+    private final NdBenchAbstractClient<?> client;
 
-    public ReadOperation(NdBenchClient pClient) {
+    public ReadOperation(NdBenchAbstractClient<?> pClient) {
         client = pClient;
     }
 
