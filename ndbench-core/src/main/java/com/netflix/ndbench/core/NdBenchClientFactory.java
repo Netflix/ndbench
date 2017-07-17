@@ -29,7 +29,6 @@ import java.util.Set;
 @Singleton
 public class NdBenchClientFactory {
 
-    @Inject
     private Map<String, NdBenchClient> clientMap;
 
     @Inject
