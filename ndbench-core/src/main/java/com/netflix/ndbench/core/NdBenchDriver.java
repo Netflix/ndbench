@@ -86,7 +86,7 @@ public class NdBenchDriver {
         this.dataGenerator = dataGenerator;
 
 
-        this.rpsCount = new RPSCount(readLimiter, writeLimiter, config, ndBenchMonitor);
+        this.rpsCount = new RPSCount(readsStarted, writesStarted, readLimiter, writeLimiter, config, ndBenchMonitor);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -422,16 +422,24 @@ public class NdBenchDriver {
         private final NdBenchMonitor ndBenchMonitor;
         private final AtomicReference<RateLimiter> readLimiter;
         private final AtomicReference<RateLimiter> writeLimiter;
+        private final AtomicBoolean readsStarted;
+        private final AtomicBoolean writesStarted;
 
-        public RPSCount(AtomicReference<RateLimiter> readLimiter,
+        public RPSCount(AtomicBoolean readsStarted,
+                        AtomicBoolean writesStarted,
+                        AtomicReference<RateLimiter> readLimiter,
                         AtomicReference<RateLimiter> writeLimiter,
                         IConfiguration config,
                         NdBenchMonitor ndBenchMonitor) {
+
+            this.readsStarted = readsStarted;
+            this.writesStarted = writesStarted;
             this.readLimiter = readLimiter;
             this.writeLimiter = writeLimiter;
             this.config = config;
             this.ndBenchMonitor = ndBenchMonitor;
         }
+
 
         private void updateRPS() {
             int secondsFreq = config.getStatsUpdateFreqSeconds();
@@ -454,18 +462,18 @@ public class NdBenchDriver {
 
             Logger.info("Read RPS: " + readRps + ", Write RPS: " + writeRps +
                     ", total RPS: " + (readRps + writeRps) + ", Success Ratio: " + sRatio + "%");
+            long expectedReadRate = (long) this.readLimiter.get().getRate();
+            long expectedwriteRate = (long) this.writeLimiter.get().getRate();
+            String bottleneckMsg = "If this occurs consistently the benchmark client could be the bottleneck.";
 
-            long expectedReadRate = (long)this.readLimiter.get().getRate();
-            long expectedwriteRate = (long)this.writeLimiter.get().getRate();
-            String bottleneckMsg = "If this occurs frequently the benchmark client could be the bottleneck.";
-            if (readRps <  expectedReadRate) {
-                Logger.warn("Expected read rate less than observed Read RPS." + bottleneckMsg);
+            if (readsStarted.get() && readRps < expectedReadRate) {
+                Logger.warn("Observed Read RPS  ({}) less than expected read rate + ({}).\n{}",
+                        readRps, expectedReadRate, bottleneckMsg);
             }
-            if (writeRps <  expectedwriteRate) {
-                Logger.warn("Expected write rate less than observed Read RPS." + bottleneckMsg);
+            if (writesStarted.get() &&   writeRps < expectedwriteRate) {
+                Logger.warn("Observed Write RPS  ({}) less than expected write rate + ({}).\n{}",
+                        writeRps, expectedwriteRate, bottleneckMsg);
             }
-
         }
-
     }
 }
