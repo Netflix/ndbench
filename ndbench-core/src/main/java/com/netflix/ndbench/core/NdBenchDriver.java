@@ -58,7 +58,7 @@ public class NdBenchDriver {
     private final AtomicBoolean writesStarted = new AtomicBoolean(false);
     private final AtomicBoolean clientInited = new AtomicBoolean(false);
 
-    private final AtomicReference<RateLimiter> readLimiter ;
+    private final AtomicReference<RateLimiter> readLimiter;
     private final AtomicReference<RateLimiter> writeLimiter;
 
     private final AtomicReference<ExecutorService> timerRef = new AtomicReference<ExecutorService>(null);
@@ -75,7 +75,6 @@ public class NdBenchDriver {
     private final DataGenerator dataGenerator;
 
 
-
     @Inject
     private NdBenchDriver(IConfiguration config, NdBenchMonitor ndBenchMonitor, DataGenerator dataGenerator) {
         this.config = config;
@@ -86,7 +85,8 @@ public class NdBenchDriver {
 
         this.dataGenerator = dataGenerator;
 
-        this.rpsCount = new RPSCount(config, ndBenchMonitor);
+
+        this.rpsCount = new RPSCount(readLimiter, writeLimiter, config, ndBenchMonitor);
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
@@ -173,6 +173,7 @@ public class NdBenchDriver {
 
         writesStarted.set(true);
     }
+
     public boolean getIsWriteRunning() {
         ExecutorService tp = tpWriteRef.get();
         if (tp != null) {
@@ -192,7 +193,7 @@ public class NdBenchDriver {
                                 AtomicReference<ExecutorService> tpRef,
                                 final AtomicReference<RateLimiter> rateLimiter,
                                 final NdBenchOperation operation
-                                , final KeyGenerator<String> keyGenerator) {
+            , final KeyGenerator<String> keyGenerator) {
 
         if (!operationEnabled) {
             Logger.info("Operation : " + operation.getClass().getSimpleName() + " not enabled, ignoring");
@@ -221,15 +222,11 @@ public class NdBenchDriver {
                                 operation.process(ndBenchMonitor, keyGenerator.getNextKey());
                             }
                         }
-                        if (!keyGenerator.hasNextKey())
-                        {
+                        if (!keyGenerator.hasNextKey()) {
                             Logger.info("No more keys to process, hence stopping the process.");
-                            if(operation.isReadType())
-                            {
+                            if (operation.isReadType()) {
                                 stopReads();
-                            }
-                            else if (operation.isWriteType())
-                            {
+                            } else if (operation.isWriteType()) {
                                 stopWrites();
                             }
                             Thread.currentThread().interrupt();
@@ -320,7 +317,7 @@ public class NdBenchDriver {
                 }
             } catch (Exception e) {
                 clientInited.compareAndSet(true, false);
-                throw new Exception("Exception initializing client",e);
+                throw new Exception("Exception initializing client", e);
             }
 
             // Logic for dealing with rate limits
@@ -331,21 +328,20 @@ public class NdBenchDriver {
         }
     }
 
-    public void onWriteRateLimitChange()
-    {
-        checkAndInitRateLimit(writeLimiter, config.getWriteRateLimit(),"writeLimiter");
+    public void onWriteRateLimitChange() {
+        checkAndInitRateLimit(writeLimiter, config.getWriteRateLimit(), "writeLimiter");
     }
-    public void onReadRateLimitChange()
-    {
-        checkAndInitRateLimit(readLimiter, config.getReadRateLimit(),"readLimiter");
+
+    public void onReadRateLimitChange() {
+        checkAndInitRateLimit(readLimiter, config.getReadRateLimit(), "readLimiter");
     }
-    private void setWriteRateLimit(int prop)
-    {
-        checkAndInitRateLimit(writeLimiter, prop,"writeLimiter");
+
+    private void setWriteRateLimit(int prop) {
+        checkAndInitRateLimit(writeLimiter, prop, "writeLimiter");
     }
-    private void setReadRateLimit(int prop)
-    {
-        checkAndInitRateLimit(readLimiter, prop,"readLimiter");
+
+    private void setReadRateLimit(int prop) {
+        checkAndInitRateLimit(readLimiter, prop, "readLimiter");
     }
 
     private void checkAndInitRateLimit(AtomicReference<RateLimiter> rateLimiter, int property, String prop) {
@@ -410,9 +406,11 @@ public class NdBenchDriver {
     public NdBenchClient getClient() {
         return clientRef.get();
     }
+
     public KeyGenerator getWriteLoadPattern() {
         return keyGeneratorWriteRef.get();
     }
+
     public KeyGenerator getReadLoadPattern() {
         return keyGeneratorReadRef.get();
     }
@@ -422,8 +420,15 @@ public class NdBenchDriver {
         private final AtomicLong writes = new AtomicLong(0L);
         private final IConfiguration config;
         private final NdBenchMonitor ndBenchMonitor;
+        private final AtomicReference<RateLimiter> readLimiter;
+        private final AtomicReference<RateLimiter> writeLimiter;
 
-        public RPSCount(IConfiguration config, NdBenchMonitor ndBenchMonitor) {
+        public RPSCount(AtomicReference<RateLimiter> readLimiter,
+                        AtomicReference<RateLimiter> writeLimiter,
+                        IConfiguration config,
+                        NdBenchMonitor ndBenchMonitor) {
+            this.readLimiter = readLimiter;
+            this.writeLimiter = writeLimiter;
             this.config = config;
             this.ndBenchMonitor = ndBenchMonitor;
         }
@@ -449,6 +454,17 @@ public class NdBenchDriver {
 
             Logger.info("Read RPS: " + readRps + ", Write RPS: " + writeRps +
                     ", total RPS: " + (readRps + writeRps) + ", Success Ratio: " + sRatio + "%");
+
+            long expectedReadRate = (long)this.readLimiter.get().getRate();
+            long expectedwriteRate = (long)this.writeLimiter.get().getRate();
+            String bottleneckMsg = "If this occurs frequently the benchmark client could be the bottleneck.";
+            if (readRps <  expectedReadRate) {
+                Logger.warn("Expected read rate less than observed Read RPS." + bottleneckMsg);
+            }
+            if (writeRps <  expectedwriteRate) {
+                Logger.warn("Expected write rate less than observed Read RPS." + bottleneckMsg);
+            }
+
         }
 
     }
