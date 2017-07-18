@@ -447,7 +447,7 @@ public class NdBenchDriver {
             ndBenchMonitor.setWriteRPS(writeRps);
             ndBenchMonitor.setReadRPS(readRps);
 
-            System.out.println("Read RPS: " + readRps + ", Write RPS: " + writeRps +
+            Logger.info("Read RPS: " + readRps + ", Write RPS: " + writeRps +
                     ", total RPS: " + (readRps + writeRps) + ", Success Ratio: " + sRatio + "%");
         }
 
