@@ -359,12 +359,6 @@ public class NdBenchDriver {
         checkAndInitRateLimit(readLimiter, config.getReadRateLimit(), "readLimiter");
     }
 
-<<<<<<< 1c9079cd332998a69ae4abcc8d4883b2e7832d89
-    private void setWriteRateLimit(int prop) {
-        checkAndInitRateLimit(writeLimiter, prop, "writeLimiter");
-    }
-
-=======
     public void updateWriteRateLimit(double newLimit) {
         settableConfig.setProperty(IConfiguration.WRITE_RATE_LIMIT_FULL_NAME, (int) Math.ceil(newLimit));
         onWriteRateLimitChange();
@@ -375,7 +369,6 @@ public class NdBenchDriver {
         checkAndInitRateLimit(writeLimiter, prop, "writeLimiter");
     }
 
->>>>>>> * add documentation to Json rendered NdBenchMonitor instances to explain what units are used for the metrics
     private void setReadRateLimit(int prop) {
         checkAndInitRateLimit(readLimiter, prop, "readLimiter");
     }
