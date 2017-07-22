@@ -73,4 +73,8 @@ public interface NdBenchMonitor {
     int getCacheHitRatioInt();
 
      void resetStats();
+
+     default String getDocumentation() {
+         return "sublcasses should supply documentation for various fields of this class";
+     }
 }
