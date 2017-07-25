@@ -53,6 +53,13 @@ public class RPSCountTest extends TestBase {
                         true, true, 9/*readRate*/, 1/*writeRate*/,
                         89/*readSuccess*/, 0/*readFail*/,
                         0/*writeSuccess*/, 0/*writeFail*/));
+        verifyLoggerActivity(                                   // verify have logging if expected rate > observed rate
+                "Observed Read RPS",
+                false,
+                getRPSCount(
+                        false, true, 9/*readRate*/, 1/*writeRate*/,
+                        89/*readSuccess*/, 0/*readFail*/,
+                        0/*writeSuccess*/, 0/*writeFail*/));
 
         verifyLoggerActivity(                                   // verify no logging if expected rate < observed rate
                 "Observed Write RPS",
@@ -73,6 +80,13 @@ public class RPSCountTest extends TestBase {
                 true,
                 getRPSCount(
                         true, true, 1/*readRate*/, 9/*writeRate*/,
+                        1/*readSuccess*/, 0/*readFail*/,
+                        89/*writeSuccess*/, 0/*writeFail*/));
+        verifyLoggerActivity(                                   // verify have logging if expected rate > observed rate
+                "Observed Write RPS",
+                false,
+                getRPSCount(
+                        true, false, 1/*readRate*/, 9/*writeRate*/,
                         1/*readSuccess*/, 0/*readFail*/,
                         89/*writeSuccess*/, 0/*writeFail*/));
     }
