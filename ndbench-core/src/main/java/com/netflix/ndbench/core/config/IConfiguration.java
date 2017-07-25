@@ -29,8 +29,6 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 // TODO - consider this.. eliminates a harded coded string in favor of rolling up to constant
 //@Configuration(prefix = NdBenchConstants.PROP_PREFIX)
 public interface IConfiguration {
-    public static String WRITE_RATE_LIMIT = "writeRateLimit";
-    public static String WRITE_RATE_LIMIT_FULL_NAME = NdBenchConstants.PROP_PREFIX + "writeRateLimit";
 
     void initialize();
 
@@ -98,7 +96,7 @@ public interface IConfiguration {
 
 
     @DefaultValue("100")
-    @PropertyName(name=WRITE_RATE_LIMIT)
+    @PropertyName(name= NdBenchConstants.WRITE_RATE_LIMIT)
     int getWriteRateLimit();
 
 
@@ -112,8 +110,8 @@ public interface IConfiguration {
     @DefaultValue("1")
     Integer getAutoTuneIncrementIntervalMillisecs();
 
-    @DefaultValue("10")
-    Integer getAutoTuneFinalRate();
+    @DefaultValue("1000")
+    Integer getAutoTuneFinalWriteRate();
 
 
 
