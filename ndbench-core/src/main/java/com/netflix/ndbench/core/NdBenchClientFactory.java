@@ -28,8 +28,7 @@ import java.util.Set;
  * @author vchella
  */
 @Singleton
-public class
-NdBenchClientFactory {
+public class NdBenchClientFactory {
 
     private Map<String, NdBenchAbstractClient<?>> clientMap;
 

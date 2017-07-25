@@ -25,6 +25,7 @@ import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.generators.KeyGenerator;
 import com.netflix.ndbench.core.generators.KeyGeneratorFactory;
@@ -231,8 +232,7 @@ public class NdBenchDriver {
                         if ((operation.isReadType() && readsStarted.get()) ||
                                 (operation.isWriteType() && writesStarted.get())) {
                             if (rateLimiter.get().tryAcquire()) {
-                                // TODO - remove this
-                                Logger.info("operating at rate {} at {}", rateLimiter.get().getRate(), new Date().getTime());
+                                //Logger.info("operating at rate {} at {}", rateLimiter.get().getRate(), new Date().getTime());
                                 operation.process(
                                         NdBenchDriver.this,
                                         ndBenchMonitor,
@@ -360,7 +360,7 @@ public class NdBenchDriver {
     }
 
     public void updateWriteRateLimit(double newLimit) {
-        settableConfig.setProperty(IConfiguration.WRITE_RATE_LIMIT_FULL_NAME, (int) Math.ceil(newLimit));
+        settableConfig.setProperty(NdBenchConstants.WRITE_RATE_LIMIT_FULL_NAME, (int) Math.ceil(newLimit));
         onWriteRateLimitChange();
     }
 
@@ -446,7 +446,7 @@ public class NdBenchDriver {
         return keyGeneratorReadRef.get();
     }
 
-    private static class RPSCount {
+    static class RPSCount {
         private final AtomicLong reads = new AtomicLong(0L);
         private final AtomicLong writes = new AtomicLong(0L);
         private final IConfiguration config;
@@ -456,12 +456,12 @@ public class NdBenchDriver {
         private final AtomicBoolean readsStarted;
         private final AtomicBoolean writesStarted;
 
-        public RPSCount(AtomicBoolean readsStarted,
-                        AtomicBoolean writesStarted,
-                        AtomicReference<RateLimiter> readLimiter,
-                        AtomicReference<RateLimiter> writeLimiter,
-                        IConfiguration config,
-                        NdBenchMonitor ndBenchMonitor) {
+        RPSCount(AtomicBoolean readsStarted,
+                 AtomicBoolean writesStarted,
+                 AtomicReference<RateLimiter> readLimiter,
+                 AtomicReference<RateLimiter> writeLimiter,
+                 IConfiguration config,
+                 NdBenchMonitor ndBenchMonitor) {
 
             this.readsStarted = readsStarted;
             this.writesStarted = writesStarted;
@@ -472,7 +472,7 @@ public class NdBenchDriver {
         }
 
 
-        private void updateRPS() {
+        void updateRPS() {
             int secondsFreq = config.getStatsUpdateFreqSeconds();
 
 
