@@ -94,7 +94,7 @@ public interface NdBenchAbstractClient<W> {
      * @return - the new suggested rate limit -- ignored by driver if less-than-or-equal-to 0.
      */
 
-    default double autoTuneWriteRateLimit(double currentRateLimit, W event, NdBenchMonitor runStats) {
+    default Double autoTuneWriteRateLimit(Double currentRateLimit, W event, NdBenchMonitor runStats) {
         return -1D;
     }
 

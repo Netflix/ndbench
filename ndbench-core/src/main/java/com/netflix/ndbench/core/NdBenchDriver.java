@@ -35,7 +35,6 @@ import com.netflix.ndbench.core.util.LoadPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,6 +61,8 @@ public class NdBenchDriver {
     private final AtomicBoolean writesStarted = new AtomicBoolean(false);
     private final AtomicBoolean clientInited = new AtomicBoolean(false);
 
+
+
     private final AtomicReference<RateLimiter> readLimiter;
     private final AtomicReference<RateLimiter> writeLimiter;
 
@@ -81,10 +82,10 @@ public class NdBenchDriver {
     private final SettableConfig settableConfig;
 
     @Inject
-    private NdBenchDriver(IConfiguration config,
-                          NdBenchMonitor ndBenchMonitor,
-                          DataGenerator dataGenerator,
-                          @RuntimeLayer SettableConfig settableConfig) {
+    NdBenchDriver(IConfiguration config,
+                  NdBenchMonitor ndBenchMonitor,
+                  DataGenerator dataGenerator,
+                  @RuntimeLayer SettableConfig settableConfig) {
 
         this.config = config;
 
@@ -501,7 +502,7 @@ public class NdBenchDriver {
                 Logger.warn("Observed Read RPS  ({}) less than expected read rate + ({}).\n{}",
                         readRps, expectedReadRate, bottleneckMsg);
             }
-            if (writesStarted.get() &&   writeRps < expectedwriteRate) {
+            if (writesStarted.get() && writeRps < expectedwriteRate) {
                 Logger.warn("Observed Write RPS  ({}) less than expected write rate + ({}).\n{}",
                         writeRps, expectedwriteRate, bottleneckMsg);
             }
