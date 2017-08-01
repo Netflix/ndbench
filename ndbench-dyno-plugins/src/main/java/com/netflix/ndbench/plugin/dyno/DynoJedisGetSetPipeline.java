@@ -22,7 +22,6 @@ import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;

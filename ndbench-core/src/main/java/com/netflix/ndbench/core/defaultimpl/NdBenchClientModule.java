@@ -16,18 +16,21 @@
 package com.netflix.ndbench.core.defaultimpl;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import org.reflections.Reflections;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Type;
 import java.util.Set;
 
 public class NdBenchClientModule extends AbstractModule {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchClientModule.class);
 
-    private MapBinder<String, NdBenchClient> maps;
+    private MapBinder<String, NdBenchAbstractClient<?>> maps;
 
     private String getAnnotationValue(Class<?> ndBenchClientImple) {
         String name=ndBenchClientImple.getName();
@@ -45,12 +48,17 @@ public class NdBenchClientModule extends AbstractModule {
 
     protected <T> void installNdBenchClientPlugin(Class<?> ndBenchClientImple) {
         if (maps == null) {
-            maps = MapBinder.newMapBinder(binder(), String.class, NdBenchClient.class);
+            TypeLiteral<String> stringTypeLiteral = new TypeLiteral<String>() {
+            };
+            TypeLiteral<NdBenchAbstractClient<?>> ndbClientTypeLiteral = (new TypeLiteral<NdBenchAbstractClient<?>>() {
+            });
+            maps = MapBinder.newMapBinder(binder(), stringTypeLiteral, ndbClientTypeLiteral);
         }
 
         String name = getAnnotationValue(ndBenchClientImple);
 
-        maps.addBinding(name).to((Class<? extends NdBenchClient>) ndBenchClientImple);
+
+        maps.addBinding(name).to((Class<? extends NdBenchAbstractClient<?>>) ndBenchClientImple);
     }
 
     @Override

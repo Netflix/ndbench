@@ -15,14 +15,6 @@
  */
 package com.netflix.ndbench.plugin.local.dynomite.proxy;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.ConnectionPoolConfiguration.LoadBalancingStrategy;
 import com.netflix.dyno.connectionpool.Host;
@@ -34,6 +26,13 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.plugin.dyno.DynoJedis;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author diegopacheco

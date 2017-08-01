@@ -18,6 +18,7 @@ package com.netflix.ndbench.core.monitoring;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.util.EstimatedHistogram;
 import org.slf4j.LoggerFactory;

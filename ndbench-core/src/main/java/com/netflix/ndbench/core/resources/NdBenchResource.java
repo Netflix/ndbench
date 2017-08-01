@@ -18,14 +18,15 @@
 package com.netflix.ndbench.core.resources;
 
 import com.google.inject.Inject;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.DataBackfill;
 import com.netflix.ndbench.core.NdBenchClientFactory;
 import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.generators.KeyGenerator;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 import com.netflix.ndbench.core.util.LoadPattern;
 import com.sun.jersey.multipart.FormDataParam;
 import groovy.lang.GroovyClassLoader;
@@ -99,7 +100,7 @@ public class NdBenchResource {
 
         Logger.info("Starting NdBench data fill");
         try {
-            NdBenchClient client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
             dataBackfill.backfill(client);
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
@@ -116,7 +117,7 @@ public class NdBenchResource {
 
         Logger.info("Starting NdBench data fill - Async");
         try {
-            NdBenchClient client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
             dataBackfill.backfillAsync(client);
             return sendSuccessResponse( "Async data fill started !");
         } catch (Exception e) {
@@ -133,7 +134,7 @@ public class NdBenchResource {
 
         Logger.info("Starting NdBench data fill");
         try {
-            NdBenchClient client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
             dataBackfill.conditionalBackfill(client);
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
@@ -150,7 +151,7 @@ public class NdBenchResource {
 
         Logger.info("Starting NdBench data fill");
         try {
-            NdBenchClient client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
             dataBackfill.verifyBackfill(client);
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
@@ -199,7 +200,7 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response init(@PathParam("client") String clientName) throws Exception {
         try {
-            NdBenchClient client = clientFactory.getClient(clientName);
+            NdBenchAbstractClient<?> client = clientFactory.getClient(clientName);
             ndBenchDriver.init(client);
 
             return sendSuccessResponse("NdBench client initiated!");
@@ -449,7 +450,7 @@ public class NdBenchResource {
             serverStatusJson.put("LoadPatterns", Arrays.asList(LoadPattern.values()));
             String currentRunningDriver="NA",connectionInfo="NA", currentWriteLoadPattern="NA", currentReadLoadPattern="NA";
 
-            NdBenchClient NdBenchClient= ndBenchDriver.getClient();
+            NdBenchAbstractClient<?> NdBenchClient= ndBenchDriver.getClient();
 
             if(NdBenchClient!=null)
             {
@@ -503,7 +504,7 @@ public class NdBenchResource {
     public Response runWorkflow() throws Exception {
 
         try {
-            NdBenchClient client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
             return sendSuccessResponse(client.runWorkFlow());
         } catch (Exception e) {
             Logger.error("Error in running workflow", e);

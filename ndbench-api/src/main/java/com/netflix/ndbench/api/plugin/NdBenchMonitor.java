@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.core.monitoring;
+package com.netflix.ndbench.api.plugin;
 
 /**
  * Monitoring interface to receive notification of NdBench events. A concrete
@@ -73,4 +73,8 @@ public interface NdBenchMonitor {
     int getCacheHitRatioInt();
 
      void resetStats();
+
+     default String getDocumentation() {
+         return "sublcasses should supply documentation for various fields of this class";
+     }
 }

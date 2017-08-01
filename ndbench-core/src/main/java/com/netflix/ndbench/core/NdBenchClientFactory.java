@@ -19,6 +19,7 @@ package com.netflix.ndbench.core;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 
 import java.util.Map;
@@ -29,15 +30,15 @@ import java.util.Set;
 @Singleton
 public class NdBenchClientFactory {
 
-    private Map<String, NdBenchClient> clientMap;
+    private Map<String, NdBenchAbstractClient<?>> clientMap;
 
     @Inject
-    public NdBenchClientFactory(Map<String, NdBenchClient> driverMap) {
+    public NdBenchClientFactory(Map<String, NdBenchAbstractClient<?>> driverMap) {
         this.clientMap = driverMap;
     }
 
-    public NdBenchClient getClient(String clientName) {
-        NdBenchClient client = clientMap.get(clientName);
+    public NdBenchAbstractClient<?> getClient(String clientName) {
+        NdBenchAbstractClient<?> client = clientMap.get(clientName);
         if (client == null) {
             throw new RuntimeException("Client not found: " + clientName);
         }

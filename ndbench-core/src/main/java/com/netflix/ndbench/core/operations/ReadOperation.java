@@ -17,11 +17,16 @@
 
 package com.netflix.ndbench.core.operations;
 
+import com.google.common.util.concurrent.RateLimiter;
+import com.netflix.archaius.api.config.SettableConfig;
+import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
+import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.NdBenchDriver;
-import com.netflix.ndbench.core.monitoring.NdBenchMonitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author vchella
@@ -29,14 +34,18 @@ import org.slf4j.LoggerFactory;
 public class ReadOperation implements NdBenchDriver.NdBenchOperation {
     private static final Logger Logger = LoggerFactory.getLogger(ReadOperation.class);
 
-    private final NdBenchClient client;
+    private final NdBenchAbstractClient<?> client;
 
-    public ReadOperation(NdBenchClient pClient) {
+    public ReadOperation(NdBenchAbstractClient<?> pClient) {
         client = pClient;
     }
 
     @Override
-    public boolean process(NdBenchMonitor monitor,  String key) {
+    public boolean process(NdBenchDriver driver,
+                           NdBenchMonitor monitor,
+                           String key,
+                           AtomicReference<RateLimiter> ignoredForNow,
+                           boolean isAutoTuneEnabled) {
         try {
             Long startTime = System.nanoTime();
             String value = client.readSingle(key);

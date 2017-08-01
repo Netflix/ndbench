@@ -18,12 +18,18 @@ package com.netflix.ndbench.core.config;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.archaius.api.annotations.PropertyName;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 /**
  * @author vchella
  */
 @Configuration(prefix = "ndbench.config")
+
+// TODO - consider this.. eliminates a harded coded string in favor of rolling up to constant
+//@Configuration(prefix = NdBenchConstants.PROP_PREFIX)
 public interface IConfiguration {
+
     void initialize();
 
     // SAMPLE DATA CONFIG
@@ -62,7 +68,6 @@ public interface IConfiguration {
     @DefaultValue("true")
     boolean isReadEnabled();
 
-
     //Workers Config
     @DefaultValue("5")
     int getStatsUpdateFreqSeconds();
@@ -89,7 +94,25 @@ public interface IConfiguration {
     @DefaultValue("100")
     int getReadRateLimit();
 
+
     @DefaultValue("100")
+    @PropertyName(name= NdBenchConstants.WRITE_RATE_LIMIT)
     int getWriteRateLimit();
+
+
+    @DefaultValue("false")
+    boolean isAutoTuneEnabled();
+
+
+    @DefaultValue("60")
+    Integer getAutoTuneRampPeriodMillisecs();
+
+    @DefaultValue("1")
+    Integer getAutoTuneIncrementIntervalMillisecs();
+
+    @DefaultValue("1000")
+    Integer getAutoTuneFinalWriteRate();
+
+
 
 }

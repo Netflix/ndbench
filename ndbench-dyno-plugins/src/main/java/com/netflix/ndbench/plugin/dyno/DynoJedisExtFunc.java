@@ -15,14 +15,6 @@
  */
 package com.netflix.ndbench.plugin.dyno;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.Host;
 import com.netflix.dyno.connectionpool.HostSupplier;
@@ -30,6 +22,13 @@ import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchBaseClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * This is the extended functional test for Dynomite.

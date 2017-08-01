@@ -17,8 +17,6 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.*;
-import com.datastax.driver.core.ConsistencyLevel;
-import com.datastax.driver.core.Row;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
