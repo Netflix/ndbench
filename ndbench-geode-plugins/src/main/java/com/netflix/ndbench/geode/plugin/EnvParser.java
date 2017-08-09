@@ -1,9 +1,12 @@
 package com.netflix.ndbench.geode.plugin;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.netflix.archaius.api.PropertyFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -19,25 +22,19 @@ import java.util.regex.Pattern;
  *
  * @author Pulkit Chandra
  */
+@Singleton
 public class EnvParser {
   private final static Logger logger = LoggerFactory.getLogger(EnvParser.class);
+  private final String PROPERTIES_VCAP_SERVICES = "VCAP_SERVICES";
+  private final String SERVICE_NAME = "p-cloudcache";
+  private PropertyFactory propertyFactory;
 
-  private static EnvParser instance;
   private final Pattern p = Pattern.compile("(.*)\\[(\\d*)\\]");
 
-  private EnvParser() {
-  }
+  @Inject
+  public EnvParser(PropertyFactory propertyFactory) {
+    this.propertyFactory = propertyFactory;
 
-  public static EnvParser getInstance() {
-    if (instance != null) {
-      return instance;
-    }
-    synchronized (EnvParser.class) {
-      if (instance == null) {
-        instance = new EnvParser();
-      }
-    }
-    return instance;
   }
 
   public List<URI> getLocators() throws IOException, URISyntaxException {
@@ -69,7 +66,7 @@ public class EnvParser {
 
   private Map getCredentials() throws IOException {
     Map credentials = null;
-    String envContent = System.getenv().get("VCAP_SERVICES");
+    String envContent = propertyFactory.getProperty(PROPERTIES_VCAP_SERVICES).asString("{}").get();
     ObjectMapper objectMapper = new ObjectMapper();
     Map services = objectMapper.readValue(envContent, Map.class);
     List gemfireService = getGemFireService(services);
@@ -82,7 +79,7 @@ public class EnvParser {
   }
 
   private List getGemFireService(Map services) {
-    List l = (List) services.get("p-cloudcache");
+    List l = (List) services.get(SERVICE_NAME);
     if (l == null) {
       throw new IllegalStateException("GemFire service is not bound to this application");
     }

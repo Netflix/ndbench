@@ -55,8 +55,8 @@ The first step before building ndbench is to configure the interfaces related to
 
 #### Deploy to Cloud Foundry
 
-1. Update NdBenchGuiceModule.java to use the CfClusterDiscovery.java class and comment the LocalClusterDiscovery.
 1. Build and upload ndBench war to Cloud Foundry using `cf push`
+2. Note that the in the cf manifest that the `DISCOVERY_ENV` is set to `CF` so we can use the CfClusterDiscovery class
 
 ## Run
 	    ./gradlew appRun
