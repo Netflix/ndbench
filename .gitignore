@@ -5,3 +5,8 @@ build
 .project
 .settings
 bin/
+*.iml
+*.ipr
+*.iws
+.idea/*
+*.log

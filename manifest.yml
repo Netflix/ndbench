@@ -1,0 +1,7 @@
+---
+applications:
+- name: ndbench
+  path: ndbench-web/build/libs/ndbench-web-0.4.0-SNAPSHOT.war
+  health-check-type: none
+  env:
+    DISCOVERY_ENV: CF
