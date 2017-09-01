@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-    id 'nebula.netflixoss' version '3.6.0'
+    id 'nebula.netflixoss' version '3.6.4'
 }
 
 ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
