@@ -53,10 +53,12 @@ The first step before building ndbench is to configure the interfaces related to
 2. Set up Auto-Scale Group (ASG) and spin up instances
 3. Deploy `ndbench-web.war` in your container
 
-#### Deploy to Cloud Foundry
+#### Deploy to Cloud Platforms
 
-1. Build and upload ndBench war to Cloud Foundry using `cf push`
-2. Note that the in the cf manifest that the `DISCOVERY_ENV` is set to `CF` so we can use the CfClusterDiscovery class
+`DISCOVERY_ENV` environment variable is responsible to bind the proper Cluster Discovery. Currently AWS, CF and Local are supported.
+Hence set the environment variable `DISCOVERY_ENV` based on the environment you are deploying the app. 
+For Amazon Web Services use `AWS`, for Cloud Foundry use `CF`, and for local deployments any other name.
+For Cloud Foundry, build and upload the ndbench war to CF using `cf push`.
 
 ## Run
 	    ./gradlew appRun
