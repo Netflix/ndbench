@@ -79,8 +79,8 @@ public class AWSLocalClusterDiscovery implements IClusterDiscovery {
 	}
     
     @Override
-    public List<String> getEndpoints(String appName) {
-        return Arrays.asList(getLocalhostName()+":8080");
+    public List<String> getEndpoints(String appName, int defaultPort) {
+        return Arrays.asList(getLocalhostName()+":"+defaultPort);
     }
 
 }

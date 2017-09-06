@@ -20,7 +20,9 @@ import com.google.inject.Inject;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -35,6 +37,10 @@ public class NDBenchClusterResource {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NDBenchClusterResource.class);
 
     private final IClusterDiscovery clusterManager;
+
+    @Context
+    HttpServletRequest request;
+
 
     @Inject
     public NDBenchClusterResource(IClusterDiscovery clusterManager) {
@@ -63,7 +69,7 @@ public class NDBenchClusterResource {
 
         Logger.info("Getting nodes list for app: "+appname);
         try {
-            return sendJson(clusterManager.getEndpoints(appname));
+            return sendJson(clusterManager.getEndpoints(appname, request.getServerPort()));
         } catch (Exception e) {
             Logger.error("Error getting Host list from ClusterManager for app: "+appname, e);
             return  sendErrorResponse("get cluster host list failed!");

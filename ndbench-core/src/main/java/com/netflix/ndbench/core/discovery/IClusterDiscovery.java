@@ -23,5 +23,5 @@ import java.util.List;
  */
 public interface IClusterDiscovery {
     List<String> getApps();
-    List<String> getEndpoints(String appName);
+    List<String> getEndpoints(String appName, int defaultPort);
 }

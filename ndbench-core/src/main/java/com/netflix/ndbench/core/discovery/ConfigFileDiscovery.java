@@ -74,7 +74,7 @@ public class ConfigFileDiscovery implements IClusterDiscovery {
     }
 
     @Override
-    public List<String> getEndpoints(String appName) {
+    public List<String> getEndpoints(String appName, int defaultPort) {
         return clusterMap.get(appName);
     }
 
