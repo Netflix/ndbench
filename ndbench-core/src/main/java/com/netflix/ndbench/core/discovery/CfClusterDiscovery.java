@@ -53,7 +53,7 @@ public class CfClusterDiscovery implements IClusterDiscovery {
     }
 
     @Override
-    public List<String> getEndpoints(String appName) {
+    public List<String> getEndpoints(String appName, int defaultPort) {
         return Arrays.asList(getVmRouteName());
     }
 
