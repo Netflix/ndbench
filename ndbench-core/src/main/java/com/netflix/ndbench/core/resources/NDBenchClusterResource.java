@@ -67,7 +67,7 @@ public class NDBenchClusterResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getApps(@PathParam("appname") String appname) throws Exception {
 
-        Logger.info("Getting nodes list for app: "+appname);
+        Logger.info("Getting nodes list for app: "+appname+", default Port used: "+ request.getServerPort());
         try {
             return sendJson(clusterManager.getEndpoints(appname, request.getServerPort()));
         } catch (Exception e) {
