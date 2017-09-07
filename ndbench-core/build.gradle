@@ -1,5 +1,5 @@
 dependencies {
-    compile "org.codehaus.groovy:groovy-all:2.4.+"
+    compile "org.codehaus.groovy:groovy-all:2.4.12"
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     compile group: 'joda-time', name: 'joda-time', version: 'latest.release'
 
