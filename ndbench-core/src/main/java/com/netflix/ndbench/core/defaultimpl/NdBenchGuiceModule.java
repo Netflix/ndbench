@@ -16,6 +16,8 @@
  */
 package com.netflix.ndbench.core.defaultimpl;
 
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
@@ -34,18 +36,20 @@ import com.netflix.ndbench.core.monitoring.FakeMonitor;
 /**
  * @author vchella
  */
-public class NdBenchGuiceModule extends AbstractModule
-{
+public class NdBenchGuiceModule extends AbstractModule {
+    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchGuiceModule.class);
+
+    
     @Override
-    protected void configure()
-    {
+    protected void configure() {
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
         String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
-        if(discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_CF)){
+        Logger.info("DISCOVERY_ENV is set to: " + discoveryEnv);
+        if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_CF)) {
             bind(IClusterDiscovery.class).to(CfClusterDiscovery.class);
-        }else if(discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)){
+        } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {
             bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
-        }else{
+        } else {
             bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
         }
         bind(DataGenerator.class).to(DefaultDataGenerator.class);
@@ -55,7 +59,7 @@ public class NdBenchGuiceModule extends AbstractModule
 
     @Provides
     IConfiguration getIConfiguration(ConfigProxyFactory proxyFactory) {
-       return proxyFactory.newProxy(IConfiguration.class);
+        return proxyFactory.newProxy(IConfiguration.class);
     }
 
 }
