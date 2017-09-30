@@ -44,7 +44,7 @@ public class AWSLocalClusterDiscovery implements IClusterDiscovery {
 
     private String getLocalhostName() {
     	String urlPublic = "http://169.254.169.254/latest/meta-data/public-hostname";
-    	String urlLocal = "http://169.254.169.254/latest/meta10-data/local-hostname";
+    	String urlLocal = "http://169.254.169.254/latest/meta-data/local-hostname";
         try {
     		return parseAwsMetadataByURL(urlPublic);
         }
