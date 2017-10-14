@@ -16,6 +16,7 @@
  */
 package com.netflix.ndbench.core.defaultimpl;
 
+import com.netflix.ndbench.api.plugin.builtin.IEsConfig;
 import org.slf4j.LoggerFactory;
 
 import com.google.inject.AbstractModule;
@@ -32,6 +33,8 @@ import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import com.netflix.ndbench.core.discovery.LocalClusterDiscovery;
 import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.core.monitoring.FakeMonitor;
+
+import javax.inject.Singleton;
 
 /**
  * @author vchella
@@ -62,4 +65,10 @@ public class NdBenchGuiceModule extends AbstractModule {
         return proxyFactory.newProxy(IConfiguration.class);
     }
 
+    @Provides
+    @Singleton
+    IEsConfig getEsNfndbenchConfig(ConfigProxyFactory factory) {
+        // Here we turn the config interface into an implementation that can load dynamic properties.
+        return factory.newProxy(IEsConfig.class);
+    }
 }
