@@ -58,7 +58,7 @@ public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
 
     @BeforeClass
     public static void initialize() throws Exception {
-        if (disableOnJenkinsTemporarily) {
+        if (disableIfDockerComposeUnavailable) {
             return;
         }
         if (StringUtils.isNotEmpty(System.getenv("ES_NDBENCH_NO_DOCKER"))) {
@@ -76,7 +76,7 @@ public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        if (disableOnJenkinsTemporarily) {
+        if (disableIfDockerComposeUnavailable) {
             return;
         }
         if (StringUtils.isNotEmpty(System.getenv("ES_NDBENCH_NO_DOCKER"))) {
@@ -88,7 +88,7 @@ public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
 
     @Test
     public void testCanReadWhatWeJustWrote() throws Exception {
-        if (disableOnJenkinsTemporarily) {
+        if (disableIfDockerComposeUnavailable) {
             return
                     ;
         }

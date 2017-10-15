@@ -26,20 +26,25 @@ public class AbstractPluginIntegrationTest extends AbstractPluginTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractPluginIntegrationTest.class);
 
     /**
-     * Temporarily shut off mechanism to  detect if running on Jenkins and  if so
+     * Temporarily shut off mechanism to  detect if running on CI servers and  if so
      * disable running integration / smoke tests. This is because docker-compose is not yet available
-     * on the AMI image on which Jenkins runs.
+     * in the  Jenkins and Travis CI environments.
      */
-    protected static final boolean disableOnJenkinsTemporarily;
+    protected static boolean disableIfDockerComposeUnavailable;
 
     static {
-        String jenkinsUrl = System.getenv("JENKINS_URL");
+        disableBuildOnCiServerWithNoDockerCompose("JENKINS_URL"); // disable if on jenkins server lacking docker-compose
+        disableBuildOnCiServerWithNoDockerCompose("CI");          // disable if on travis server lacking docker-compose
+    }
+
+    private static void disableBuildOnCiServerWithNoDockerCompose(String ciEnvVar) {
+        String jenkinsUrl = System.getenv(ciEnvVar);
         if (jenkinsUrl == null || jenkinsUrl.equals("")) {
-            logger.info("Enabling Elasticsearch integration");
-            disableOnJenkinsTemporarily = false;
+            logger.info("Enabling Elasticsearch integration tests");
+            disableIfDockerComposeUnavailable = false;
         } else {
-            logger.info("Disabling Elasticsearch integration test because it does not currently run on Jenkins");
-            disableOnJenkinsTemporarily = true;
+            logger.info("Disabling Elasticsearch integration test. docker-compose is not available on CI servers !");
+            disableIfDockerComposeUnavailable = true;
         }
     }
 
@@ -47,7 +52,7 @@ public class AbstractPluginIntegrationTest extends AbstractPluginTest {
     public static DockerComposeRule docker = getDockerComposeRule();
 
     private static ImmutableDockerComposeRule getDockerComposeRule() {
-        if (disableOnJenkinsTemporarily) {
+        if (disableIfDockerComposeUnavailable) {
             return null;
         }
         if (StringUtils.isNotEmpty(System.getenv("ES_NDBENCH_NO_DOCKER"))) {
