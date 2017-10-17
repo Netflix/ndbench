@@ -28,8 +28,8 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     static final String RESULT_OK = "Ok";
     public static final int MAX_INDEX_ROLLS_PER_HOUR = 60;
 
-    private final IEsConfig config;
     private final IClusterDiscovery discoverer;
+    private final IEsConfig esConfig;
     private final IConfiguration coreConfig;
 
     // package scope for fields below --  so their values can be used in tests
@@ -55,8 +55,8 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
         this(coreConfig, esConfig, discoverer, true);
     }
 
-    EsRestPlugin(IConfiguration coreConfig, IEsConfig config, IClusterDiscovery discoverer, Boolean randomizeKeys) {
-        this.config = config;
+    EsRestPlugin(IConfiguration coreConfig, IEsConfig esConfig, IClusterDiscovery discoverer, Boolean randomizeKeys) {
+        this.esConfig = esConfig;
         this.coreConfig = coreConfig;
         this.discoverer = discoverer;
         this.randomizeKeys = randomizeKeys;
@@ -74,10 +74,10 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
      */
 
     public String getClusterOrHostName() {
-        if (StringUtils.isNotBlank(config.getHostName()))
-            return config.getHostName();
+        if (StringUtils.isNotBlank(esConfig.getHostName()))
+            return esConfig.getHostName();
         else
-            return config.getCluster();
+            return esConfig.getCluster();
     }
 
 
@@ -89,12 +89,12 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
      */
     @Override
     public synchronized void init(DataGenerator dataGenerator) throws Exception {
-        if (config.getRestClientPort() == 443 && !config.isHttps()) {
+        if (esConfig.getRestClientPort() == 443 && !esConfig.isHttps()) {
             throw new IllegalArgumentException(
                     "You must set the fast property 'https' to true if you use the https default port");
         }
 
-        Integer indexRollsPerHour = config.getIndexRollsPerDay();
+        Integer indexRollsPerHour = esConfig.getIndexRollsPerDay();
         if (indexRollsPerHour < 0 || indexRollsPerHour > MAX_INDEX_ROLLS_PER_HOUR) {
             throw new IllegalArgumentException(
                     "The fast property 'indexRollsPerHour' must be > 0 and <= " + MAX_INDEX_ROLLS_PER_HOUR);
@@ -102,27 +102,27 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
         if (indexRollsPerHour > 0 && 60 % indexRollsPerHour != 0) {
             throw new IllegalArgumentException( "The fast property 'indexRollsPerHour' must evenly divide 60");
         }
-        if (config.getBulkWriteBatchSize() < 0) {
+        if (esConfig.getBulkWriteBatchSize() < 0) {
             throw new IllegalArgumentException( "bulkWriteBatchSize can't be negative'");
         }
 
 
-        List<HttpHost> endpoints = getEndpoints(discoverer, config);
+        List<HttpHost> endpoints = getEndpoints(discoverer, esConfig);
         restClient = RestClient.builder(endpoints.toArray(new HttpHost[0])).build();
 
         String hostname = endpoints.get(0).getHostName();
-        ES_HOST_PORT = String.format("%s://%s:%s", getScheme(), hostname, config.getRestClientPort());
-        ES_INDEX_TYPE_RESOURCE_PATH = String.format("/%s/%s", config.getIndexName(), DEFAULT_DOC_TYPE);
+        ES_HOST_PORT = String.format("%s://%s:%s", getScheme(), hostname, esConfig.getRestClientPort());
+        ES_INDEX_TYPE_RESOURCE_PATH = String.format("/%s/%s", esConfig.getIndexName(), DEFAULT_DOC_TYPE);
         CONNECTION_INFO =
                 "Cluster: " + this.getClusterOrHostName() + "\n" +
                         "Test Index URL: " + ES_HOST_PORT + ES_INDEX_TYPE_RESOURCE_PATH;
 
         writer = new EsWriter(
-                config.getIndexName(),
+                esConfig.getIndexName(),
                 DEFAULT_DOC_TYPE,
-                config.getBulkWriteBatchSize() > 0,
+                esConfig.getBulkWriteBatchSize() > 0,
                 indexRollsPerHour,
-                config.getBulkWriteBatchSize(), config.isRandomizeStrings() ?
+                esConfig.getBulkWriteBatchSize(), esConfig.isRandomizeStrings() ?
                 dataGenerator :
                 new FakeWordDictionaryBasedDataGenerator(dataGenerator, coreConfig.getDataSize()));
 
@@ -132,7 +132,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
                     coreConfig.getAutoTuneIncrementIntervalMillisecs(),
                     coreConfig.getWriteRateLimit(),
                     coreConfig.getAutoTuneFinalWriteRate(),
-                    config.getAutoTuneWriteFailureRatioThreshold());
+                    esConfig.getAutoTuneWriteFailureRatioThreshold());
         } else {
             // OK if it is null because it will never be used if ! isAutoTuneEnabled
             // In fact if we initialized it when auto tune is not enabled, then we would enforce needless checks
@@ -145,13 +145,13 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     }
 
     private String getScheme() {
-        return config.isHttps() ? "https" : "http";
+        return esConfig.isHttps() ? "https" : "http";
     }
 
     /**
      * Writes either one or many documents to Elasticsearch -- multiple documents will be written
-     * {@link IEsConfig#isBulkWrite()} is true, and in this case the
-     * exact number to be written per call is defined by
+     * if {@link IEsConfig#getBulkWriteBatchSize()}()} is > 0, and in this case the
+     * exact number to be written per call is defined by the return value of that same method:
      * {@link IEsConfig#getBulkWriteBatchSize()}.
      * <p>
      * Note that the passed-in key will be appended with random string values -- if we were to choose the

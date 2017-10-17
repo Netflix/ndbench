@@ -33,30 +33,6 @@ public class EsUtils {
         return response.body().string();
     }
 
-    public static String httpPutJson(String url, String json) throws IOException {
-        Request request = new Request.Builder().url(url).put(RequestBody.create(JSON, json)).build();
-        Response response = httpClient.newCall(request).execute();
-
-        if (response.code() != 200 && response.code() != 201) {
-            String message = "Unable to put JSON to  " + url + " response code was: " + response.code();
-            logger.error(message);
-            throw new IOException(message);
-        }
-
-        return response.body().string();
-    }
-
-    public static String httpPostXml(String url, String xml) throws IOException {
-        Request request = new Request.Builder().url(url).put(RequestBody.create(XML, xml)).build();
-        Response response = httpClient.newCall(request).execute();
-
-        if (response.code() != 200) {
-            logger.error("Unable to post XML to " + url);
-            throw new IOException("Unable to post XML to " + url);
-        }
-
-        return response.body().string();
-    }
 
     public static Map<String, Object> createDefaultDocument(DataGenerator dataGenerator) {
         Map<String, Object> defaultDocument = new HashMap<>();

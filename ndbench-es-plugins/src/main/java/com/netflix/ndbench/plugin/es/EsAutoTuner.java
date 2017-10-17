@@ -1,6 +1,7 @@
 package com.netflix.ndbench.plugin.es;
 
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
+import com.netflix.ndbench.api.plugin.builtin.IEsConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,14 +15,8 @@ class EsAutoTuner {
 
     private static final Logger logger = LoggerFactory.getLogger(EsAutoTuner.class);
 
-    /**
-     * // captures  time of first auto-tune recommendation request (made via a call to recommendNewRate);
-     * TODO - update comment
-     * Ignore the  possible race condition that arises if multiple threads call this method at around the same time
-     * when an instance is an uninitialized state. Two (or maybe more) instance of ConstantStepWiseRateIncreaser
-     * may be concurrently built, but the system clock time to rate mappings will be close enough that it
-     * won't really matter -- auto-tuning behavior will work as expected.
-     */
+
+     // captures  time of first auto-tune recommendation request (made via a call to recommendNewRate);
     private volatile long timeOfFirstAutoTuneRequest = -1;
 
     private volatile boolean writeFailureThresholdReached = false;
@@ -45,10 +40,19 @@ class EsAutoTuner {
                 finalRate);
     }
 
+    /** Recommends the new write rate potentially taking into account the current rate, the result of the last write and
+     *  statistics accumulated to date.   Currently only the success to failure ratio is considered and
+     *  compared against {@link IEsConfig#getAutoTuneWriteFailureRatioThreshold()}
+     *
+     * Note that we can ignore the  possible race condition that arises if multiple threads call this method at around
+     * the same time.     In this case two threads will be attempting to set timeOfFirstAutoTuneRequest.. but the
+     * target values they are using to set this variable  be so close it will not affect the desired behavior of the
+     * auto-tuning feature.
+     */
     double recommendNewRate(double currentRateLimit, WriteResult event, NdBenchMonitor runStats) {
         long currentTime = new Date().getTime();
 
-        if (timeOfFirstAutoTuneRequest < 0) {
+        if (timeOfFirstAutoTuneRequest < 0) {          // race condition here when multiple writers, but can be ignored
             timeOfFirstAutoTuneRequest = currentTime;
         }
 

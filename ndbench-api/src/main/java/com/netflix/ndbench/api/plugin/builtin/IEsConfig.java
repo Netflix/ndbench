@@ -53,14 +53,17 @@ public interface IEsConfig {
      *
      * Example 2:  if you wanted to roll 7 times per hour you would be out of luck as 1440/(7*24) is not an integer.
      *
-     * <p>
-     * Note this option is currently supported only if bulk write is specified.
      */
     @DefaultValue("0")
     Integer getIndexRollsPerDay();
 
 
+    /**
+     *
+     * Threshold write failure ratio beyond which no auto-tune increase will occur. By default if failure rate is
+     * grows larger than 1% auto tune triggered rate increases will cease.
+     */
     @DefaultValue("0.01F")
-        // default threshold set so no auto-tune increase if write failure ratio >=  1%
+        // default threshold set so
     Float getAutoTuneWriteFailureRatioThreshold();
 }

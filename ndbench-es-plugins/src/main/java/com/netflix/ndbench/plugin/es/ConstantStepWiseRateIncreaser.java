@@ -15,17 +15,6 @@ import java.util.ArrayList;
  * Callers of this class should record the epoch time at which they wish to begin the rate increase ramp
  * and specify this recorded  "baseReferenceTime" as the first argument  to {@link #getRateForGivenClockTime}.
  * This method will adjust the target instances clock value table by adding the baseReferenceTime to each entry.
- * <p>
- * <p>
- * TODO -  mention how auto-tuning rate increases must not start until the driver begins calling writeSingle, and
- * how their might be a delay in the initial construction of a ConstantStepWiseRateIncreaser and
- * the time at which the driver starts making the aforementioned calls.
- * <p>
- * TODO -- update this comment.
- * Ignore the  possible race condition that arises if multiple threads call this method at around the same time
- * when an instance is an uninitialized state. Two (or maybe more) arrays will be concurrently built, but the
- * system clock time to rate mappings will be close enough that it won't really matter -- auto-tuning behavior
- * will work as expected.
  */
 @Immutable
 public class ConstantStepWiseRateIncreaser {
@@ -113,13 +102,6 @@ public class ConstantStepWiseRateIncreaser {
      * Build internal array mapping relative-from-zero clock time values to the rate that will be returned once system
      * clock exceeds time value in a particular cell (but is less than the time value in the immediately
      * succeeding cell);
-     * <p>
-     * Ignore the  possible race condition that arises if multiple threads call this method at around the same time
-     * when an instance is an uninitialized state. Two (or maybe more) arrays will be concurrently built, but the
-     * system clock time to rate mappings will be close enough that it won't really matter -- auto-tuning behavior
-     * will work as expected.
-     * <p>
-     * TODO -- put this comment somewhere else
      */
 
     public double getRateForGivenClockTime(long baseReferenceTime, long clockTime) {
