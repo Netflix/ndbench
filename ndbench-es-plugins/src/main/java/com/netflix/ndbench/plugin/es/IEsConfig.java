@@ -1,4 +1,4 @@
-package com.netflix.ndbench.api.plugin.builtin;
+package com.netflix.ndbench.plugin.es;
 
 
 import com.netflix.archaius.api.annotations.Configuration;
@@ -9,7 +9,7 @@ public interface IEsConfig {
     @DefaultValue("es_ndbench_test")
     String getCluster();
 
-    @DefaultValue("localhost")
+    @DefaultValue("")
     String getHostName();
 
     @DefaultValue("false")

@@ -26,6 +26,7 @@ import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.defaultimpl.NdBenchClientModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
+import com.netflix.ndbench.plugin.es.NfndbenchEsModule;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
@@ -48,7 +49,7 @@ public class InjectedWebListener extends GuiceServletContextListener
         moduleList.add(new NdBenchGuiceModule());
         moduleList.add(new NdBenchClientModule());
         moduleList.add(new ArchaiusModule()); //Archaius-2
-
+        moduleList.add(new NfndbenchEsModule());
 
 
         Injector injector = Guice.createInjector(moduleList);

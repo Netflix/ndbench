@@ -7,7 +7,6 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.api.plugin.builtin.IEsConfig;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import org.apache.commons.lang.StringUtils;

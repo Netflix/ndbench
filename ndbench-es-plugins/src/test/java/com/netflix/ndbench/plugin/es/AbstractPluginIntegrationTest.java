@@ -1,7 +1,6 @@
 package com.netflix.ndbench.plugin.es;
 
 import com.netflix.ndbench.api.plugin.DataGenerator;
-import com.netflix.ndbench.api.plugin.builtin.IEsConfig;
 import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.ImmutableDockerComposeRule;
 import com.palantir.docker.compose.configuration.ProjectName;

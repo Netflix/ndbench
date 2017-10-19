@@ -1,4 +1,4 @@
-package com.netflix.ndbench.plugin.es;
+package com.netflix.ndbench.core.util;
 
 import com.google.common.collect.ImmutableList;
 
@@ -41,7 +41,7 @@ public class ConstantStepWiseRateIncreaser {
      * the value rampPeriodMillisecs / incrementIntervalMillisecs (which MUST evaluate to an integral value with
      * no remainder). At each step the rate will increase constantly by (finalRate - initRate)  / number-of-steps.
      */
-    ConstantStepWiseRateIncreaser(int rampPeriodMillisecs,
+    public ConstantStepWiseRateIncreaser(int rampPeriodMillisecs,
                                   int incrementIntervalMillisecs,
                                   int initRate,
                                   int finalRate) {
@@ -118,7 +118,7 @@ public class ConstantStepWiseRateIncreaser {
         // Find the first cell 'j' whose immediate successor cell (j+1) has a time that exceeds desiredClockTime,
         // then return rate for cell 'j'
         //
-        for (int i = 0; i <= indexOfLastInTable; i++) {
+        for (int i = 0; i < indexOfLastInTable; i++) {
             long timeCeilingFromSuccessor = clockTimeToRateTable.get(i + 1).time;
             if (timeCeilingFromSuccessor > desiredClockTimeRelativizedToTimeZero) {
                 retval = clockTimeToRateTable.get(i).rate;

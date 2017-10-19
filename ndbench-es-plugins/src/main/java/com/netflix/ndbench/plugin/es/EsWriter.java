@@ -2,7 +2,6 @@ package com.netflix.ndbench.plugin.es;
 
 import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
-import com.netflix.ndbench.api.plugin.builtin.IEsConfig;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
 import org.elasticsearch.client.Response;
@@ -124,7 +123,7 @@ class EsWriter {
                                 String key,
                                 Boolean randomizeKeys) throws IOException {
         String randomizedKey = key + (randomizeKeys ? UUID.randomUUID().toString() : "");
-        String url = esIndexUrl + "/" + randomizedKey;
+        String url = "/" + esIndexUrl + "/" + randomizedKey;
         String doc = EsUtils.createDefaultDocumentAsJson(dataGenerator, false);
         Response response =
                 restClient.performRequest(

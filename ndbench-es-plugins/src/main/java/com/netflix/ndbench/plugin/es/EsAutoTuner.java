@@ -1,7 +1,7 @@
 package com.netflix.ndbench.plugin.es;
 
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
-import com.netflix.ndbench.api.plugin.builtin.IEsConfig;
+import com.netflix.ndbench.core.util.ConstantStepWiseRateIncreaser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

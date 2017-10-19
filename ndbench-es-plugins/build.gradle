@@ -3,6 +3,7 @@ apply plugin: 'java'
 
 dependencies {
     compile project(':ndbench-api')
+    compile project(':ndbench-core')
     compile 'org.elasticsearch:elasticsearch:2.3.3'
 }
 
