@@ -33,6 +33,8 @@ import com.netflix.ndbench.core.discovery.LocalClusterDiscovery;
 import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.core.monitoring.FakeMonitor;
 
+import javax.inject.Singleton;
+
 /**
  * @author vchella
  */
@@ -61,5 +63,4 @@ public class NdBenchGuiceModule extends AbstractModule {
     IConfiguration getIConfiguration(ConfigProxyFactory proxyFactory) {
         return proxyFactory.newProxy(IConfiguration.class);
     }
-
 }

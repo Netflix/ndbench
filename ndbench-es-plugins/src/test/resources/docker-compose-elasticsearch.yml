@@ -1,0 +1,10 @@
+version: '2'
+services:
+    elasticsearch:
+        image: elasticsearch:5
+        container_name:  elasticsearch
+        hostname: elasticsearch
+            - "9200:9200"
+            - "9300:9300"
+        network_mode: "host"
+
