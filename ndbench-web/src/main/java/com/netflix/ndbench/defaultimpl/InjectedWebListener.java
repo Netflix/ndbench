@@ -16,23 +16,16 @@
  */
 package com.netflix.ndbench.defaultimpl;
 
-import com.google.common.collect.Lists;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Module;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-import com.netflix.archaius.guice.ArchaiusModule;
-import com.netflix.ndbench.core.config.IConfiguration;
-import com.netflix.ndbench.core.defaultimpl.NdBenchClientModule;
-import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
+import com.netflix.ndbench.core.config.GuiceInjectorProvider;
 import com.netflix.ndbench.plugin.es.NfndbenchEsModule;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -44,18 +37,9 @@ public class InjectedWebListener extends GuiceServletContextListener
     @Override
     protected Injector getInjector()
     {
-        List<Module> moduleList = Lists.newArrayList();
-        moduleList.add(new JaxServletModule());
-        moduleList.add(new NdBenchGuiceModule());
-        moduleList.add(new NdBenchClientModule());
-        moduleList.add(new ArchaiusModule()); //Archaius-2
-        moduleList.add(new NfndbenchEsModule());
-
-
-        Injector injector = Guice.createInjector(moduleList);
-        injector.getInstance(IConfiguration.class).initialize();
-
-        return injector;
+        return new GuiceInjectorProvider().getInjector(
+                new NfndbenchEsModule(),                    // provisional code. The next commit will hook in google reflections-based discovery of this and all other plugin guice binding modules to be added.
+                new JaxServletModule());
     }
 
     public static class JaxServletModule extends ServletModule
