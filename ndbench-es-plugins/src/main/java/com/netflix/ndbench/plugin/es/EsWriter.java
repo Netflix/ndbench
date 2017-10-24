@@ -116,7 +116,7 @@ class EsWriter {
             writeSingleDoc(restClient, key, randomizeKeys);
         }
 
-        return new WriteResult(0);
+        return WriteResult.PROVISIONAL_RESULT_THAT_ASSUMES_ALL_WENT_WELL;
     }
 
     private void writeSingleDoc(RestClient restClient,

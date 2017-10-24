@@ -98,7 +98,7 @@ public class AbstractPluginIntegrationTest extends AbstractPluginTest {
                 getConfig(portNum, forcedHostName, indexName, isBulkWrite, 0f, indexRollsPerDay);
         EsRestPlugin plugin =
                 new EsRestPlugin(
-                        getCoreConfig(0, false, 60, 10, 10),
+                        getCoreConfig(0, false, 60, 10, 10, 0.01f),
                         config,
                         new MockServiceDiscoverer(9200),
                         false);

@@ -113,6 +113,13 @@ public interface IConfiguration {
     @DefaultValue("1000")
     Integer getAutoTuneFinalWriteRate();
 
-
+    /**
+     *
+     * Threshold write failure ratio beyond which no auto-tune increase will occur. By default if failure rate is
+     * grows larger than 1% auto tune triggered rate increases will cease.
+     *
+     */
+    @DefaultValue("0.01F")
+    Float getAutoTuneWriteFailureRatioThreshold();
 
 }

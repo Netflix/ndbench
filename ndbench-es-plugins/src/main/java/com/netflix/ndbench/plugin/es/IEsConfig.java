@@ -26,6 +26,15 @@ public interface IEsConfig {
     Integer getBulkWriteBatchSize();
 
 
+  /**
+     * If true then the values of string type fields written to Elasticsearch will be random, and if false the generated
+     * values for  fields  will be formed using a 'dictionary' of fake words starting with a defined prefix.
+     * This dictionary would contain entries such as: dog-ab, dog-yb, dog-bt, etc.
+     * <p>
+     * Setting this attribute to false results in Lucene indices that are closer to those that result from
+     * indexing  documents that contain natural language sentences. Such indices should be more compact than
+     * indices resulting from indexing documents which contain completely random gibberish.
+     */
     @DefaultValue("true")
     Boolean isRandomizeStrings();
 
@@ -58,12 +67,4 @@ public interface IEsConfig {
     Integer getIndexRollsPerDay();
 
 
-    /**
-     *
-     * Threshold write failure ratio beyond which no auto-tune increase will occur. By default if failure rate is
-     * grows larger than 1% auto tune triggered rate increases will cease.
-     */
-    @DefaultValue("0.01F")
-        // default threshold set so
-    Float getAutoTuneWriteFailureRatioThreshold();
 }

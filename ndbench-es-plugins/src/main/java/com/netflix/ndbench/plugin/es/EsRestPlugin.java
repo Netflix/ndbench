@@ -131,7 +131,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
                     coreConfig.getAutoTuneIncrementIntervalMillisecs(),
                     coreConfig.getWriteRateLimit(),
                     coreConfig.getAutoTuneFinalWriteRate(),
-                    esConfig.getAutoTuneWriteFailureRatioThreshold());
+                    coreConfig.getAutoTuneWriteFailureRatioThreshold());
         } else {
             // OK if it is null because it will never be used if ! isAutoTuneEnabled
             // In fact if we initialized it when auto tune is not enabled, then we would enforce needless checks

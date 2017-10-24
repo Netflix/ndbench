@@ -110,11 +110,6 @@ public class AbstractPluginTest {
                 return indexRollsPerHour;
             }
 
-            @Override
-            public Float getAutoTuneWriteFailureRatioThreshold() {
-                return maxAcceptableWriteFailures;
-            }
-
         };
     }
 
@@ -123,7 +118,8 @@ public class AbstractPluginTest {
                                                   final boolean isAutoTuneEnabled,
                                                   final int autoTuneRampPeriodMillisecs,
                                                   final int autoTuneIncremenetIntervalMillisecs,
-                                                  final int autoTuneFinalRate) {
+                                                  final int autoTuneFinalRate,
+                                                  float maxAcceptableWriteFailures) {
         return new IConfiguration() {
             @Override
             public void initialize() {
@@ -229,6 +225,12 @@ public class AbstractPluginTest {
             public Integer getAutoTuneFinalWriteRate() {
                 return autoTuneFinalRate;
             }
+
+            @Override
+            public Float getAutoTuneWriteFailureRatioThreshold() {
+                return maxAcceptableWriteFailures;
+            }
+
         };
     }
 }

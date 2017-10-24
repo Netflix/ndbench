@@ -2,13 +2,11 @@ package com.netflix.ndbench.plugin.es;
 
 import com.google.common.collect.ImmutableList;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
-import com.netflix.ndbench.core.util.ConstantStepWiseRateIncreaser;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -55,7 +53,7 @@ public class AutotuneTest extends AbstractPluginTest {
                 getConfig(9200, "google.com", "junkIndexName", true, 0.01f, 0);
         EsRestPlugin plugin =
                 new EsRestPlugin(
-                        getCoreConfig(1, true, 100, 10, 11),
+                        getCoreConfig(1, true, 100, 10, 11, 0.01f),
                         config,
                         new MockServiceDiscoverer(9200),
                         false);
