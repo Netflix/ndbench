@@ -51,15 +51,15 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
     public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
 
-        ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.keyspace").asString("dev1").get();
-        TableName =propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname").asString("emp").get();
+        ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cluster").asString("localhost").get();
+        ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.host").asString("127.0.0.1").get();
+        KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.keyspace").asString("dev1").get();
+        TableName =propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cfname").asString("emp").get();
 
-        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
-        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
 
-       MaxColCount  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.colsPerRow").asLong(100L).get();
+       MaxColCount  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.colsPerRow").asLong(100L).get();
 
        preInit();
        initDriver();

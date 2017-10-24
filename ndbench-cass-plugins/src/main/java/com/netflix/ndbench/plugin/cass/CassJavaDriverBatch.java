@@ -59,10 +59,10 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin {
 
     @Override
     void preInit() {
-        TableName2  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname2").asString("test2").get();
-        batchSize = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.batchSize").asInteger(3).get();
-        useTimeStamp = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.useTimestamp").asBoolean(true).get();
-        useMultiPartition = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.useMultiPartition").asBoolean(false).get();
+        TableName2  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cfname2").asString("test2").get();
+        batchSize = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.batchSize").asInteger(3).get();
+        useTimeStamp = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.useTimestamp").asBoolean(true).get();
+        useMultiPartition = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.useMultiPartition").asBoolean(false).get();
     }
 
     @Override

@@ -9,6 +9,8 @@ import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.archaius.api.PropertyListener;
 import com.netflix.ndbench.core.NdBenchDriver;
 
+import static com.netflix.ndbench.api.plugin.common.NdBenchConstants.PROP_NAMESPACE;
+
 /**
  * @author vchella
  */
@@ -18,7 +20,7 @@ public class NdbenchConfigListener {
     @Inject
     public NdbenchConfigListener(PropertyFactory factory, NdBenchDriver ndBenchDriver)
     {
-        factory.getProperty("ndbench.config.readRateLimit").asInteger(100).addListener(new PropertyListener<Integer>() {
+        factory.getProperty(PROP_NAMESPACE + "readRateLimit").asInteger(100).addListener(new PropertyListener<Integer>() {
             @Override
             public void onChange(Integer value) {
                 ndBenchDriver.onReadRateLimitChange();
@@ -29,7 +31,7 @@ public class NdbenchConfigListener {
 
             }
         });
-        factory.getProperty("ndbench.config.writeRateLimit").asInteger(100).addListener(new PropertyListener<Integer>() {
+        factory.getProperty(PROP_NAMESPACE + "writeRateLimit").asInteger(100).addListener(new PropertyListener<Integer>() {
             @Override
             public void onChange(Integer value) {
                 ndBenchDriver.onWriteRateLimitChange();

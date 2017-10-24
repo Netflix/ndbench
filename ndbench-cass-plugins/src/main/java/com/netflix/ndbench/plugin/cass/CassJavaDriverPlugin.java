@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+import static com.netflix.ndbench.api.plugin.common.NdBenchConstants.PROP_NAMESPACE;
+
 
 /**
  * @author vchella
@@ -66,14 +68,14 @@ public class CassJavaDriverPlugin implements NdBenchClient{
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
 
-        ClusterName = propertyFactory.getProperty("ndbench.config.cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty("ndbench.config.cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty("ndbench.config.cass.keyspace").asString("dev1").get();
-        TableName =propertyFactory.getProperty("ndbench.config.cass.cfname").asString("emp").get();
+        ClusterName = propertyFactory.getProperty(PROP_NAMESPACE + "cass.cluster").asString("localhost").get();
+        ClusterContactPoint = propertyFactory.getProperty(PROP_NAMESPACE + "cass.host").asString("127.0.0.1").get();
+        KeyspaceName = propertyFactory.getProperty(PROP_NAMESPACE + "cass.keyspace").asString("dev1").get();
+        TableName =propertyFactory.getProperty(PROP_NAMESPACE + "cass.cfname").asString("emp").get();
 
 
-        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
-        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(PROP_NAMESPACE +"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(PROP_NAMESPACE +"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
 
 
 
