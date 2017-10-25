@@ -105,7 +105,6 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
             throw new IllegalArgumentException( "bulkWriteBatchSize can't be negative'");
         }
 
-
         List<HttpHost> endpoints = getEndpoints(discoverer, esConfig);
         restClient = RestClient.builder(endpoints.toArray(new HttpHost[0])).build();
 
@@ -202,20 +201,12 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     // Will never be called by driver if isAutoTuneEnabled=false -- for that reason autoTuner is allowed to be null.
     // See constructor for details.
     //
-    public double autoTuneWriteRateLimit(double currentRateLimit, WriteResult event, NdBenchMonitor runStats) {
+    // Note: this method will only be called after the ndbench driver tries to perform a writeSingle operation
+    //
+    @Override
+    public Double autoTuneWriteRateLimit(Double currentRateLimit, WriteResult event, NdBenchMonitor runStats) {
+        assert autoTuner != null;
         return autoTuner.recommendNewRate(currentRateLimit, event, runStats);
-    }
-
-    String getIndexUrl() {          // this method is only for testing
-        return ES_INDEX_TYPE_RESOURCE_PATH;
-    }
-
-    EsWriter getWriter() {          // this method is only for testing
-        return writer;
-    }
-
-    void deleteIndex(String indexName) throws IOException {
-        restClient.performRequest("DELETE", "/" + indexName);
     }
 
     private String getUrlToDocGivenId(String key) {

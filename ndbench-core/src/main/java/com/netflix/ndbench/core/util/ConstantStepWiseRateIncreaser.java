@@ -25,17 +25,6 @@ public class ConstantStepWiseRateIncreaser {
     private final int incrementIntervalMillisecs;
     private final double rateIncrementPerStep;
 
-    @Immutable
-    private class Cell {
-        private final long time;
-        private final double rate;
-
-        Cell(long time, double rate) {
-            this.time = time;
-            this.rate = rate;
-        }
-    }
-
 
     /**
      * Returns a step-wise rate increaser which will ramp from 'initRate' to 'finalRate' over the course of

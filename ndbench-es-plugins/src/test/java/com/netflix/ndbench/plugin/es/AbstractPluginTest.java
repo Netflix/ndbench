@@ -41,28 +41,6 @@ public class AbstractPluginTest {
         }
     }
 
-    protected static DataGenerator alwaysSameValueGenerator = new DataGenerator() {
-        @Override
-        public String getRandomString() {
-            return "hello";
-        }
-
-        @Override
-        public String getRandomValue() {
-            return "hello";
-        }
-
-        @Override
-        public Integer getRandomInteger() {
-            return 1;
-        }
-
-        @Override
-        public Integer getRandomIntegerValue() {
-            return 1;
-        }
-    };
-
     protected static IEsConfig getConfig(final int portNum,
                                          @Nullable final String forcedHostName,
                                          final String indexName,

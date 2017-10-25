@@ -19,7 +19,8 @@ class EsAutoTuner {
      // captures  time of first auto-tune recommendation request (made via a call to recommendNewRate);
     private volatile long timeOfFirstAutoTuneRequest = -1;
 
-    private volatile boolean writeFailureThresholdReached = false;
+
+    private volatile boolean crossedAllowedFailureThreshold = false;
 
     EsAutoTuner(Integer rampPeriodMillisecs,
                 Integer incrementIntervalMillisecs,
@@ -41,13 +42,15 @@ class EsAutoTuner {
     }
 
     /** Recommends the new write rate potentially taking into account the current rate, the result of the last write and
-     *  statistics accumulated to date.   Currently only the success to failure ratio is considered and
-     *  compared against {@link IEsConfig#getAutoTuneWriteFailureRatioThreshold()}
+     *  statistics accumulated to date.   Currently only the success-to-failure ratio is considered and
+     *  compared against {@link com.netflix.ndbench.core.config.IConfiguration#getAutoTuneWriteFailureRatioThreshold()}
      *
      * Note that we can ignore the  possible race condition that arises if multiple threads call this method at around
      * the same time.     In this case two threads will be attempting to set timeOfFirstAutoTuneRequest.. but the
      * target values they are using to set this variable  be so close it will not affect the desired behavior of the
      * auto-tuning feature.
+     *
+     * Note 2: this method will only be called after the ndbench driver tries to perform a writeSingle operation
      */
     double recommendNewRate(double currentRateLimit, WriteResult event, NdBenchMonitor runStats) {
         long currentTime = new Date().getTime();
@@ -56,12 +59,6 @@ class EsAutoTuner {
             timeOfFirstAutoTuneRequest = currentTime;
         }
 
-
-        if (writeFailureThresholdReached) {
-            return currentRateLimit;
-        }
-
-
         // Keep rate at current rate if  calculated write failure ratio meets or exceeds configured threshold,
         // But don't even do this check if a divide by zero error would result from calculating the write
         // failure ratio via the formula:   writesFailures / writeSuccesses
@@ -69,11 +66,19 @@ class EsAutoTuner {
         if (runStats.getWriteSuccess() > 0) {
             double calculatedFailureRatio = runStats.getWriteFailure() / (1.0 * runStats.getWriteSuccess());
             if (calculatedFailureRatio >= autoTuneFailureRatioThreshold) {
+                crossedAllowedFailureThreshold = true;
                 logger.info(
                         "Not considering increase of write rate limit. calculatedFailureRatio={}. threshold={}",
                         calculatedFailureRatio, autoTuneFailureRatioThreshold);
-                writeFailureThresholdReached = true;
                 return currentRateLimit;
+            } else {
+                // by forgetting we crossed threshold and resetting timeOfFirstAutoTuneRequest we allow the
+                // write rate to drop back down to the specified initial value and we get another shot at
+                // trying to step wise increase to the max rate.
+                if (crossedAllowedFailureThreshold) {
+                    crossedAllowedFailureThreshold = false;
+                    timeOfFirstAutoTuneRequest  = currentTime;
+                }
             }
         }
 

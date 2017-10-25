@@ -23,27 +23,36 @@ public class AutotuneTest extends AbstractPluginTest {
 
         List<Double> result1 =
                 stepThroughRateIncreases(noWritesYet, noWritesYet, noWritesYet);
-        assert (result1.equals(ImmutableList.of(1.0, 2.0, 3.0)));
+        System.out.println("result1:" + result1);
+        assert (result1.equals(ImmutableList.of(1.0, 2.0, 3.0, 11.0)));
 
 
         List<Double> result2 =
                 stepThroughRateIncreases(noWritesYet, failuresAlmostAtThreshold, failuresAlmostAtThreshold);
-        assert (result2.equals(ImmutableList.of(1.0, 2.0, 3.0)));
+        System.out.println("result2:" + result2);
+        assert (result2.equals(ImmutableList.of(1.0, 2.0, 3.0, 11.0)));
 
 
         List<Double> result3 =
                 stepThroughRateIncreases(noWritesYet, failuresExactlyAtThreshold, failuresExactlyAtThreshold);
-        assert (result3.equals(ImmutableList.of(1.0, 0.0, 0.0)));  // expect passed in current rate (0) after 2nd one..
+        System.out.println("result3:" + result3);
+        assert (result3.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one..
 
 
         List<Double> result4 =
                 stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresSlightlyOverThreshold);
-        assert (result4.equals(ImmutableList.of(1.0, 0.0, 0.0)));  // expect passed in current rate (0) after 2nd one..
+        System.out.println("result4:" + result4);
+        assert (result4.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one..
 
 
+        // This next test verifies that when the failure rate rises above allowed threshold we stop increasing. However,
+        // if at some future time enough successful writes go through to the extent that the rate subsequently
+        // drops below that threshold, we will once again start increasing the rate (if we have not yet reached the
+        // max rate.)
         List<Double> result5 =
                 stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresAlmostAtThreshold);
-        assert (result5.equals(ImmutableList.of(1.0, 0.0, 0.0)));  // expect passed in current rate (0) after 2nd one..
+        System.out.println("result5:" + result5);
+        assert (result5.equals(ImmutableList.of(1.0, 0.0, 1.0, 11.0)));  // expect passed in current rate (0) after 2nd one..
     }
 
     private List<Double> stepThroughRateIncreases(NdBenchMonitor m1,
@@ -61,20 +70,27 @@ public class AutotuneTest extends AbstractPluginTest {
         WriteResult okWriteResult = new WriteResult(0);
 
 
+        NdBenchMonitor failuresAlmostAtThreshold = getMonitorInstance(101, 1);
+
+
         List<Double> result;
 
         ArrayList<Double> returnValue = new ArrayList<Double>();
 
-        Double res1 = plugin.autoTuneWriteRateLimit(0, okWriteResult, m1);      // assume current rate is zero
+        Double res1 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, m1);      // assume current rate is zero
         returnValue.add(res1);
         Thread.sleep(11);
 
-        Double res2 = plugin.autoTuneWriteRateLimit(0, okWriteResult, m2);      // assume current rate is zero
+        Double res2 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, m2);      // assume current rate is zero
         returnValue.add(res2);
         Thread.sleep(11);
 
-        Double res3 = plugin.autoTuneWriteRateLimit(0, okWriteResult, m3);      // assume current rate is zero
+        Double res3 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, m3);      // assume current rate is zero
         returnValue.add(res3);
+        Thread.sleep(100);
+
+        Double res4 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, failuresAlmostAtThreshold);
+        returnValue.add(res4);
 
         result = returnValue;
         return result;
