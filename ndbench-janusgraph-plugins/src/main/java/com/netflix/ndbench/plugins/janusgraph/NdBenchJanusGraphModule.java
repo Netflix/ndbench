@@ -9,7 +9,7 @@ import com.netflix.ndbench.plugins.janusgraph.configs.cql.ICQLConfig;
 /**
  * @author pencal
  */
-public class JanusGraphModule extends AbstractModule {
+public class NdBenchJanusGraphModule extends AbstractModule {
 
     @Override
     protected void configure() {
