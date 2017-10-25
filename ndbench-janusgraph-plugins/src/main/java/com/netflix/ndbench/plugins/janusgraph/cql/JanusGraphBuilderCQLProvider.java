@@ -1,7 +1,8 @@
 package com.netflix.ndbench.plugins.janusgraph.cql;
 
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.plugins.janusgraph.IJanusGraphBuilder;
+import com.netflix.ndbench.plugins.janusgraph.configs.IJanusGraphConfig;
+import com.netflix.ndbench.plugins.janusgraph.configs.cql.ICQLConfig;
 import org.janusgraph.core.JanusGraphFactory;
 
 import javax.inject.Inject;
@@ -17,14 +18,14 @@ public class JanusGraphBuilderCQLProvider implements IJanusGraphBuilder {
     private final JanusGraphFactory.Builder graphBuilder;
 
     @Inject
-    public JanusGraphBuilderCQLProvider(PropertyFactory factory) {
+    public JanusGraphBuilderCQLProvider(IJanusGraphConfig storageConfig, ICQLConfig config) {
         graphBuilder = JanusGraphFactory
                 .build()
-                .set("storage.cql.keyspace", factory.getProperty("ndbench.config.janusgraph.storage.cql.keyspace").asString("").get())
+                .set("storage.cql.keyspace", config.getKeyspace())
                 .set("storage.backend", "cql")
-                .set("storage.cql.cluster-name", factory.getProperty("ndbench.config.janusgraph.storage.cql.cluster-name").asString("").get())
-                .set("storage.hostname", factory.getProperty("ndbench.config.janusgraph.storage.hostname").asString("").get())
-                .set("storage.port", factory.getProperty("ndbench.config.janusgraph.storage.port").asString("").get())
+                .set("storage.cql.cluster-name", config.getClusterName())
+                .set("storage.hostname", storageConfig.getStorageHostname())
+                .set("storage.port", storageConfig.getStoragePort())
                 .set("storage.lock.wait-time", 300)
                 .set("cache.db-cache", false)
                 .set("query.batch", false)
