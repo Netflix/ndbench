@@ -5,10 +5,13 @@ import com.palantir.docker.compose.DockerComposeRule;
 import com.palantir.docker.compose.ImmutableDockerComposeRule;
 import com.palantir.docker.compose.configuration.ProjectName;
 import com.palantir.docker.compose.connection.waiting.HealthChecks;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.ClassRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 
 /**
@@ -25,25 +28,24 @@ public class AbstractPluginIntegrationTest extends AbstractPluginTest {
     private static final Logger logger = LoggerFactory.getLogger(AbstractPluginIntegrationTest.class);
 
     /**
-     * Temporarily shut off mechanism to  detect if running on CI servers and  if so
-     * disable running integration / smoke tests. This is because docker-compose is not yet available
-     * in the  Jenkins and Travis CI environments.
+     * Temporarily shut off mechanism to  detect if docker and docker-compose are not available or not. If these
+     * are not available, then we will disable running integration / smoke tests. Docker, and (even more likely)
+     * docker-compose may be unavailable in some  Jenkins and Travis CI environments.
      */
-    protected static boolean disableIfDockerComposeUnavailable;
+    protected static boolean disableDueToDockerExecutableUnavailability = false;
 
     static {
-        disableBuildOnCiServerWithNoDockerCompose("JENKINS_URL"); // disable if on jenkins server lacking docker-compose
-        disableBuildOnCiServerWithNoDockerCompose("CI");          // disable if on travis server lacking docker-compose
+        verifyAvailabilityOfExecutable("docker");
+        verifyAvailabilityOfExecutable("docker-compose");
     }
 
-    private static void disableBuildOnCiServerWithNoDockerCompose(String ciEnvVar) {
-        String jenkinsUrl = System.getenv(ciEnvVar);
-        if (jenkinsUrl == null || jenkinsUrl.equals("")) {
-            logger.info("Enabling Elasticsearch integration tests");
-            disableIfDockerComposeUnavailable = false;
-        } else {
-            logger.info("Disabling Elasticsearch integration test. docker-compose is not available on CI servers !");
-            disableIfDockerComposeUnavailable = true;
+    private static void verifyAvailabilityOfExecutable(String command) {
+        try {
+            Process proc = Runtime.getRuntime().exec(command);
+            if (! IOUtils.toString(proc.getInputStream()).contains("docker") )
+                disableDueToDockerExecutableUnavailability = true;
+        } catch (IOException e) {
+            disableDueToDockerExecutableUnavailability = true;
         }
     }
 
@@ -51,7 +53,7 @@ public class AbstractPluginIntegrationTest extends AbstractPluginTest {
     public static DockerComposeRule docker = getDockerComposeRule();
 
     private static ImmutableDockerComposeRule getDockerComposeRule() {
-        if (disableIfDockerComposeUnavailable) {
+        if (disableDueToDockerExecutableUnavailability) {
             return null;
         }
         if (StringUtils.isNotEmpty(System.getenv("ES_NDBENCH_NO_DOCKER"))) {
