@@ -20,8 +20,10 @@ import java.util.ArrayList;
 public class ConstantStepWiseRateIncreaser {
     public static final int MAX_STEPS = 10 * 1000;      // don't want to much overhead in searching data structure
 
-    private final int indexOfLastInTable;
-    private final ImmutableList<Cell> clockTimeToRateTable;
+    private final int initRate;
+    private final int finalRate;
+    private final int incrementIntervalMillisecs;
+    private final double rateIncrementPerStep;
 
     @Immutable
     private class Cell {
@@ -69,64 +71,26 @@ public class ConstantStepWiseRateIncreaser {
                     "rampPeriodMillisecs / incrementIntervalMillisecs should not exceed MAX_STEPS (" + MAX_STEPS + ")");
         }
 
-
-        final ArrayList<Cell> tmpClockTimeToRateTable = new ArrayList<Cell>();
-
         int numSteps = rampPeriodMillisecs / incrementIntervalMillisecs;
         double spread = (finalRate - initRate) * 1.0;
         double rateIncrementPerStep = spread / numSteps;
 
-        for (int i = 0; i <= numSteps; i++) {
-            tmpClockTimeToRateTable.add(
-                    new Cell(
-                            i * incrementIntervalMillisecs,
-                            initRate + (i * rateIncrementPerStep)
-                    )
-            );
-        }
-
-        // initialize high values sentinel cell
-        tmpClockTimeToRateTable.add(new Cell(Long.MAX_VALUE, 0 /* dummy never used for rate */));
-
-        indexOfLastInTable = numSteps + 1;
-        assert (tmpClockTimeToRateTable.size() == indexOfLastInTable + 1);
-        assert (tmpClockTimeToRateTable.get(numSteps).time == rampPeriodMillisecs);
-        assert (tmpClockTimeToRateTable.get(numSteps).rate == finalRate);
-
-
-        ImmutableList.Builder<Cell> cellBuilder = new ImmutableList.Builder<>();
-        clockTimeToRateTable = cellBuilder.addAll(tmpClockTimeToRateTable).build();
+        this.initRate = initRate;
+        this.finalRate = finalRate;
+        this.incrementIntervalMillisecs = incrementIntervalMillisecs;
+        this.rateIncrementPerStep = rateIncrementPerStep;
     }
-
-    /**
-     * Build internal array mapping relative-from-zero clock time values to the rate that will be returned once system
-     * clock exceeds time value in a particular cell (but is less than the time value in the immediately
-     * succeeding cell);
-     */
 
     public double getRateForGivenClockTime(long baseReferenceTime, long clockTime) {
         if (baseReferenceTime > clockTime) {
             throw new IllegalArgumentException(
                     "specified baseReferenceTime ("
                             + baseReferenceTime + ") is greater than clockTime (" + clockTime + ")");
-
         }
 
         long desiredClockTimeRelativizedToTimeZero = clockTime - baseReferenceTime;
-        double retval = -1;
-
-        // Find the first cell 'j' whose immediate successor cell (j+1) has a time that exceeds desiredClockTime,
-        // then return rate for cell 'j'
-        //
-        for (int i = 0; i < indexOfLastInTable; i++) {
-            long timeCeilingFromSuccessor = clockTimeToRateTable.get(i + 1).time;
-            if (timeCeilingFromSuccessor > desiredClockTimeRelativizedToTimeZero) {
-                retval = clockTimeToRateTable.get(i).rate;
-                break;
-            }
-        }
-
-        assert (retval >= 0);           // this invariant must be maintained, otherwise code is really broken
-        return retval;
+        return Math.min(
+                initRate + desiredClockTimeRelativizedToTimeZero / incrementIntervalMillisecs * rateIncrementPerStep,
+                this.finalRate);
     }
 }
