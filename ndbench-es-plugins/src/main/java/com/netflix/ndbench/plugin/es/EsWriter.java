@@ -1,6 +1,5 @@
 package com.netflix.ndbench.plugin.es;
 
-import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;

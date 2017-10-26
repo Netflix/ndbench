@@ -1,9 +1,6 @@
 package com.netflix.ndbench.core.util;
 
-import com.google.common.collect.ImmutableList;
-
 import javax.annotation.concurrent.Immutable;
-import java.util.ArrayList;
 
 /**
  * Ramps a rate from  a specified 'initRate' to a 'finalRate' in constant increments over the course of a
@@ -62,12 +59,11 @@ public class ConstantStepWiseRateIncreaser {
 
         int numSteps = rampPeriodMillisecs / incrementIntervalMillisecs;
         double spread = (finalRate - initRate) * 1.0;
-        double rateIncrementPerStep = spread / numSteps;
 
         this.initRate = initRate;
         this.finalRate = finalRate;
         this.incrementIntervalMillisecs = incrementIntervalMillisecs;
-        this.rateIncrementPerStep = rateIncrementPerStep;
+        this.rateIncrementPerStep = spread / numSteps;
     }
 
     public double getRateForGivenClockTime(long baseReferenceTime, long clockTime) {
