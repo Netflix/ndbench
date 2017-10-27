@@ -1,7 +1,6 @@
 package com.netflix.ndbench.plugin.es;
 
 import com.google.common.collect.ImmutableList;
-import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import org.slf4j.Logger;
@@ -40,28 +39,6 @@ public class AbstractPluginTest {
             return ImmutableList.of("localhost:" + port);
         }
     }
-
-    protected static DataGenerator alwaysSameValueGenerator = new DataGenerator() {
-        @Override
-        public String getRandomString() {
-            return "hello";
-        }
-
-        @Override
-        public String getRandomValue() {
-            return "hello";
-        }
-
-        @Override
-        public Integer getRandomInteger() {
-            return 1;
-        }
-
-        @Override
-        public Integer getRandomIntegerValue() {
-            return 1;
-        }
-    };
 
     protected static IEsConfig getConfig(final int portNum,
                                          @Nullable final String forcedHostName,

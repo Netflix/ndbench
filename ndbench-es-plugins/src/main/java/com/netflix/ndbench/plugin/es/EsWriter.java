@@ -1,6 +1,5 @@
 package com.netflix.ndbench.plugin.es;
 
-import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicHeader;
@@ -13,6 +12,7 @@ import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
 
@@ -58,7 +58,6 @@ class EsWriter {
     private final String esDocType;
     private final boolean isBulkWrite;
 
-    private static final ImmutableMap<String, String> EMPTY_PARAMS = ImmutableMap.of();
     private static final BasicHeader CONTENT_TYPE_HDR_JSON = new BasicHeader("Content-Type", "application/json");
 
     private final DataGenerator dataGenerator;
@@ -129,7 +128,7 @@ class EsWriter {
                 restClient.performRequest(
                         "PUT",
                         url,
-                        EMPTY_PARAMS,
+                        Collections.emptyMap(),
                         new StringEntity(doc),
                         CONTENT_TYPE_HDR_JSON);
         logger.debug(
@@ -154,7 +153,7 @@ class EsWriter {
         }
         String json = stringBuilder.toString();
         logger.trace("bulk write payload was: {}", json);
-        restClient.performRequest("POST", "/_bulk", EMPTY_PARAMS, new StringEntity(json), CONTENT_TYPE_HDR_JSON);
+        restClient.performRequest("POST", "/_bulk", Collections.emptyMap(), new StringEntity(json), CONTENT_TYPE_HDR_JSON);
     }
 
 

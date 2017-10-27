@@ -1,12 +1,6 @@
 package com.netflix.ndbench.core.util;
 
-import com.google.common.collect.ImmutableList;
-import com.netflix.ndbench.api.plugin.NdBenchMonitor;
-import com.netflix.ndbench.core.util.ConstantStepWiseRateIncreaser;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
