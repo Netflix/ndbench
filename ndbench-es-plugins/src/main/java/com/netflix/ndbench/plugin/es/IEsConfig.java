@@ -3,8 +3,9 @@ package com.netflix.ndbench.plugin.es;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-@Configuration(prefix = "ndbench.config.es")
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  ".es")
 public interface IEsConfig {
     @DefaultValue("es_ndbench_test")
     String getCluster();
@@ -65,6 +66,4 @@ public interface IEsConfig {
      */
     @DefaultValue("0")
     Integer getIndexRollsPerDay();
-
-
 }

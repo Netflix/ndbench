@@ -24,10 +24,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 /**
  * @author vchella
  */
-@Configuration(prefix = "ndbench.config")
-
-// TODO - consider this.. eliminates a harded coded string in favor of rolling up to constant
-//@Configuration(prefix = NdBenchConstants.PROP_PREFIX)
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE_NO_DOT)
 public interface IConfiguration {
 
     void initialize();
