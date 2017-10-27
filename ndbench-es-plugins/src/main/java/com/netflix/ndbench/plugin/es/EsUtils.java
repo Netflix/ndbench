@@ -2,7 +2,10 @@ package com.netflix.ndbench.plugin.es;
 
 import com.google.gson.Gson;
 import com.netflix.ndbench.api.plugin.DataGenerator;
-import okhttp3.*;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -119,7 +119,7 @@ public interface IConfiguration {
      * grows larger than 1% auto tune triggered rate increases will cease.
      *
      */
-    @DefaultValue("0.01F")
+    @DefaultValue("0.01")
     Float getAutoTuneWriteFailureRatioThreshold();
 
 }

@@ -1,3 +1,4 @@
+
 /*
  *  Copyright 2016 Netflix, Inc.
  *
@@ -19,27 +20,29 @@ package com.netflix.ndbench.defaultimpl;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
+import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 import com.netflix.ndbench.core.config.GuiceInjectorProvider;
 import com.netflix.ndbench.plugin.es.NfndbenchEsModule;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
+import com.netflix.ndbench.plugins.janusgraph.NdBenchJanusGraphModule;
+import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author vchella
  */
 public class InjectedWebListener extends GuiceServletContextListener
 {
-
     @Override
     protected Injector getInjector()
     {
-        return new GuiceInjectorProvider().getInjector(
-                new NfndbenchEsModule(),                    // provisional code. The next commit will hook in google reflections-based discovery of this and all other plugin guice binding modules to be added.
-                new JaxServletModule());
+        return new GuiceInjectorProvider().getInjector( new JaxServletModule());
     }
 
     public static class JaxServletModule extends ServletModule
