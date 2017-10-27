@@ -147,7 +147,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
 
     /**
      * Writes either one or many documents to Elasticsearch -- multiple documents will be written
-     * if {@link IEsConfig#getBulkWriteBatchSize()}()} is > 0, and in this case the
+     * if {@link IEsConfig#getBulkWriteBatchSize()}()} is greater than 0, and in this case the
      * exact number to be written per call is defined by the return value of that same method:
      * {@link IEsConfig#getBulkWriteBatchSize()}.
      * <p>
