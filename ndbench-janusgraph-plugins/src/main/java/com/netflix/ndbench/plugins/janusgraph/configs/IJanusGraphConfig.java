@@ -11,8 +11,8 @@ import com.netflix.archaius.api.annotations.DefaultValue;
 @Configuration(prefix = "ndbench.config.janusgraph")
 public interface IJanusGraphConfig {
     // One can benchmark either the Tinkerpop API or the JanusGraph Core API if needed
-    @DefaultValue("true")
-    boolean isUsingTinkerpop();
+    @DefaultValue("false")
+    boolean useJanusgraphTransaction();
 
     @DefaultValue("127.0.0.1")
     String getStorageHostname();
