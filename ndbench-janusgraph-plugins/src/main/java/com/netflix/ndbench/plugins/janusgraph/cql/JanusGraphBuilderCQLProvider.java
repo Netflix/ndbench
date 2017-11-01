@@ -15,23 +15,20 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class JanusGraphBuilderCQLProvider implements IJanusGraphBuilder {
-    private final JanusGraphFactory.Builder graphBuilder;
+    protected JanusGraphFactory.Builder graphBuilder;
+
+    public JanusGraphBuilderCQLProvider() {
+
+    }
 
     @Inject
     public JanusGraphBuilderCQLProvider(IJanusGraphConfig storageConfig, ICQLConfig config) {
-        graphBuilder = JanusGraphFactory
-                .build()
-                .set("storage.cql.keyspace", config.getKeyspace())
-                .set("storage.backend", "cql")
-                .set("storage.cql.cluster-name", config.getClusterName())
+        graphBuilder = JanusGraphFactory.build().set("storage.cql.keyspace", config.getKeyspace())
+                .set("storage.backend", "cql").set("storage.cql.cluster-name", config.getClusterName())
                 .set("storage.hostname", storageConfig.getStorageHostname())
-                .set("storage.port", storageConfig.getStoragePort())
-                .set("storage.lock.wait-time", 300)
-                .set("cache.db-cache", false)
-                .set("query.batch", false)
-                .set("query.smart-limit", false)
-                .set("query.force-index", false)
-                .set("query.fast-property", false);
+                .set("storage.port", storageConfig.getStoragePort()).set("storage.lock.wait-time", 300)
+                .set("cache.db-cache", false).set("query.batch", false).set("query.smart-limit", false)
+                .set("query.force-index", false).set("query.fast-property", false);
     }
 
     public JanusGraphFactory.Builder getGraphBuilder() {
