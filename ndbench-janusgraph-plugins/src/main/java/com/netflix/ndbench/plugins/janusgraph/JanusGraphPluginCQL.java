@@ -22,14 +22,15 @@ import java.util.Iterator;
 import java.util.List;
 
 /***
- * JanusGraph benchmarking plugin to measure throughput of write and read by single ID using JanusGraph Core API
+ * JanusGraph benchmarking plugin to measure throughput of write and read by
+ * single ID using JanusGraph Core API
  *
  * @author pencal
  */
 @Singleton
 @NdBenchClientPlugin("janusgraph-cql")
 public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBenchClient {
-    private static final Logger LOG = LoggerFactory.getLogger(JanusGraphPluginCQL.class);
+    private static final Logger Logger = LoggerFactory.getLogger(JanusGraphPluginCQL.class);
     private static String BACKEND = "cql";
 
     private final JanusGraphFactory.Builder graphBuilder;
@@ -37,13 +38,13 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
     private DataGenerator dataGenerator;
     private GraphTraversalSource traversalSource;
     private JanusGraph graph;
-    private boolean useTinkerPop;
+    private boolean useJanusgraphTransaction;
 
     @Inject
     public JanusGraphPluginCQL(IJanusGraphConfig config, JanusGraphBuilderCQLProvider builderProvider) {
         super(BACKEND, config.getStorageHostname(), config.getStoragePort());
         this.graphBuilder = builderProvider.getGraphBuilder();
-        this.useTinkerPop = config.isUsingTinkerpop();
+        this.useJanusgraphTransaction = config.useJanusgraphTransaction();
     }
 
     @Override
@@ -57,7 +58,16 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
     @Override
     public String readSingle(String key) throws Exception {
         String response = OK;
-        if (useTinkerPop) {
+        if (useJanusgraphTransaction) {
+            try (JanusGraphTransaction tx = graph.newTransaction()) {
+                Iterator<JanusGraphVertex> result = tx.query().has(PROP_CUSTOM_ID_KEY, key).vertices().iterator();
+                if (result == null)
+                    throw new Exception(
+                            "Internal error when reading data with key" + key + " using JanusGraph Core API");
+                else if (!result.hasNext())
+                    response = CACHE_MISS;
+            }
+        } else {
             List<Vertex> results = traversalSource.V().has(PROP_CUSTOM_ID_KEY, key).toList();
 
             if (results == null)
@@ -65,35 +75,24 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
             else if (results.size() == 0)
                 response = CACHE_MISS;
         }
-        else  {
-            try(JanusGraphTransaction tx = graph.newTransaction()) {
-                Iterator<JanusGraphVertex> result = tx.query().has(PROP_CUSTOM_ID_KEY, key).vertices().iterator();
-                if (result == null)
-                    throw new Exception("Internal error when reading data with key" + key + " using JanusGraph Core API");
-                else if (!result.hasNext())
-                    response = CACHE_MISS;
-            }
-        }
 
         return response;
     }
 
     @Override
     public String writeSingle(String key) throws Exception {
-        if (useTinkerPop) {
-            Transaction tx = traversalSource.tx();
-            tx.open();
-            traversalSource.getGraph().addVertex(T.label, VERTEX_LABEL_LEVEL_1
-                    , PROP_CUSTOM_ID_KEY, key
-                    , PROP_METADATA_KEY, dataGenerator.getRandomValue());
-            tx.commit();
-        } else {
-            try(JanusGraphTransaction tx = graph.newTransaction()) {
-                tx.addVertex(T.label, VERTEX_LABEL_LEVEL_1
-                        , PROP_CUSTOM_ID_KEY, key
-                        , PROP_METADATA_KEY, dataGenerator.getRandomValue());
+        if (useJanusgraphTransaction) {
+            try (JanusGraphTransaction tx = graph.newTransaction()) {
+                tx.addVertex(T.label, VERTEX_LABEL_LEVEL_1, PROP_CUSTOM_ID_KEY, key, PROP_METADATA_KEY,
+                        dataGenerator.getRandomValue());
                 tx.commit();
             }
+        } else {
+            Transaction tx = traversalSource.tx();
+            tx.open();
+            traversalSource.getGraph().addVertex(T.label, VERTEX_LABEL_LEVEL_1, PROP_CUSTOM_ID_KEY, key,
+                    PROP_METADATA_KEY, dataGenerator.getRandomValue());
+            tx.commit();
         }
 
         return OK;
