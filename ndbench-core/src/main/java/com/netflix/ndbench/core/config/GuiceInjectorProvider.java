@@ -20,7 +20,6 @@ public class GuiceInjectorProvider {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(GuiceInjectorProvider.class);
 
     private List<Module> getModuleList(AbstractModule... modules) {
-
         List<Module> moduleList = Lists.newArrayList();
 
         // Add default list of modules
@@ -28,40 +27,16 @@ public class GuiceInjectorProvider {
         moduleList.add(new NdBenchClientModule());
         moduleList.add(new ArchaiusModule()); //Archaius-2
 
-        // Discover guice binding modules for ndbench client plugins, and add them to list
-        Reflections reflections = new Reflections("com.netflix.ndbench");
-        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(NdBenchClientPluginGuiceModule.class);
-        for (Class<?> ndb: classes) {
-            moduleList.add(instantiateGuiceModule(ndb));
-        }
-
-
         // Add any additional caller specified modules
         moduleList.addAll(Arrays.asList(modules));
         return moduleList;
     }
 
-    private AbstractModule instantiateGuiceModule(Class moduleClass) {
-        if (Logger.isDebugEnabled()) {
-            Logger.info("adding ndbench client plugin guice module: {}", moduleClass.getCanonicalName());
-        }
-        Object object = null;
-        try {
-            object = moduleClass.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException(
-                    "Failed to invoke no argument constructor of Guice binding module class " +
-                            moduleClass.getCanonicalName());
-        }
-        return (AbstractModule) object;
-    }
 
     /**
      * Creates an injector using modules obtained from the following sources:  (1) the hard coded list of modules
      * specified in the {@link GuiceInjectorProvider #getModulesList()} method of this class,  (2)  the  'modules'
-     * list passed as the first and only argument to this method, and (3) all
-     * modules that are auto-discovered via reflection as a result of advertising themselves via the annotation
-     * {@link com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule}
+     * list passed as the first and only argument to this method
      *
      * @param modules - any additional Guice binding modules which will supplement the list of  those added by default
      */

@@ -13,38 +13,50 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package com.netflix.ndbench.core.defaultimpl;
+
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.MapBinder;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 import org.reflections.Reflections;
 import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 
+/**
+ * Uses reflection to discover all NdBench client plugins which (a) reside within the package namespace
+ * "com.netflix.ndbench", and (b) are annotated with {@link com.netflix.ndbench.core.defaultimpl.NdBenchClientModule}.
+ * The implementing class of each thusly discovered client plugin and the plugin's name (extracted as the
+ * parameter to each annotation) are used as entries in a map that enables the plugin's class to be looked up by name.
+ * <p>
+ * This class uses similar reflection-based discovery to find all Guice modules required by  client plugins.
+ * Any plugin client which needs Guice bindings only needs to annotate its Guice module with
+ * {@link com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule}, and that module will be
+ * auto-installed by this class.
+ */
 public class NdBenchClientModule extends AbstractModule {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchClientModule.class);
 
     private MapBinder<String, NdBenchAbstractClient<?>> maps;
 
-    private String getAnnotationValue(Class<?> ndBenchClientImple) {
-        String name=ndBenchClientImple.getName();
+    private String getAnnotationValue(Class<?> ndBenchClientImpl) {
+        String name = ndBenchClientImpl.getName();
         try {
-            NdBenchClientPlugin annot = ndBenchClientImple.getAnnotation(NdBenchClientPlugin.class);
+            NdBenchClientPlugin annot = ndBenchClientImpl.getAnnotation(NdBenchClientPlugin.class);
             name = annot.value();
-            Logger.info("Installing NdBenchClientPlugin: "+ndBenchClientImple.getName()+" with Annotation: "+name);
-        }
-        catch (Exception e)
-        {
-            Logger.warn("No Annotation found for class :"+ name +", so loading default class name");
+            Logger.info("Installing NdBenchClientPlugin: " + ndBenchClientImpl.getName() + " with Annotation: " + name);
+        } catch (Exception e) {
+            Logger.warn("No Annotation found for class :" + name + ", so loading default class name");
         }
         return name;
     }
 
-    protected <T> void installNdBenchClientPlugin(Class<?> ndBenchClientImple) {
+    private <T> void installNdBenchClientPlugin(Class<?> ndBenchClientImpl) {
         if (maps == null) {
             TypeLiteral<String> stringTypeLiteral = new TypeLiteral<String>() {
             };
@@ -53,10 +65,10 @@ public class NdBenchClientModule extends AbstractModule {
             maps = MapBinder.newMapBinder(binder(), stringTypeLiteral, ndbClientTypeLiteral);
         }
 
-        String name = getAnnotationValue(ndBenchClientImple);
+        String name = getAnnotationValue(ndBenchClientImpl);
 
 
-        maps.addBinding(name).to((Class<? extends NdBenchAbstractClient<?>>) ndBenchClientImple);
+        maps.addBinding(name).to((Class<? extends NdBenchAbstractClient<?>>) ndBenchClientImpl);
     }
 
     @Override
@@ -64,9 +76,34 @@ public class NdBenchClientModule extends AbstractModule {
         //Get all implementations of NdBenchClient Interface and install them as Plugins
         Reflections reflections = new Reflections("com.netflix.ndbench");
         final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(NdBenchClientPlugin.class);
-        for (Class<?> ndb: classes) {
+        for (Class<?> ndb : classes) {
             installNdBenchClientPlugin(ndb);
         }
+        installGuiceBindingsRequiredByClientPlugins();
+    }
+
+    private void installGuiceBindingsRequiredByClientPlugins() {
+        // Discover guice binding modules for ndbench client plugins, and add them to list
+        Reflections reflections = new Reflections("com.netflix.ndbench");
+        final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(NdBenchClientPluginGuiceModule.class);
+        for (Class<?> ndb : classes) {
+            AbstractModule e = instantiateGuiceModule(ndb);
+            install(e);
+        }
+    }
+
+
+    private AbstractModule instantiateGuiceModule(Class moduleClass) {
+        Logger.info("adding ndbench client plugin guice module: {}", moduleClass.getCanonicalName());
+        Object object;
+        try {
+            object = moduleClass.newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new RuntimeException(
+                    "Failed to invoke no argument constructor of Guice binding module class " +
+                            moduleClass.getCanonicalName());
+        }
+        return (AbstractModule) object;
     }
 }
 
