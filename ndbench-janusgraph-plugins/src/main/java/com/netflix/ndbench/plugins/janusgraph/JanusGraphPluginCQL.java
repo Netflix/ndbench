@@ -60,13 +60,18 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
         String response = OK;
         if (useJanusgraphTransaction) {
             try (JanusGraphTransaction tx = graph.newTransaction()) {
-                Iterator<JanusGraphVertex> result = tx.query().has(PROP_CUSTOM_ID_KEY, key).vertices().iterator();
-                if (result == null)
+                JanusGraphVertex vertex = (JanusGraphVertex) tx.query().has(PROP_CUSTOM_ID_KEY, key).vertices();              
+                if (vertex == null) {
+                    tx.commit();
                     throw new Exception(
                             "Internal error when reading data with key" + key + " using JanusGraph Core API");
-                else if (!result.hasNext())
+                }
+                if(vertex.keys().isEmpty())
                     response = CACHE_MISS;
-            }
+                
+                tx.commit();
+            } 
+
         } else {
             List<Vertex> results = traversalSource.V().has(PROP_CUSTOM_ID_KEY, key).toList();
 
@@ -82,22 +87,17 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
     @Override
     public String writeSingle(String key) throws Exception {
         if (useJanusgraphTransaction) {
-            try (JanusGraphTransaction tx = graph.newTransaction()) {
-                tx.addVertex(T.label, VERTEX_LABEL_LEVEL_1, PROP_CUSTOM_ID_KEY, key, PROP_METADATA_KEY,
-                        dataGenerator.getRandomValue());
-                tx.commit();
-            }
+                graph.addVertex(T.label, VERTEX_LABEL_LEVEL_1, PROP_CUSTOM_ID_KEY, key, PROP_METADATA_KEY,
+                        dataGenerator.getRandomValue()); //Automatically opens a new transaction
+                graph.tx().commit();
         } else {
-            Transaction tx = traversalSource.tx();
-            tx.open();
             traversalSource.getGraph().addVertex(T.label, VERTEX_LABEL_LEVEL_1, PROP_CUSTOM_ID_KEY, key,
                     PROP_METADATA_KEY, dataGenerator.getRandomValue());
-            tx.commit();
+            traversalSource.getGraph().tx().commit();
         }
 
         return OK;
     }
-
     @Override
     public void shutdown() throws Exception {
         graph.close();
