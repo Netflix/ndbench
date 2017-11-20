@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.evcache.EVCache;
+import com.netflix.evcache.pool.EVCacheClientPoolManager;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
@@ -42,10 +43,12 @@ public class EVCacheTestPlugin implements NdBenchClient{
     private static final String CacheMiss = null;
 
     private final EVCache evcache;
+    private final EVCacheClientPoolManager manager;
 
 
     @Inject
-    public EVCacheTestPlugin(PropertyFactory propertyFactory, EVCache.Builder builder) {
+    public EVCacheTestPlugin(PropertyFactory propertyFactory, EVCache.Builder builder, EVCacheClientPoolManager manager) {
+        this.manager = manager;
         final String evcacheAppName = propertyFactory.getProperty(PROP_NAMESPACE + "evcache.name").asString("EVCACHE").get();
         final String evcacheCachePrefix = propertyFactory.getProperty(PROP_NAMESPACE + "evcache.prefix").asString("").get();
         final Integer evcacheTTL = propertyFactory.getProperty(PROP_NAMESPACE + "evcache.ttl").asInteger(900).get();
@@ -75,14 +78,7 @@ public class EVCacheTestPlugin implements NdBenchClient{
     @Override
     public String readSingle(String key) throws Exception {
         String res = evcache.get(key);
-        if(res!=null)
-        {
-            if(res.isEmpty())
-            {
-                throw new Exception("Data retrieved is not ok ");
-            }
-        }
-        else
+        if(res == null)
         {
             return CacheMiss;
         }
@@ -108,8 +104,8 @@ public class EVCacheTestPlugin implements NdBenchClient{
      */
     @Override
     public void shutdown() throws Exception {
-        log.info("Shutting down EVCacheTestPlugin");
-
+        log.info("Shutting down EVCacheClientPoolManager");
+        this.manager.shutdown();
     }
 
     /**
