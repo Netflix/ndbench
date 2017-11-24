@@ -17,8 +17,10 @@
 
 package com.netflix.ndbench.api.plugin;
 
+import java.util.List;
+
 /**
- * @author vchella
+ * @author vchella, pencal
  */
  public interface NdBenchClient extends NdBenchAbstractClient<String> {
 
@@ -35,7 +37,6 @@ package com.netflix.ndbench.api.plugin;
 	 */
 	 String readSingle(final String key) throws Exception;
 
-
 	/**
 	 * Perform a single write operation
 	 * @return
@@ -43,8 +44,22 @@ package com.netflix.ndbench.api.plugin;
 	 */
 	 String writeSingle(final String key) throws Exception;
 
+    /**
+     * Perform a bulk read operation
+     * @return
+     * @throws Exception
+     */
+    List<String> readBulk(final List<String> keys) throws Exception;
 
     /**
+	 * Perform a bulk write operation
+	 * @return
+	 * @throws Exception
+	 */
+	List<String> writeBulk(final List<String> keys) throws Exception;
+
+
+	/**
      * shutdown the client
      */
      void shutdown() throws Exception;

@@ -24,6 +24,7 @@ import com.netflix.ndbench.core.NdBenchDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -41,17 +42,17 @@ public class ReadOperation implements NdBenchDriver.NdBenchOperation {
     @Override
     public boolean process(NdBenchDriver driver,
                            NdBenchMonitor monitor,
-                           String key,
+                           List<String> keys,
                            AtomicReference<RateLimiter> ignoredForNow,
                            boolean isAutoTuneEnabled) {
         try {
             Long startTime = System.nanoTime();
-            String value = client.readSingle(key);
+            List<String> value = client.readBulk(keys);
             monitor.recordReadLatency((System.nanoTime() - startTime)/1000);
             if (value != null) {
                 monitor.incCacheHit();
             } else {
-                Logger.debug("Miss for key: " + key);
+                Logger.debug("Miss for key: {}", keys);
                 monitor.incCacheMiss();
             }
             monitor.incReadSuccess();
@@ -64,8 +65,6 @@ public class ReadOperation implements NdBenchDriver.NdBenchOperation {
 
         }
     }
-
-
 
     @Override
     public boolean isReadType() {

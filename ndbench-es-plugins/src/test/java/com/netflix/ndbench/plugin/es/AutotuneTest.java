@@ -5,6 +5,7 @@ import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -74,19 +75,19 @@ public class AutotuneTest extends AbstractPluginTest {
 
         ArrayList<Double> returnValue = new ArrayList<Double>();
 
-        Double res1 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, m1);      // assume current rate is zero
+        Double res1 = plugin.autoTuneWriteRateLimit(0D, Collections.singletonList(okWriteResult), m1);      // assume current rate is zero
         returnValue.add(res1);
         Thread.sleep(11);
 
-        Double res2 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, m2);      // assume current rate is zero
+        Double res2 = plugin.autoTuneWriteRateLimit(0D, Collections.singletonList(okWriteResult), m2);      // assume current rate is zero
         returnValue.add(res2);
         Thread.sleep(11);
 
-        Double res3 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, m3);      // assume current rate is zero
+        Double res3 = plugin.autoTuneWriteRateLimit(0D, Collections.singletonList(okWriteResult), m3);      // assume current rate is zero
         returnValue.add(res3);
         Thread.sleep(100);
 
-        Double res4 = plugin.autoTuneWriteRateLimit(0D, okWriteResult, failuresAlmostAtThreshold);
+        Double res4 = plugin.autoTuneWriteRateLimit(0D, Collections.singletonList(okWriteResult), failuresAlmostAtThreshold);
         returnValue.add(res4);
 
         result = returnValue;

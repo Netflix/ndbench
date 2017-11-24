@@ -24,10 +24,13 @@ import com.netflix.ndbench.core.NdBenchDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * @author vchella
+ * Operation to write given the bulk size
+ *
+ * @author vchella, pencal
  */
 public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
     private static final Logger Logger = LoggerFactory.getLogger(WriteOperation.class);
@@ -35,18 +38,18 @@ public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
     private final NdBenchAbstractClient<W> client;
 
     public WriteOperation(NdBenchAbstractClient<W> pClient) {
-        client = pClient;
+        this.client = pClient;
     }
 
     @Override
     public boolean process(NdBenchDriver driver,
                            NdBenchMonitor stats,
-                           String key,
+                           List<String> keys,
                            AtomicReference<RateLimiter> rateLimiter,
                            boolean isAutoTuneEnabled) {
         try {
             Long startTime = System.nanoTime();
-            W result = client.writeSingle(key);
+            List<W> result = client.writeBulk(keys);
             stats.recordWriteLatency((System.nanoTime() - startTime)/1000);
 
             if (isAutoTuneEnabled) {

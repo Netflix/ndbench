@@ -8,6 +8,7 @@ import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -64,6 +65,34 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
         session.execute(batch);
         batch.clear();
         return ResultOK;
+    }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        List<String> responses = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            String response = readSingle(key);
+            responses.add(response);
+        }
+        return responses;
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        List<String> responses = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            String response = writeSingle(key);
+            responses.add(response);
+        }
+        return responses;
     }
 
     @Override

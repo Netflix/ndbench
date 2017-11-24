@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -107,6 +108,34 @@ public class GeodeCloudPlugin implements NdBenchClient{
 
     return result;
   }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        List<String> responses = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            String response = readSingle(key);
+            responses.add(response);
+        }
+        return responses;
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        List<String> responses = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            String response = writeSingle(key);
+            responses.add(response);
+        }
+        return responses;
+    }
 
   public void shutdown() throws Exception {
     if (!clientCache.isClosed()){
