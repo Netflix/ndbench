@@ -28,8 +28,6 @@ public class Log4jConfigurationTest {
         final Logger logger = LoggerFactory.getLogger(Log4jConfigurationTest .class);
         if (! logger.isTraceEnabled()) {
             throw new RuntimeException("slf4j seems not to be bound to a log4j implementation. check depdendencies!");
-        } else {
-            System.out.println("IS DEBUG ENABLED:" + logger);
         }
     }
 }

@@ -47,6 +47,17 @@ The gradlew script will pull down all necessary gradle components/infrastructure
 
 NdBench provides several default implementations ( NdBenchConfiguration, LocalClusterDiscovery etc). You can use these or choose to create your own. NdBench currently works on AWS or your local environment. We are open to contributions to support other platforms as well.
 
+
+## Build Dependencies
+
+Contributors to the Ndbench code base interested in viewing the tree of dependencies used by Gradle to build the project can invoke the command
+
+    ./gradlew allDeps
+
+This will print the dependency for each subproject.
+
+
+
 ## How to
 
 The first step before building ndbench is to configure the interfaces related to your environment in the [InjectedWebListener](https://github.com/Netflix/ndbench/blob/master/ndbench-web/src/main/java/com/netflix/ndbench/defaultimpl/InjectedWebListener.java). Checkout the [Wiki](https://github.com/Netflix/ndbench/wiki/Configuration) for further explanation on what interfaces to bind based on your environment. 
