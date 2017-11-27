@@ -20,6 +20,14 @@ apply from: file('gradle/license.gradle')
 apply from: file('gradle/release.gradle')
 */
 
+allprojects {
+    
+    // https://www.developerfeed.com/how-do-disable-low-level-logging-apache-common-packages/
+
+    // handy command display all transitive dependencies of each subproject
+    task allDeps(type: DependencyReportTask) {}
+}
+
 
 subprojects {
     apply plugin: 'nebula.netflixoss'
