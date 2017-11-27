@@ -48,14 +48,6 @@ The gradlew script will pull down all necessary gradle components/infrastructure
 NdBench provides several default implementations ( NdBenchConfiguration, LocalClusterDiscovery etc). You can use these or choose to create your own. NdBench currently works on AWS or your local environment. We are open to contributions to support other platforms as well.
 
 
-## Build Dependencies
-
-Contributors to the Ndbench code base interested in viewing the tree of dependencies used by Gradle to build the project can invoke the command
-
-    ./gradlew allDeps
-
-This will print the dependency for each subproject.
-
 
 
 ## How to
