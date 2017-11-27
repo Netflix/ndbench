@@ -152,8 +152,12 @@ class EsWriter {
             stringBuilder.append("\n");
         }
         String json = stringBuilder.toString();
-        logger.trace("bulk write payload was: {}", json);
-        restClient.performRequest("POST", "/_bulk", Collections.emptyMap(), new StringEntity(json), CONTENT_TYPE_HDR_JSON);
+        Response response = restClient.performRequest("POST", "/_bulk", Collections.emptyMap(), new StringEntity(json), CONTENT_TYPE_HDR_JSON);
+        if (logger.isTraceEnabled()) {
+            logger.trace("got response: {} after sending bulk write payload of: {}", response, json);
+        } else {
+            logger.debug("GOT response: {} after sending bulk write payload", response);
+        }
     }
 
 
@@ -164,7 +168,7 @@ class EsWriter {
                 esDocType,
                 key);
         String retval = metadata + "\n" + doc;           // yes. could do in format, but this is clearer
-        logger.debug("bulk write payload for one doc: {}", retval);
+        logger.trace("bulk write payload for one doc: {}", retval);
         return retval;
     }
 

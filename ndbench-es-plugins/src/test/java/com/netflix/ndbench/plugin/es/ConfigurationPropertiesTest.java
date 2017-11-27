@@ -1,4 +1,4 @@
-package com;
+package com.netflix.ndbench.plugin.es;
 
 import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.governator.guice.test.ModulesForTesting;
@@ -13,22 +13,25 @@ import javax.inject.Inject;
 
 /**
  * Verifies that system properties may be used to set values returned by dynamic  proxies generated from
- * {@link com.netflix.ndbench.core.config.IConfiguration},using the namespace prefix "ndbench.config."
+ * {@link IEsConfig},using the namespace prefix "ndbench.config.es".
  *
  */
 @RunWith(GovernatorJunit4ClassRunner.class)
-@ModulesForTesting({NdBenchGuiceModule.class, ArchaiusModule.class})
+@ModulesForTesting({NfndbenchEsModule.class, ArchaiusModule.class})
 public class ConfigurationPropertiesTest {
     static {
-        System.setProperty("ndbench.config.numKeys", "777");
+        System.setProperty("ndbench.config.es.connectTimeoutSeconds", "777");
     }
 
     @Inject
-    IConfiguration config;
+    IEsConfig esConfig;
 
     @Test
     public void testInvokingProcessMethodOnWriteOperationSetsNewRateLimit() throws Exception {
-        assert (config.getNumKeys() == 777);
+        assert (esConfig.getConnectTimeoutSeconds() == 777);
+        assert (esConfig.getConnectionRequestTimeoutSeconds() == 120);
+        assert (esConfig.getSocketTimeoutSeconds() == 120);
+        assert (esConfig.getMaxRetryTimeoutSeconds() == 120);
     }
 }
 
