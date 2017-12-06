@@ -24,7 +24,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 /**
  * @author vchella
  */
-@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE_NO_DOT)
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE)
 public interface IConfiguration {
 
     void initialize();
