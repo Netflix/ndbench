@@ -131,12 +131,7 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
      * @throws Exception
      */
     public List<String> readBulk(final List<String> keys) throws Exception {
-        List<String> responses = new ArrayList<>(keys.size());
-        for (String key : keys) {
-            String response = readSingle(key);
-            responses.add(response);
-        }
-        return responses;
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     /**
@@ -145,12 +140,7 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
      * @throws Exception
      */
     public List<String> writeBulk(final List<String> keys) throws Exception {
-        List<String> responses = new ArrayList<>(keys.size());
-        for (String key : keys) {
-            String response = writeSingle(key);
-            responses.add(response);
-        }
-        return responses;
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     @Override

@@ -24,6 +24,7 @@ import com.netflix.ndbench.core.NdBenchDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -49,7 +50,15 @@ public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
                            boolean isAutoTuneEnabled) {
         try {
             Long startTime = System.nanoTime();
-            List<W> result = client.writeBulk(keys);
+            List<W> result;
+            if (keys.size() > 1) {
+                // bulk
+                result = client.writeBulk(keys);
+            } else {
+                // single
+                result = new ArrayList<>(1);
+                result.add(client.writeSingle(keys.get(0)));
+            }
             stats.recordWriteLatency((System.nanoTime() - startTime)/1000);
 
             if (isAutoTuneEnabled) {

@@ -188,12 +188,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
      * @throws Exception
      */
     public List<String> readBulk(final List<String> keys) throws Exception {
-        List<String> responses = new ArrayList<>(keys.size());
-        for (String key : keys) {
-            String response = readSingle(key);
-            responses.add(response);
-        }
-        return responses;
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     /**
@@ -202,12 +197,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
      * @throws Exception
      */
     public List<WriteResult> writeBulk(final List<String> keys) throws Exception {
-        List<WriteResult> responses = new ArrayList<>(keys.size());
-        for (String key : keys) {
-            WriteResult response = writeSingle(key);
-            responses.add(response);
-        }
-        return responses;
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     @Override
