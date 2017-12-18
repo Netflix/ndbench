@@ -30,6 +30,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
     // settings
     protected static String ClusterName, KeyspaceName, TableName, ClusterContactPoint;
+    int port;
 
     protected ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
@@ -53,6 +54,8 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
         ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cluster").asString("localhost").get();
         ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.host").asString("127.0.0.1").get();
+
+        port = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.host.port").asInteger(9042).get();
         KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.keyspace").asString("dev1").get();
         TableName =propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname").asString("emp").get();
 
@@ -88,7 +91,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
         Logger.info("Cassandra  Cluster: " + ClusterName);
 
-        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint);
+        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint, port);
         this.session = cassJavaDriverManager.getSession(cluster);
 
         upsertKeyspace(this.session);
