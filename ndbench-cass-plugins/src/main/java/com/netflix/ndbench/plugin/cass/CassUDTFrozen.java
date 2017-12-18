@@ -49,14 +49,14 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin {
 
     @Override
     void preInit() {
-        ADDRESS_TYPE  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.udt.address_type").asString("address_type").get();
-        FULLNAME_TYPE  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.udt.fullname_type").asString("fullname_type").get();
-        EMAIL_TYPE  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.udt.email_type").asString("email_type").get();
+        ADDRESS_TYPE  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE+"cass.udt.address_type").asString("address_type").get();
+        FULLNAME_TYPE  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE+"cass.udt.fullname_type").asString("fullname_type").get();
+        EMAIL_TYPE  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE+"cass.udt.email_type").asString("email_type").get();
 
 
-        randomReads = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.udt.randomReads").asBoolean(true).get();
+        randomReads = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE+"cass.udt.randomReads").asBoolean(true).get();
 
-        randomWrites = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.udt.randomWrites").asBoolean(true).get();
+        randomWrites = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE+"cass.udt.randomWrites").asBoolean(true).get();
 
     }
     @Inject
