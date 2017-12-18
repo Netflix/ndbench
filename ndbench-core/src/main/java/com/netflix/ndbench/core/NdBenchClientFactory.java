@@ -20,7 +20,6 @@ package com.netflix.ndbench.core;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
-import com.netflix.ndbench.api.plugin.NdBenchClient;
 
 import java.util.Map;
 import java.util.Set;

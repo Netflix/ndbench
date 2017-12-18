@@ -81,7 +81,7 @@ public class NDBenchConfigResource {
             {
                 if (entry.getKey()!=null && !entry.getKey().isEmpty()
                         && entry.getValue()!=null && !entry.getValue().isEmpty()) {
-                    settableConfig.setProperty(NdBenchConstants.PROP_PREFIX + entry.getKey(), entry.getValue());
+                    settableConfig.setProperty(NdBenchConstants.PROP_NAMESPACE + entry.getKey(), entry.getValue());
 
                 }
             }
@@ -128,7 +128,7 @@ public class NDBenchConfigResource {
                 if (entry.getKey()!=null && !entry.getKey().isEmpty()
                         && entry.getValue()!=null && !entry.getValue().isEmpty()) {
 
-                        settableConfig.setProperty(NdBenchConstants.PROP_PREFIX +entry.getKey(), entry.getValue());
+                        settableConfig.setProperty(NdBenchConstants.PROP_NAMESPACE +entry.getKey(), entry.getValue());
                     switch (entry.getKey())
                     {
                         case NdBenchConstants.READ_RATE_LIMIT:

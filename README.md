@@ -11,12 +11,14 @@
 
 
 ## Client APIs
-* Cassandra (Thrift and CQL)
+* Apache Cassandra (Thrift and CQL)
 * Redis
-* Dynomite with Redis
+* Netflix Dynomite (Redis API)
 * Elasticsearch
 * Elassandra
 * Geode
+* JanusGraph
+* Netflix EVCache (Memcache API)
 
 ## Features
    * Dynamically change the benchmark configurations while the test is running, hence perform tests along with our production microservices.
@@ -44,6 +46,9 @@ NdBench comes with a Gradle wrapper
 The gradlew script will pull down all necessary gradle components/infrastructure automatically, then run the build.
 
 NdBench provides several default implementations ( NdBenchConfiguration, LocalClusterDiscovery etc). You can use these or choose to create your own. NdBench currently works on AWS or your local environment. We are open to contributions to support other platforms as well.
+
+
+
 
 ## How to
 
