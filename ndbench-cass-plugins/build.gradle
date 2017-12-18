@@ -8,5 +8,9 @@ dependencies {
     compile group: 'com.netflix.astyanax', name: 'astyanax-thrift', version: 'latest.release'
     compile group: 'com.netflix.astyanax', name: 'astyanax-cassandra', version: 'latest.release'
 
+    //Support Cassandra  UDT
+    compile 'com.datastax.cassandra:cassandra-driver-mapping:3.+'
+    compile 'com.datastax.cassandra:cassandra-driver-extras:3.+'
+
 
 }
