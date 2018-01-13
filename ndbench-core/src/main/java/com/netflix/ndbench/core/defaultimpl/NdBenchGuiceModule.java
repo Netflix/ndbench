@@ -52,7 +52,6 @@ public class NdBenchGuiceModule extends AbstractModule {
         }
         bind(DataGenerator.class).to(DefaultDataGenerator.class);
         bind(NdbenchConfigListener.class).asEagerSingleton();
-        bind(IClusterDiscovery.class).to(AwsAsgDiscovery.class);
 
     }
 
