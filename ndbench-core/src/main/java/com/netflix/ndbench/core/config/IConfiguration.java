@@ -24,10 +24,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 /**
  * @author vchella
  */
-@Configuration(prefix = "ndbench.config")
-
-// TODO - consider this.. eliminates a harded coded string in favor of rolling up to constant
-//@Configuration(prefix = NdBenchConstants.PROP_PREFIX)
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE)
 public interface IConfiguration {
 
     void initialize();
@@ -113,6 +110,13 @@ public interface IConfiguration {
     @DefaultValue("1000")
     Integer getAutoTuneFinalWriteRate();
 
-
+    /**
+     *
+     * Threshold write failure ratio beyond which no auto-tune increase will occur. By default if failure rate is
+     * grows larger than 1% auto tune triggered rate increases will cease.
+     *
+     */
+    @DefaultValue("0.01")
+    Float getAutoTuneWriteFailureRatioThreshold();
 
 }

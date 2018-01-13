@@ -1,37 +1,25 @@
 package org.libex.test.google;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentMap;
-
-import javax.annotation.Nullable;
-
-import junit.framework.Assert;
-import junit.framework.AssertionFailedError;
-
 import com.google.common.base.Converter;
 import com.google.common.base.Objects;
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.MutableClassToInstanceMap;
+import com.google.common.collect.*;
 import com.google.common.reflect.Invokable;
 import com.google.common.reflect.Parameter;
 import com.google.common.reflect.Reflection;
 import com.google.common.reflect.TypeToken;
 import com.google.common.testing.ArbitraryInstances;
 import com.google.common.testing.NullPointerTester.Visibility;
+import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
+
+import javax.annotation.Nullable;
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentMap;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This is a modified version of {@link com.google.common.testing.NullPointerTester} to enable configuration

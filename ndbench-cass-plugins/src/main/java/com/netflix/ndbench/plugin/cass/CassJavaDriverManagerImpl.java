@@ -15,10 +15,11 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
     Session session;
 
     @Override
-    public Cluster registerCluster(String clName, String contactPoint) {
+    public Cluster registerCluster(String clName, String contactPoint, int port) {
         cluster = Cluster.builder()
                 .withClusterName(clName)
                 .addContactPoint(contactPoint)
+                .withPort(port)
                 .build();
         return cluster;
     }

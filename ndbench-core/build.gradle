@@ -27,10 +27,6 @@ dependencies {
     testCompile 'com.google.guava:guava-testlib:17'
     testCompile 'com.google.guava:guava-testlib:17.0'
     testCompile 'org.mockito:mockito-all:1.+'
-    
-
-
-
-    
-
+    testCompile 'org.mockito:mockito-all:1.+'
+    testCompile 'commons-io:commons-io:2.4'
 }

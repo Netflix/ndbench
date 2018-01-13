@@ -30,6 +30,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
     // settings
     protected static String ClusterName, KeyspaceName, TableName, ClusterContactPoint;
+    int port;
 
     protected ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
@@ -51,15 +52,16 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
     public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
 
-        ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.keyspace").asString("dev1").get();
-        TableName =propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.cfname").asString("emp").get();
+        ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cluster").asString("localhost").get();
+        ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.host").asString("127.0.0.1").get();
+        KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.keyspace").asString("dev1").get();
+        TableName =propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cfname").asString("emp").get();
+        port = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE + "cass.host.port").asInteger(9042).get();
 
-        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
-        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
 
-       MaxColCount  = propertyFactory.getProperty(NdBenchConstants.PROP_PREFIX+"cass.colsPerRow").asLong(100L).get();
+       MaxColCount  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.colsPerRow").asLong(100L).get();
 
        preInit();
        initDriver();
@@ -88,7 +90,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
         Logger.info("Cassandra  Cluster: " + ClusterName);
 
-        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint);
+        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint, port);
         this.session = cassJavaDriverManager.getSession(cluster);
 
         upsertKeyspace(this.session);
