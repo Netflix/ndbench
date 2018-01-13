@@ -228,6 +228,11 @@ public class AbstractPluginTest {
                 return maxAcceptableWriteFailures;
             }
 
+            @Override
+            public String getASGName() {
+                return null;
+            }
+
         };
     }
 }

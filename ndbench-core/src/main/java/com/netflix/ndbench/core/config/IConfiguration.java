@@ -119,4 +119,5 @@ public interface IConfiguration {
     @DefaultValue("0.01")
     Float getAutoTuneWriteFailureRatioThreshold();
 
+    String getASGName();
 }
