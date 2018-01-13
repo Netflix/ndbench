@@ -39,48 +39,13 @@ public class AWSLocalClusterDiscovery implements IClusterDiscovery {
 
     @Override
     public List<String> getApps() {
-        return Arrays.asList(getLocalhostName());
+        return Arrays.asList(AWSUtil.getLocalhostName());
     }
 
-    private String getLocalhostName() {
-    	String urlPublic = "http://169.254.169.254/latest/meta-data/public-hostname";
-    	String urlLocal = "http://169.254.169.254/latest/meta-data/local-hostname";
-        try {
-    		return parseAwsMetadataByURL(urlPublic);
-        }
-        catch (Exception e) {
-            logger.error("Unable to get the public hostname name. Trying local...",e);
-            return parseAwsMetadataByURL(urlLocal);
-        }
-    }
 
-	private String parseAwsMetadataByURL(String urlPublic){
-		BufferedReader in = null;
-		try{
-			HttpURLConnection con = (HttpURLConnection) new URL(urlPublic).openConnection();
-			con.setRequestMethod("GET");
-
-			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			String inputLine;
-			StringBuffer response = new StringBuffer();
-			while ((inputLine = in.readLine()) != null) {
-				response.append(inputLine);
-			}
-			return response.toString().trim();
-		}catch(Exception e){
-			throw new RuntimeException(e);
-		}finally{
-			try {
-				in.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-    
     @Override
     public List<String> getEndpoints(String appName, int defaultPort) {
-        return Arrays.asList(getLocalhostName()+":"+defaultPort);
+        return Arrays.asList(AWSUtil.getLocalhostName()+":"+defaultPort);
     }
 
 }
