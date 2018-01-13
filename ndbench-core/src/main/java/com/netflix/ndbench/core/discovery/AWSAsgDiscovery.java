@@ -25,46 +25,60 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * AWSAsgDiscovery assumes you have enough permissions to run autoscaling:DescribeAutoScalingInstances and
+ * describeInstances request on AWS.
+ *
+ * This class also assumes that NdBench is deployed in an ASG.
+ *
+ * <b>Important:</b> Be sure to fill in your AWS access credentials in
+ * ~/.aws/credentials (C:\Users\USER_NAME\.aws\credentials for Windows
+ * users) before you try to run this sample.
  * @author vchella
  */
-public class AWSAsgDiscovery  implements IClusterDiscovery {
+public class AwsAsgDiscovery implements IClusterDiscovery {
     private static final Logger logger = LoggerFactory.getLogger(LocalClusterDiscovery.class.getName());
 
     IConfiguration config;
     @Inject
-    public AWSAsgDiscovery(IConfiguration configuration)
+    public AwsAsgDiscovery(IConfiguration configuration)
     {
         this.config = configuration;
     }
     @Override
     public List<String> getApps() {
-        return Arrays.asList("TESTING");
+        return Arrays.asList(getCurrentAsgName());
     }
 
     @Override
     public List<String> getEndpoints(String appName, int defaultPort) {
 
-        return getRacMembership();
+        return getRacMembership().stream().map(s -> s+":"+defaultPort).collect(Collectors.toList());
 
     }
 
     public List<String> getRacMembership()
     {
         List<String> instanceIps = new LinkedList<>();
+
+
+         /*
+         * Create your credentials file at ~/.aws/credentials (C:\Users\USER_NAME\.aws\credentials for Windows users)
+         * and save the following lines after replacing the underlined values with your own.
+         *
+         * [default]
+         * aws_access_key_id = YOUR_ACCESS_KEY_ID
+         * aws_secret_access_key = YOUR_SECRET_ACCESS_KEY
+         */
+
         AmazonAutoScaling client = null;
         AmazonEC2 ec2Client = null;
+
         try
         {
-            client = AmazonAutoScalingClientBuilder.standard().build();
+            client = getAutoScalingClient();
             ec2Client = AmazonEC2ClientBuilder.standard().build();
 
-            DescribeAutoScalingInstancesRequest asgInsReq = new DescribeAutoScalingInstancesRequest()
-                    .withInstanceIds(AWSUtil.getLocalInstanceId());
-
-            DescribeAutoScalingInstancesResult asgInsRes = client.describeAutoScalingInstances(asgInsReq);
-            String myAsgName = asgInsRes.getAutoScalingInstances().get(0).getAutoScalingGroupName();
-
-
+            String myAsgName = getCurrentAsgName();
 
             DescribeAutoScalingGroupsRequest asgReq = new DescribeAutoScalingGroupsRequest().withAutoScalingGroupNames(myAsgName);
 
@@ -97,7 +111,7 @@ public class AWSAsgDiscovery  implements IClusterDiscovery {
         }
         catch (Exception e)
         {
-            logger.error("Exception in getting private IPs",e);
+            logger.error("Exception in getting private IPs from current ASG",e);
         }
         finally
         {
@@ -108,5 +122,21 @@ public class AWSAsgDiscovery  implements IClusterDiscovery {
         }
         return instanceIps;
     }
+
+    private String getCurrentAsgName()
+    {
+        DescribeAutoScalingInstancesRequest asgInsReq = new DescribeAutoScalingInstancesRequest()
+                .withInstanceIds(AWSUtil.getLocalInstanceId());
+
+        DescribeAutoScalingInstancesResult asgInsRes = getAutoScalingClient().describeAutoScalingInstances(asgInsReq);
+        String myAsgName = asgInsRes.getAutoScalingInstances().get(0).getAutoScalingGroupName();
+        return myAsgName!=null && myAsgName.length() > 0 ? myAsgName : "NdBench_Aws_cluster";
+    }
+
+    protected AmazonAutoScaling getAutoScalingClient() {
+        AmazonAutoScaling client = AmazonAutoScalingClientBuilder.standard().build();
+        return client;
+    }
+
 
 }

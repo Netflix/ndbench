@@ -40,17 +40,19 @@ public class NdBenchGuiceModule extends AbstractModule {
     protected void configure() {
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
         String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
-//        Logger.info("DISCOVERY_ENV is set to: " + discoveryEnv);
-//        if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_CF)) {
-//            bind(IClusterDiscovery.class).to(CfClusterDiscovery.class);
-//        } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {
-//            bind(IClusterDiscovery.class).to(AWSAsgDiscovery.class);
-//        } else {
-//            bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
-//        }
+        Logger.info("DISCOVERY_ENV is set to: " + discoveryEnv);
+        if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_CF)) {
+            bind(IClusterDiscovery.class).to(CfClusterDiscovery.class);
+        } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {
+            bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
+        } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS_ASG)) {
+            bind(IClusterDiscovery.class).to(AwsAsgDiscovery.class);
+        } else {
+            bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
+        }
         bind(DataGenerator.class).to(DefaultDataGenerator.class);
         bind(NdbenchConfigListener.class).asEagerSingleton();
-        bind(IClusterDiscovery.class).to(AWSAsgDiscovery.class);
+        bind(IClusterDiscovery.class).to(AwsAsgDiscovery.class);
 
     }
 
