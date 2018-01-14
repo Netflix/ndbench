@@ -29,4 +29,11 @@ dependencies {
     testCompile 'org.mockito:mockito-all:1.+'
     testCompile 'org.mockito:mockito-all:1.+'
     testCompile 'commons-io:commons-io:2.4'
+
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-autoscaling
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-autoscaling', version: '1.11.261'
+
+    // https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-ec2
+    compile group: 'com.amazonaws', name: 'aws-java-sdk-ec2', version: '1.11.261'
+
 }

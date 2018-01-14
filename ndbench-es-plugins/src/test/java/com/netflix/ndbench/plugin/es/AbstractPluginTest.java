@@ -227,6 +227,7 @@ public class AbstractPluginTest {
             public Float getAutoTuneWriteFailureRatioThreshold() {
                 return maxAcceptableWriteFailures;
             }
+            
 
         };
     }
