@@ -102,7 +102,7 @@ public class AwsAsgDiscovery implements IClusterDiscovery {
             instanceIps =  insRes.getReservations().get(0)
                     .getInstances()
                     .stream()
-                    .map(Instance::getPrivateIpAddress)
+                    .map(Instance::getPublicDnsName)
                     .collect(Collectors.toList());
 
 
