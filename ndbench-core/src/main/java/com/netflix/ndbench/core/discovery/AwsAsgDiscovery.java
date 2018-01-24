@@ -11,6 +11,7 @@ import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
+import com.amazonaws.services.ec2.model.Reservation;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.netflix.ndbench.core.config.IConfiguration;
@@ -99,13 +100,10 @@ public class AwsAsgDiscovery implements IClusterDiscovery {
 
             DescribeInstancesResult insRes = ec2Client.describeInstances(insReq);
 
-            instanceIps =  insRes.getReservations().get(0)
-                    .getInstances()
-                    .stream()
+            instanceIps =  insRes.getReservations().stream()
+                    .flatMap(r -> r.getInstances().stream())
                     .map(Instance::getPublicDnsName)
                     .collect(Collectors.toList());
-
-
 
             return instanceIps;
         }
