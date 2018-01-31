@@ -7,18 +7,21 @@ import com.amazonaws.services.autoscaling.AmazonAutoScaling;
 import com.amazonaws.services.autoscaling.AmazonAutoScalingClientBuilder;
 import com.amazonaws.services.autoscaling.model.*;
 import com.amazonaws.services.ec2.AmazonEC2;
+import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.ec2.AmazonEC2ClientBuilder;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-import com.amazonaws.services.ec2.model.Instance;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.netflix.ndbench.core.config.IConfiguration;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.amazonaws.services.ec2.model.Instance;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +58,9 @@ public class AwsAsgDiscovery implements IClusterDiscovery {
 
     public List<String> getRacMembership()
     {
+        List<String> instanceIps = new LinkedList<>();
+
+
          /*
          * Create your credentials file at ~/.aws/credentials (C:\Users\USER_NAME\.aws\credentials for Windows users)
          * and save the following lines after replacing the underlined values with your own.
@@ -93,17 +99,19 @@ public class AwsAsgDiscovery implements IClusterDiscovery {
 
             DescribeInstancesResult insRes = ec2Client.describeInstances(insReq);
 
-            Set<String> instanceDnsNames = insRes.getReservations().stream()
-                    .flatMap(r -> r.getInstances().stream())
-                    .map(Instance::getPublicDnsName)
-                    .collect(Collectors.toSet());
+            instanceIps =  insRes.getReservations().get(0)
+                    .getInstances()
+                    .stream()
+                    .map(Instance::getPrivateIpAddress)
+                    .collect(Collectors.toList());
 
-            return new ArrayList<>(instanceDnsNames);
+
+
+            return instanceIps;
         }
         catch (Exception e)
         {
             logger.error("Exception in getting private IPs from current ASG",e);
-            return Collections.emptyList();
         }
         finally
         {
@@ -112,6 +120,7 @@ public class AwsAsgDiscovery implements IClusterDiscovery {
             if(ec2Client !=null)
                 ec2Client.shutdown();
         }
+        return instanceIps;
     }
 
     private String getCurrentAsgName()
