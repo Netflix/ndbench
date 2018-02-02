@@ -24,7 +24,9 @@ configurations {
 }
 
 task integrationTest(type: Test) {
-    testClassesDir = sourceSets.integrationTest.output.classesDir
+    description = 'ES Integeration test running within Docker container'
+    //location for ALL the compiled tests
+    testClassesDirs = sourceSets.integrationTest.output
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
