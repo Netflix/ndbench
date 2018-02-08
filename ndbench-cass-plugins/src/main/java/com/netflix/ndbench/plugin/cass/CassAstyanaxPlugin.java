@@ -36,11 +36,9 @@ import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.netflix.ndbench.api.plugin.common.NdBenchConstants.PROP_NAMESPACE;
