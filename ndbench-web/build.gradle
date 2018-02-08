@@ -4,7 +4,9 @@ apply plugin: "org.akhikhl.gretty"
 dependencies {
     compile project(':ndbench-core')
     compile project(':ndbench-api')
-    compile project(':ndbench-cass-plugins')
+    compile (project(':ndbench-cass-plugins')) {
+        exclude group: 'ch.qos.logback'
+    }
     compile project(':ndbench-dyno-plugins')
     compile project(':ndbench-sample-plugins')
     compile project(':ndbench-es-plugins')

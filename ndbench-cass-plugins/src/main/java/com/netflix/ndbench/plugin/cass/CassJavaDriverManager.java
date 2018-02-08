@@ -12,7 +12,7 @@ import com.google.inject.ImplementedBy;
  */
 @ImplementedBy(CassJavaDriverManagerImpl.class)
 public interface CassJavaDriverManager {
-    Cluster registerCluster(String clName, String contactPoint);
+    Cluster registerCluster(String clName, String contactPoint, int port);
 
     Session getSession(Cluster cluster);
 

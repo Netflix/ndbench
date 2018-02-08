@@ -22,8 +22,7 @@ package com.netflix.ndbench.api.plugin.common;
  */
 public final class NdBenchConstants {
     public static final String WEBAPP_NAME = "ndbench";
-    public static final String PROP_NAMESPACE_NO_DOT = WEBAPP_NAME + ".config";
-    public static final String PROP_NAMESPACE =  PROP_NAMESPACE_NO_DOT + ".";
+    public static final String PROP_NAMESPACE =  (WEBAPP_NAME + ".config") + ".";
 
     public static final String NUM_KEYS="numKeys";
     public static final String NUM_VALUES="numValues";
@@ -53,5 +52,6 @@ public final class NdBenchConstants {
     public static final String DISCOVERY_ENV="DISCOVERY_ENV";
     public static final String DISCOVERY_ENV_CF="CF";
     public static final String DISCOVERY_ENV_AWS="AWS";
+    public static final String DISCOVERY_ENV_AWS_ASG="AWS_ASG";
 
 }

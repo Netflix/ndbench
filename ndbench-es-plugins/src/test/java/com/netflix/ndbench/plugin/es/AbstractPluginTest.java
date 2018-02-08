@@ -87,6 +87,26 @@ public class AbstractPluginTest {
                 return indexRollsPerHour;
             }
 
+            @Override
+            public Integer getConnectTimeoutSeconds() {
+                return 120;
+            }
+
+            @Override
+            public Integer getConnectionRequestTimeoutSeconds() {
+                return 120;
+            }
+
+            @Override
+            public Integer getSocketTimeoutSeconds() {
+                return 120;
+            }
+
+            @Override
+            public Integer getMaxRetryTimeoutSeconds() {
+                return 120;
+            }
+
         };
     }
 
@@ -207,6 +227,7 @@ public class AbstractPluginTest {
             public Float getAutoTuneWriteFailureRatioThreshold() {
                 return maxAcceptableWriteFailures;
             }
+            
 
         };
     }

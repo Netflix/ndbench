@@ -3,10 +3,18 @@ dependencies {
     compile project(':ndbench-core')
 
     // JanusGraph
-    compile 'org.janusgraph:janusgraph-core:0.2.0'
-    compile 'org.janusgraph:janusgraph-cassandra:0.2.0'
-    compile 'org.janusgraph:janusgraph-cql:0.2.0'
-    compile 'org.janusgraph:janusgraph-es:0.2.0'
+    compile ('org.janusgraph:janusgraph-core:0.2.0') {
+        exclude group: 'ch.qos.logback'
+    }
+    compile ('org.janusgraph:janusgraph-cassandra:0.2.0') {
+        exclude group: 'ch.qos.logback'
+    }
+    compile ('org.janusgraph:janusgraph-cql:0.2.0') {
+        exclude group: 'ch.qos.logback'
+    }
+    compile ('org.janusgraph:janusgraph-es:0.2.0') {
+        exclude group: 'ch.qos.logback'
+    }
 
     // Elastic Search
     compile 'org.elasticsearch:elasticsearch:5.6.3'

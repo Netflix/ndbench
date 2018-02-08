@@ -11,8 +11,10 @@ import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
+import org.apache.http.client.config.RequestConfig;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.elasticsearch.client.RestClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,23 +91,35 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     public synchronized void init(DataGenerator dataGenerator) throws Exception {
         if (esConfig.getRestClientPort() == 443 && !esConfig.isHttps()) {
             throw new IllegalArgumentException(
-                    "You must set the fast property 'https' to true if you use the https default port");
+                    "You must set the configuration property 'https' to true if you use the https default port");
         }
 
         Integer indexRollsPerHour = esConfig.getIndexRollsPerDay();
         if (indexRollsPerHour < 0 || indexRollsPerHour > MAX_INDEX_ROLLS_PER_HOUR) {
             throw new IllegalArgumentException(
-                    "The fast property 'indexRollsPerHour' must be > 0 and <= " + MAX_INDEX_ROLLS_PER_HOUR);
+                    "The configuration property 'indexRollsPerHour' must be > 0 and <= " + MAX_INDEX_ROLLS_PER_HOUR);
         }
+
         if (indexRollsPerHour > 0 && 60 % indexRollsPerHour != 0) {
-            throw new IllegalArgumentException( "The fast property 'indexRollsPerHour' must evenly divide 60");
+            throw new IllegalArgumentException( "The configuration property 'indexRollsPerHour' must evenly divide 60");
         }
         if (esConfig.getBulkWriteBatchSize() < 0) {
             throw new IllegalArgumentException( "bulkWriteBatchSize can't be negative'");
         }
 
+        RestClientBuilder.RequestConfigCallback callback = requestConfigBuilder -> {
+            requestConfigBuilder.setConnectTimeout(esConfig.getConnectTimeoutSeconds() * 1000);
+            requestConfigBuilder.setConnectionRequestTimeout(esConfig.getConnectionRequestTimeoutSeconds() * 1000);
+            requestConfigBuilder.setSocketTimeout(esConfig.getSocketTimeoutSeconds()* 1000) ;
+            return requestConfigBuilder;
+        };
         List<HttpHost> endpoints = getEndpoints(discoverer, esConfig);
-        restClient = RestClient.builder(endpoints.toArray(new HttpHost[0])).build();
+        HttpHost[] hosts = endpoints.toArray(new HttpHost[0]);
+        restClient =
+                RestClient.builder(hosts).
+                        setMaxRetryTimeoutMillis(esConfig.getMaxRetryTimeoutSeconds() * 1000).
+                        setRequestConfigCallback( callback ).
+                        build();
 
         String hostname = endpoints.get(0).getHostName();
         ES_HOST_PORT = String.format("%s://%s:%s", getScheme(), hostname, esConfig.getRestClientPort());
