@@ -11,6 +11,7 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 /**
@@ -123,6 +124,24 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin {
         session.execute(batch);
         batch.clear();
         return ResultOK;
+    }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     private BoundStatement getBStmtTable1(String key) {

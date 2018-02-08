@@ -40,6 +40,9 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.netflix.ndbench.api.plugin.common.NdBenchConstants.PROP_NAMESPACE;
 
 
@@ -179,6 +182,24 @@ public class CassAstyanaxPlugin implements NdBenchClient{
         Logger.info("Shutting down CassAstyanaxPlugin");
         context.shutdown();
 
+    }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     /**

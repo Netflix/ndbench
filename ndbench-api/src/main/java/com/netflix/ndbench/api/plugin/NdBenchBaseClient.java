@@ -18,19 +18,31 @@
 package com.netflix.ndbench.api.plugin;
 
 
+import java.util.List;
+
 /**
- * @author vchella
+ * @author vchella, pencal
  */
 public abstract class NdBenchBaseClient implements NdBenchClient {
 
     @Override
-    public String readSingle(String key) throws Exception {
+    public String readSingle(final String key) throws Exception {
         return null;
     }
 
 
     @Override
-    public String writeSingle(String key) throws Exception {
+    public String writeSingle(final String key) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        return null;
+    }
+
+    @Override
+    public List<String> writeBulk(final List<String> keys) throws Exception {
         return null;
     }
 

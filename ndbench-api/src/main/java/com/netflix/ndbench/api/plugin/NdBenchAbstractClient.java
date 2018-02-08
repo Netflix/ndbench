@@ -17,6 +17,8 @@
 
 package com.netflix.ndbench.api.plugin;
 
+import java.util.List;
+
 /**
  * Defines default methods that provide a hook point for Auto-tuning, more information for which may be found
  * <a href="http://github.com/Netflix/ndbench/wiki/Configuration">here</a>.
@@ -27,6 +29,8 @@ package com.netflix.ndbench.api.plugin;
  * to the type that heretofore has been returned by all clients implementing the writeSingle method (namely: String.)
  *
  * @param <W> - the type of the result returned by {@link #writeSingle}
+ *
+ * @author vchella, pencal
  */
 public interface NdBenchAbstractClient<W> {
 
@@ -45,6 +49,13 @@ public interface NdBenchAbstractClient<W> {
      */
     String readSingle(final String key) throws Exception;
 
+    /**
+     * Perform a bulk read operation given the list of keys
+     *
+     * @return
+     * @throws Exception
+     */
+    List<String> readBulk(final List<String> keys) throws Exception;
 
     /**
      * Perform a single write operation
@@ -54,6 +65,13 @@ public interface NdBenchAbstractClient<W> {
      */
     W writeSingle(final String key) throws Exception;
 
+    /**
+     * Perform bulk write operation given the list of keys
+     *
+     * @param keys
+     * @return
+     */
+    List<W> writeBulk(final List<String> keys) throws Exception;
 
     /**
      * shutdown the client
@@ -94,14 +112,14 @@ public interface NdBenchAbstractClient<W> {
      * @return - the new suggested rate limit -- ignored by driver if less-than-or-equal-to 0.
      */
 
-    default Double autoTuneWriteRateLimit(Double currentRateLimit, W event, NdBenchMonitor runStats) {
+    default Double autoTuneWriteRateLimit(Double currentRateLimit, List<W> event, NdBenchMonitor runStats) {
         return -1D;
     }
 
     /**
      * See documentation for {@link #autoTuneWriteRateLimit}
      */
-    default double autoTuneReadRateLimit(double currentRateLimit, W event, NdBenchMonitor runStats) {
+    default double autoTuneReadRateLimit(double currentRateLimit, List<W> event, NdBenchMonitor runStats) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 }

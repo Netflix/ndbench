@@ -35,6 +35,8 @@ import com.netflix.ndbench.core.util.LoadPattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -113,22 +115,22 @@ public class NdBenchDriver {
     }
 
 
-    public void start(LoadPattern loadPattern, int windowSize, long windowDurationInSec) {
+    public void start(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         Logger.info("Starting Load Test Driver...");
-        startWrites(loadPattern, windowSize, windowDurationInSec);
-        startReads(loadPattern, windowSize, windowDurationInSec);
+        startWrites(loadPattern, windowSize, windowDurationInSec, bulkSize);
+        startReads(loadPattern, windowSize, windowDurationInSec, bulkSize);
     }
 
-    public void startReads(LoadPattern loadPattern, int windowSize, long windowDurationInSec) {
+    public void startReads(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         if (readsStarted.get()) {
             Logger.info("Reads already started ... ignoring");
             return;
         }
-        startReadsInternal(loadPattern, windowSize, windowDurationInSec);
+        startReadsInternal(loadPattern, windowSize, windowDurationInSec, bulkSize);
     }
 
 
-    private void startReadsInternal(LoadPattern loadPattern, int windowSize, long windowDurationInSec) {
+    private void startReadsInternal(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         Logger.info("Starting NdBenchDriver reads...");
         NdBenchOperation operation;
 
@@ -149,20 +151,21 @@ public class NdBenchDriver {
                 readLimiter,
                 operation,
                 keyGenerator,
-                config.isAutoTuneEnabled());
+                config.isAutoTuneEnabled(),
+                bulkSize);
         readsStarted.set(true);
     }
 
-    public void startWrites(LoadPattern loadPattern, int windowSize, long windowDurationInSec) {
+    public void startWrites(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         if (writesStarted.get()) {
             Logger.info("Writes already started ... ignoring");
             return;
         }
 
-        startWritesInternal(loadPattern, windowSize, windowDurationInSec);
+        startWritesInternal(loadPattern, windowSize, windowDurationInSec, bulkSize);
     }
 
-    private void startWritesInternal(LoadPattern loadPattern, int windowSize, long windowDurationInSec) {
+    private void startWritesInternal(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         Logger.info("Starting NdBenchDriver writes...");
         NdBenchOperation operation;
 
@@ -182,7 +185,8 @@ public class NdBenchDriver {
                 writeLimiter,
                 operation,
                 keyGenerator,
-                config.isAutoTuneEnabled());
+                config.isAutoTuneEnabled(),
+                bulkSize);
 
         writesStarted.set(true);
     }
@@ -207,10 +211,11 @@ public class NdBenchDriver {
                                 final AtomicReference<RateLimiter> rateLimiter,
                                 final NdBenchOperation operation,
                                 final KeyGenerator<String> keyGenerator,
-                                Boolean isAutoTuneEnabled) {
+                                Boolean isAutoTuneEnabled,
+                                int bulkSize) {
 
         if (!operationEnabled) {
-            Logger.info("Operation : " + operation.getClass().getSimpleName() + " not enabled, ignoring");
+            Logger.info("Operation : {} not enabled, ignoring", operation.getClass().getSimpleName());
             return;
         }
         keyGenerator.init();
@@ -225,37 +230,46 @@ public class NdBenchDriver {
 
         for (int i = 0; i < numWorkersConfig; i++) {
 
-            threadPool.submit(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
+            threadPool.submit((Callable<Void>) () -> {
 
-                    while (!Thread.currentThread().isInterrupted()) {
-                        if ((operation.isReadType() && readsStarted.get()) ||
-                                (operation.isWriteType() && writesStarted.get())) {
-                            if (rateLimiter.get().tryAcquire()) {
-                                //Logger.info("operating at rate {} at {}", rateLimiter.get().getRate(), new Date().getTime());
-                                operation.process(
-                                        NdBenchDriver.this,
-                                        ndBenchMonitor,
-                                        keyGenerator.getNextKey(),
-                                        rateLimiter,
-                                        isAutoTuneEnabled);
-                            }
+                while (!Thread.currentThread().isInterrupted()) {
+                    boolean noMoreKey = false;
+
+                    if ((operation.isReadType() && readsStarted.get()) ||
+                            (operation.isWriteType() && writesStarted.get())) {
+                        if (rateLimiter.get().tryAcquire()) {
+
+                            List<String> keys = new ArrayList<>(bulkSize);
+                            for (int j = 0; j < bulkSize; j++) {
+                                keys.add(keyGenerator.getNextKey());
+                                if (!keyGenerator.hasNextKey()) {
+                                    noMoreKey = true;
+                                    break;
+                                }
+                            } // eo keygens
+
+                            operation.process(
+                                    NdBenchDriver.this,
+                                    ndBenchMonitor,
+                                    keys,
+                                    rateLimiter,
+                                    isAutoTuneEnabled);
+                        } // eo rateLimiter tryGet
+                    } // eo if read or write
+
+                    if (noMoreKey) {
+                        Logger.info("No more keys to process, hence stopping the process.");
+                        if (operation.isReadType()) {
+                            stopReads();
+                        } else if (operation.isWriteType()) {
+                            stopWrites();
                         }
-                        if (!keyGenerator.hasNextKey()) {
-                            Logger.info("No more keys to process, hence stopping the process.");
-                            if (operation.isReadType()) {
-                                stopReads();
-                            } else if (operation.isWriteType()) {
-                                stopWrites();
-                            }
-                            Thread.currentThread().interrupt();
-                            break;
-                        }
-                    }
-                    Logger.info("NdBenchWorker shutting down");
-                    return null;
-                }
+                        Thread.currentThread().interrupt();
+                        break;
+                    } // eo if noMoreKey
+                } // eo while thread not interrupted
+                Logger.info("NdBenchWorker shutting down");
+                return null;
             });
             numWorkers.incrementAndGet();
         }
@@ -323,7 +337,7 @@ public class NdBenchDriver {
     public interface NdBenchOperation {
         boolean process(NdBenchDriver driver,
                         NdBenchMonitor monitor,
-                        String key,
+                        List<String> keys,
                         AtomicReference<RateLimiter> rateLimiter,
                         boolean isAutoTuneEnabled);
 

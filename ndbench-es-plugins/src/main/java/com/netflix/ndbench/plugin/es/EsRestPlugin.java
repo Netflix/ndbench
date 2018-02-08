@@ -196,6 +196,24 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
         return RESULT_OK;
     }
 
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<WriteResult> writeBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
     @Override
     public void shutdown() throws Exception {
         restClient.close();
@@ -217,7 +235,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     // Note: this method will only be called after the ndbench driver tries to perform a writeSingle operation
     //
     @Override
-    public Double autoTuneWriteRateLimit(Double currentRateLimit, WriteResult event, NdBenchMonitor runStats) {
+    public Double autoTuneWriteRateLimit(Double currentRateLimit, List<WriteResult> event, NdBenchMonitor runStats) {
         assert autoTuner != null;
         return autoTuner.recommendNewRate(currentRateLimit, event, runStats);
     }

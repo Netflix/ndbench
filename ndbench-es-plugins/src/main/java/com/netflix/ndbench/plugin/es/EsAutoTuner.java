@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Date;
+import java.util.List;
 
 
 class EsAutoTuner {
@@ -52,7 +53,7 @@ class EsAutoTuner {
      *
      * Note 2: this method will only be called after the ndbench driver tries to perform a writeSingle operation
      */
-    double recommendNewRate(double currentRateLimit, WriteResult event, NdBenchMonitor runStats) {
+    double recommendNewRate(double currentRateLimit, List<WriteResult> event, NdBenchMonitor runStats) {
         long currentTime = new Date().getTime();
 
         if (timeOfFirstAutoTuneRequest < 0) {          // race condition here when multiple writers, but can be ignored

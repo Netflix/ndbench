@@ -18,6 +18,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
@@ -41,14 +44,12 @@ public class NdbenchDriverTest {
     @Inject
     DataGenerator dataGenerator;
 
-
-
     @Test
     public void testInvokingProcessMethodOnWriteOperationSetsNewRateLimit() throws Exception {
         NdBenchClient mockClientPlugin = mock(NdBenchClient.class);
         when(mockClientPlugin.writeSingle(anyString())).thenReturn("foo");
         when(mockClientPlugin.
-                autoTuneWriteRateLimit(anyDouble(), anyString(), any(NdBenchMonitor.class))).
+                autoTuneWriteRateLimit(anyDouble(), Collections.singletonList(anyString()), any(NdBenchMonitor.class))).
                 thenReturn(500D);
 
         NdBenchMonitor  mockMonitor = mock(NdBenchMonitor .class);
@@ -61,7 +62,7 @@ public class NdbenchDriverTest {
         WriteOperation writeOperation = new WriteOperation(mockClientPlugin);
 
         writeOperation.
-                process(driver, mockMonitor, "some-key", new AtomicReference<>(RateLimiter.create(100)), true);
+                process(driver, mockMonitor, Collections.singletonList("some-key"), new AtomicReference<>(RateLimiter.create(100)), true);
 
         int rateFromSettableConfig = settableConfig.getInteger(NdBenchConstants.WRITE_RATE_LIMIT_FULL_NAME);
 
@@ -72,4 +73,38 @@ public class NdbenchDriverTest {
         //double rateFromDriverRateLimiter = driver.getWriteLimiter().get().getRate();
         //assertEquals(rateFromDriverRateLimiter, 500D, .001);
     }
+
+    @Test
+    public void testInvokingProcessMethodOnBulkWriteOperationSetsNewRateLimit() throws Exception {
+        NdBenchClient mockClientPlugin = mock(NdBenchClient.class);
+        when(mockClientPlugin.writeSingle(anyString())).thenReturn("foo");
+        when(mockClientPlugin.
+                autoTuneWriteRateLimit(anyDouble(), Collections.singletonList(anyString()), any(NdBenchMonitor.class))).
+                thenReturn(500D);
+
+        NdBenchMonitor  mockMonitor = mock(NdBenchMonitor .class);
+        doNothing().when(mockMonitor).recordReadLatency(anyLong());
+        doNothing().when(mockMonitor).incWriteSuccess();
+
+        when(mockClientPlugin.writeSingle(anyString())).thenReturn("foo");
+
+        NdBenchDriver driver = new NdBenchDriver(config, ndBenchMonitor, dataGenerator, settableConfig);
+        WriteOperation writeOperation = new WriteOperation(mockClientPlugin);
+
+
+        List<String> keys = new ArrayList<>(1000);
+        for (int i = 0; i < 1000; i++) {
+            keys.add("keys" + i);
+        }
+
+        writeOperation.
+                process(driver, mockMonitor, keys, new AtomicReference<>(RateLimiter.create(100)), true);
+
+        int rateFromSettableConfig = settableConfig.getInteger(NdBenchConstants.WRITE_RATE_LIMIT_FULL_NAME);
+
+
+        assertEquals(rateFromSettableConfig , 500D, .001);
+    }
+
+
 }

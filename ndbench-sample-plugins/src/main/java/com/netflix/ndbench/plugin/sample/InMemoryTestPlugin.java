@@ -24,6 +24,8 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
@@ -90,6 +92,24 @@ public class InMemoryTestPlugin implements NdBenchClient{
     public String writeSingle(String key) throws Exception {
         data.put(key, this.dataGenerator.getRandomValue());
         return ResultOK;
+    }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     /**

@@ -7,7 +7,6 @@ import com.netflix.ndbench.plugins.janusgraph.configs.IJanusGraphConfig;
 import com.netflix.ndbench.plugins.janusgraph.cql.JanusGraphBuilderCQLProvider;
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
-import org.apache.tinkerpop.gremlin.structure.Transaction;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.janusgraph.core.JanusGraph;
 import org.janusgraph.core.JanusGraphFactory;
@@ -18,7 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 /***
@@ -57,21 +56,31 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
 
     @Override
     public String readSingle(String key) throws Exception {
+        JanusGraphTransaction tx = useJanusgraphTransaction ? graph.newTransaction() : null;
+
+        try {
+            return readSingleInternal(key, tx);
+        } finally {
+            if (tx != null)
+                tx.close();
+        }
+    }
+
+    private String readSingleInternal(String key, JanusGraphTransaction transaction) throws Exception {
         String response = OK;
         if (useJanusgraphTransaction) {
-            try (JanusGraphTransaction tx = graph.newTransaction()) {
-                JanusGraphVertex vertex = (JanusGraphVertex) tx.query().has(PROP_CUSTOM_ID_KEY, key).vertices();              
-                if (vertex == null) {
-                    tx.commit();
-                    throw new Exception(
-                            "Internal error when reading data with key" + key + " using JanusGraph Core API");
-                }
-                if(vertex.keys().isEmpty())
-                    response = CACHE_MISS;
-                
-                tx.commit();
-            } 
+            if (transaction == null) {
+                throw new IllegalArgumentException("JanusGraph transaction in read operation is null");
+            }
 
+            JanusGraphVertex vertex = (JanusGraphVertex) transaction.query().has(PROP_CUSTOM_ID_KEY, key).vertices();
+
+            if (vertex == null) {
+                throw new Exception("Internal error when reading data with key" + key + " using JanusGraph Core API");
+            }
+
+            if (vertex.keys().isEmpty())
+                response = CACHE_MISS;
         } else {
             List<Vertex> results = traversalSource.V().has(PROP_CUSTOM_ID_KEY, key).toList();
 
@@ -98,6 +107,42 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
 
         return OK;
     }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        List<String> responses = new ArrayList<>(keys.size());
+        JanusGraphTransaction transaction = useJanusgraphTransaction ? graph.newTransaction() : null;
+
+        try {
+            for (String key : keys) {
+                String response = readSingleInternal(key, transaction);
+                responses.add(response);
+            }
+        } finally {
+            if (transaction != null)
+                transaction.close();
+        }
+        return responses;
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        List<String> responses = new ArrayList<>(keys.size());
+        for (String key : keys) {
+            String response = writeSingle(key);
+            responses.add(response);
+        }
+        return responses;
+    }
+
     @Override
     public void shutdown() throws Exception {
         graph.close();

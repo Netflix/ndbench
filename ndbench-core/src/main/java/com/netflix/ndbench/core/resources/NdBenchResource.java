@@ -44,7 +44,7 @@ import static com.netflix.ndbench.core.util.RestUtil.*;
 
 
 /**
- * @author vchella
+ * @author vchella, pencal
  */
 @Path("/ndbench/driver")
 public class NdBenchResource {
@@ -216,12 +216,13 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response start(@DefaultValue("random") @QueryParam("loadPattern") String loadPattern,
                           @DefaultValue("-1")  @QueryParam("windowSize") int windowSize,
-                          @DefaultValue("-1") @QueryParam("durationInSec") long durationInSec) throws Exception {
+                          @DefaultValue("-1") @QueryParam("durationInSec") long durationInSec,
+                          @DefaultValue("1") @QueryParam("bulkSize") int bulkSize) throws Exception {
         try {
             LoadPattern loadPatternType = LoadPattern.fromString(loadPattern);
             Result validationResult = validateLoadPatternParams(loadPatternType, windowSize, durationInSec);
             if (validationResult.isSuccess) {
-                ndBenchDriver.start(loadPatternType, windowSize, durationInSec);
+                ndBenchDriver.start(loadPatternType, windowSize, durationInSec, bulkSize);
                 Logger.info("Starting NdBench test");
                 return sendSuccessResponse("NDBench test started");
             } else {
@@ -240,12 +241,13 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response startReads(@DefaultValue("random") @QueryParam("loadPattern") String loadPattern,
                                @DefaultValue("-1")  @QueryParam("windowSize") int windowSize,
-                               @DefaultValue("-1") @QueryParam("durationInSec") long durationInSec) throws Exception {
+                               @DefaultValue("-1") @QueryParam("durationInSec") long durationInSec,
+                               @DefaultValue("1") @QueryParam("bulkSize") int bulkSize) throws Exception {
         try {
             LoadPattern loadPatternType = LoadPattern.fromString(loadPattern);
             Result validationResult = validateLoadPatternParams(loadPatternType, windowSize, durationInSec);
             if (validationResult.isSuccess) {
-                ndBenchDriver.startReads(loadPatternType, windowSize, durationInSec);
+                ndBenchDriver.startReads(loadPatternType, windowSize, durationInSec, bulkSize);
                 Logger.info("Starting NdBench reads");
                 return sendSuccessResponse("NDBench reads started");
             } else {
@@ -279,13 +281,14 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response startWrites(@DefaultValue("random") @QueryParam("loadPattern") String loadPattern,
                                 @DefaultValue("-1")  @QueryParam("windowSize") int windowSize,
-                                @DefaultValue("-1") @QueryParam("durationInSec") long durationInSec) throws Exception {
+                                @DefaultValue("-1") @QueryParam("durationInSec") long durationInSec,
+                                @DefaultValue("1")  @QueryParam("bulkSize") int bulkSize) throws Exception {
 
         try {
             LoadPattern loadPatternType = LoadPattern.fromString(loadPattern);
             Result validationResult = validateLoadPatternParams(loadPatternType, windowSize, durationInSec);
             if (validationResult.isSuccess) {
-                ndBenchDriver.startWrites(loadPatternType, windowSize, durationInSec);
+                ndBenchDriver.startWrites(loadPatternType, windowSize, durationInSec, bulkSize);
                 Logger.info("Starting NdBench writes");
                 return sendSuccessResponse("NDBench writes started");
             } else {
