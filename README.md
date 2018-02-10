@@ -13,11 +13,12 @@
 ## Client APIs
 * Apache Cassandra (Thrift and CQL)
 * Redis
-* Netflix Dynomite (Redis API)
 * Elasticsearch
 * Elassandra
-* Geode
-* JanusGraph
+* AWS DynamoDB
+* Apache Geode
+* Apache JanusGraph
+* Netflix Dynomite (Redis API)
 * Netflix EVCache (Memcache API)
 
 ## Features
