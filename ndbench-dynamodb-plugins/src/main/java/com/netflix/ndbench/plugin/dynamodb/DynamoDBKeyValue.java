@@ -113,7 +113,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 
 		logger.debug("Waiting until the table is in ACTIVE state");
 		table.waitForActive();
-
+		
 		DescribeTableRequest describeTableRequest = new DescribeTableRequest()
 				.withTableName(this.config.getTableName());
 		TableDescription tableDescription = client.describeTable(describeTableRequest).getTable();
@@ -182,6 +182,18 @@ public class DynamoDBKeyValue implements NdBenchClient {
 
 	@Override
 	public void shutdown() throws Exception {
+		try {
+			logger.info("Issuing DeleteTable request for " + config.getTableName());
+			table.delete();
+
+			logger.info("Waiting for " + config.getTableName() + " to be deleted...this may take a while...");
+
+			table.waitForDelete();
+		} catch (Exception e) {
+			logger.error("DeleteTable request failed for " + config.getTableName());
+			logger.error(e.getMessage());
+		}
+		table.delete(); // cleanup
 		client.shutdown();
 		logger.info("DynamoDB shutdown");
 	}
