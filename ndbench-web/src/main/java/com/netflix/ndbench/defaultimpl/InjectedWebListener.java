@@ -20,19 +20,13 @@ package com.netflix.ndbench.defaultimpl;
 import com.google.inject.Injector;
 import com.google.inject.servlet.GuiceServletContextListener;
 import com.google.inject.servlet.ServletModule;
-import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 import com.netflix.ndbench.core.config.GuiceInjectorProvider;
-import com.netflix.ndbench.plugin.es.NfndbenchEsModule;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.guice.spi.container.servlet.GuiceContainer;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
-import com.netflix.ndbench.plugins.janusgraph.NdBenchJanusGraphModule;
-import org.reflections.Reflections;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * @author vchella
