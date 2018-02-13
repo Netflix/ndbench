@@ -2,15 +2,22 @@ apply plugin: 'war'
 apply plugin: "org.akhikhl.gretty"
 
 dependencies {
-    compile project(':ndbench-core')
+    compile (project(':ndbench-core')){
+        exclude group: 'org.slf4j'
+    }
     compile project(':ndbench-api')
     compile (project(':ndbench-cass-plugins')) {
         exclude group: 'ch.qos.logback'
     }
     compile project(':ndbench-dyno-plugins')
     compile project(':ndbench-sample-plugins')
-    compile project(':ndbench-es-plugins')
-    compile project(':ndbench-geode-plugins')
+    compile( project(':ndbench-es-plugins')){
+        exclude group: 'org.apache.logging.log4j'
+    }
+    compile (project(':ndbench-geode-plugins')){
+//        exclude group: 'org.apache.logging.log4j'
+        exclude group: 'org.slf4j'
+    }
     compile project(':ndbench-janusgraph-plugins')
     compile 'com.google.inject.extensions:guice-servlet:4.0'
     compile 'com.google.inject:guice:4.0'
@@ -30,7 +37,7 @@ gretty {
     // http://akhikhl.github.io/gretty-doc/Gretty-configuration.html
 }
 configurations {
-      grettyRunnerTomcat8 {
-           exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
-         }
+    grettyRunnerTomcat8 {
+        exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
     }
+}
