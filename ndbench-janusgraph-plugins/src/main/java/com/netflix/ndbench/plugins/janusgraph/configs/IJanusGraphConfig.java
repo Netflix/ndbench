@@ -18,21 +18,23 @@ package com.netflix.ndbench.plugins.janusgraph.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 /**
  * Common configs for JanusGraph benchmark
  *
  * @author pencal
  */
-@Configuration(prefix = "ndbench.config.janusgraph")
+@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + "janusgraph")
 public interface IJanusGraphConfig {
-    // One can benchmark either the Tinkerpop API or the JanusGraph Core API if needed
-    @DefaultValue("false")
-    boolean useJanusgraphTransaction();
+	// One can benchmark either the Tinkerpop API or the JanusGraph Core API if
+	// needed
+	@DefaultValue("false")
+	boolean useJanusgraphTransaction();
 
-    @DefaultValue("127.0.0.1")
-    String getStorageHostname();
+	@DefaultValue("127.0.0.1")
+	String getStorageHostname();
 
-    @DefaultValue("9042")
-    String getStoragePort();
+	@DefaultValue("9042")
+	String getStoragePort();
 }
