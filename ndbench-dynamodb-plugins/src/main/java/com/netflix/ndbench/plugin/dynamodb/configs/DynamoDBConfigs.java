@@ -4,6 +4,7 @@ import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
+
 /**
  * Configurations for DynamoDB benchmarks
  *
