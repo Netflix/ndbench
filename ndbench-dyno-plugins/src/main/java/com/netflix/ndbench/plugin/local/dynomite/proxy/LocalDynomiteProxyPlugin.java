@@ -30,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -68,7 +67,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
         HostSupplier hSupplier = new HostSupplier() {
 
             @Override
-            public Collection<Host> getHosts() {
+            public List<Host> getHosts() {
 
                 List<Host> hosts = new ArrayList<Host>();
                 hosts.add(new Host("localhost", dynomitePort, "local-dc", Host.Status.Up));
@@ -85,7 +84,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
                 .withDynomiteClusterName(ClusterName)
                 .withHostSupplier(hSupplier)
                 .withCPConfig(new ConnectionPoolConfigurationImpl("myCP")
-                .withTokenSupplier(new LocalHttpEndpointBasedTokenMapSupplier(dynomitePort))
+                .withTokenSupplier(new LocalHttpEndpointBasedTokenMapSupplier())
                 .setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware))                		
                 .build();
 
