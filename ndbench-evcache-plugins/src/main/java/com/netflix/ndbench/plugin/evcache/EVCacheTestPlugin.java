@@ -40,14 +40,16 @@ public class EVCacheTestPlugin implements NdBenchClient {
 	private static final String ResultOK = "Ok";
 	private static final String CacheMiss = null;
 
-	private final EVCache evcache;
+	private EVCache evcache;
 	private final EVCacheClientPoolManager manager;
+	private final EVCache.Builder builder;
+	private final EVCacheConfigs configs;
 
 	@Inject
 	public EVCacheTestPlugin(EVCacheConfigs configs, EVCache.Builder builder, EVCacheClientPoolManager manager) {
 		this.manager = manager;
-		this.evcache = builder.setAppName(configs.getName()).setCachePrefix(configs.getPrefix())
-				.setDefaultTTL(configs.getTTL()).build();
+		this.builder = builder;
+		this.configs = configs;
 	}
 
 	/**
@@ -58,6 +60,9 @@ public class EVCacheTestPlugin implements NdBenchClient {
 	@Override
 	public void init(DataGenerator dataGenerator) throws Exception {
 		this.dataGenerator = dataGenerator;
+		log.info("Initialized EVCacheTestPlugin");
+		this.evcache = builder.setAppName(configs.getName()).setCachePrefix(configs.getPrefix())
+				.setDefaultTTL(configs.getTTL()).build();
 		log.info("Initialized EVCacheTestPlugin");
 	}
 
