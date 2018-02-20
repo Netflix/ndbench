@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.plugin.evcache.configs;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -27,15 +27,13 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule
  *
  */
 @NdBenchClientPluginGuiceModule
-public class DynamoDBModule extends AbstractModule {
+public class EVCacheModule extends AbstractModule {
+	@Override
+	protected void configure() {
+	}
 
-    @Override
-    protected void configure() {
-    }
-
-    @Provides
-    DynamoDBConfigs getDynamoDBConfigs(ConfigProxyFactory factory) {
-        return factory.newProxy(DynamoDBConfigs.class);
-    }
-
+	@Provides
+	EVCacheConfigs getEVCachePlugins(ConfigProxyFactory factory) {
+		return factory.newProxy(EVCacheConfigs.class);
+	}
 }
