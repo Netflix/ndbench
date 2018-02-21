@@ -14,28 +14,21 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.plugin.evcache.configs;
 
-import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
-import com.netflix.archaius.ConfigProxyFactory;
-import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
+import com.netflix.archaius.api.annotations.Configuration;
+import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-/**
- * 
- * @author ipapapa
- *
- */
-@NdBenchClientPluginGuiceModule
-public class DynamoDBModule extends AbstractModule {
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "evcache")
+public interface EVCacheConfigs {
+	
+	@DefaultValue("EVCACHE")
+	String getName();
+	
+	@DefaultValue("prefix")
+	String getPrefix();
 
-    @Override
-    protected void configure() {
-    }
-
-    @Provides
-    DynamoDBConfigs getDynamoDBConfigs(ConfigProxyFactory factory) {
-        return factory.newProxy(DynamoDBConfigs.class);
-    }
-
+	@DefaultValue("900")
+	int getTTL();
 }
