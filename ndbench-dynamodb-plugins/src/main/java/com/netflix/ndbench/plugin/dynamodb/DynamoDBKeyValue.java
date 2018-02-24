@@ -72,14 +72,10 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	@Inject
 	public DynamoDBKeyValue(AWSCredentialsProvider credential, DynamoDBConfigs config, DataGenerator dataGenerator) {
 		this.config = config;
-		if (System.getenv(NdBenchConstants.DISCOVERY_ENV).equals("AWS")) {
+	//	if (System.getenv(NdBenchConstants.DISCOVERY_ENV).equals("AWS")) {
 			awsCredentialsProvider = credential;
+	/**
 		} else {
-			/*
-			 * The ProfileCredentialsProvider will return your [default] credential profile
-			 * by reading from the credentials file located at
-			 * (/home/username/.aws/credentials).
-			 */
 			awsCredentialsProvider = new ProfileCredentialsProvider();
 			try {
 				awsCredentialsProvider.getCredentials();
@@ -89,6 +85,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 						+ "location (/home/<username>/.aws/credentials), and is in valid format.", e);
 			}
 		}
+		**/
 	}
 
 	@Override
@@ -104,11 +101,15 @@ public class DynamoDBKeyValue implements NdBenchClient {
 		 */
 
 		logger.debug("Creating table if it does not exist yet");
+		
+		Long readCapacityUnits = Long.getLong(this.config.getReadCapacityUnits());
+		Long writeCapacityUnits = Long.getLong(this.config.getWriteCapacityUnits());
+		
 		table = dynamoDB.createTable(this.config.getTableName(),
 				Arrays.asList(new KeySchemaElement(config.getAttributeName(), KeyType.HASH)),
 				Arrays.asList(new AttributeDefinition("Id", ScalarAttributeType.N),
 						new AttributeDefinition("value", ScalarAttributeType.S)),
-				new ProvisionedThroughput(this.config.getReadCapacityUnits(), this.config.getWriteCapacityUnits()));
+				new ProvisionedThroughput(readCapacityUnits, writeCapacityUnits));
 
 		logger.debug("Waiting until the table is in ACTIVE state");
 		table.waitForActive();

@@ -43,11 +43,11 @@ public interface DynamoDBConfigs {
 	/*
 	 * Used for provisioned throughput
 	 */
-	@DefaultValue("1L")
-	Long getReadCapacityUnits();
+	@DefaultValue("1")
+	String getReadCapacityUnits();
 
-	@DefaultValue("1L")
-	Long getWriteCapacityUnits();
+	@DefaultValue("1")
+	String getWriteCapacityUnits();
 
 	/*
 	 * Consistency: When you request a strongly consistent read, DynamoDB returns a
