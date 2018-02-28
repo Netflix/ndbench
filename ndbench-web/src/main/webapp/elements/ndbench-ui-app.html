@@ -8769,14 +8769,27 @@ The layout class stylesheet provides a simple set of class-based flexbox rules, 
 let you specify layout properties directly in markup. You must include this file
 in every element that needs to use them.
 
-  Sample use:
+    Sample use:
 
-      <link rel="import" href="../iron-flex-layout/iron-flex-layout-classes.html">
-      <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    ```
+    <custom-element-demo>
+      <template>
+        <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+        <next-code-block></next-code-block>
+      </template>
+    </custom-element-demo>
+    ```
 
-      <div class="layout horizontal layout-start">
-        <div>cross axis start alignment</div>
-      </div>
+    ```html
+    <link rel="import" href="iron-flex-layout-classes.html">
+    <style is="custom-style" include="iron-flex iron-flex-alignment"></style>
+    <style>
+      .test { width: 100px; }
+    </style>
+    <div class="layout horizontal center-center">
+      <div class="test">horizontal layout center alignment</div>
+    </div>
+    ```
 
 2. [Custom CSS mixins](https://github.com/PolymerElements/iron-flex-layout/blob/master/iron-flex-layout.html).
 The mixin stylesheet includes custom CSS mixins that can be applied inside a CSS rule using the `@apply` function.
@@ -8795,8 +8808,7 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
 @demo demo/index.html
 -->
 
-<style>
-  /* IE 10 support for HTML5 hidden attr */
+<style is="custom-style">
   [hidden] {
     display: none !important;
   }
@@ -8854,7 +8866,7 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
       -webkit-flex-wrap: wrap;
       flex-wrap: wrap;
     };
-    
+
     --layout-no-wrap: {
       -ms-flex-wrap: nowrap;
       -webkit-flex-wrap: nowrap;
@@ -9152,7 +9164,17 @@ A complete [guide](https://elements.polymer-project.org/guides/flex-layout) to `
   }
 
 </style>
-<dom-module id="paper-header-panel" assetpath="../bower_components/paper-header-panel/">
+<script>
+  // This is left only for backward compatibility with projects
+  // that incorrectly relied on unscoped global [hidden] rules;
+  // removing would be a breaking change, but new projects
+  // should never rely on this.
+  (function() {
+    var style = document.createElement('style');
+    style.textContent = '[hidden] { display: none !important; }';
+    document.head.appendChild(style);
+  })();
+</script><dom-module id="paper-header-panel" assetpath="../bower_components/paper-header-panel/">
   <template>
     <style>
       :host {
@@ -10184,7 +10206,7 @@ The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
 Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
---><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700"><dom-module id="paper-toolbar" assetpath="../bower_components/paper-toolbar/">
+--><link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:400,700|Roboto:400,300,300italic,400italic,500,500italic,700,700italic" crossorigin="anonymous"><dom-module id="paper-toolbar" assetpath="../bower_components/paper-toolbar/">
   <template>
     <style>
       :host {
@@ -11749,7 +11771,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     },
 
     observers: [
-      '_detectKeyboardFocus(focused)',
+      '_focusChanged(focused)',
       '_activeChanged(active, ariaActiveAttribute)'
     ],
 
@@ -11767,6 +11789,14 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         this._userActivate(!this.active);
       } else {
         this.active = false;
+      }
+    },
+
+    _focusChanged: function(focused) {
+      this._detectKeyboardFocus(focused);
+
+      if (!focused) {
+        this._setPressed(false);
       }
     },
 
@@ -13127,6 +13157,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 
         svg.setAttribute('viewBox', viewBox);
         svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+        svg.setAttribute('focusable', 'false');
         // TODO(dfreedm): `pointer-events: none` works around https://crbug.com/370136
         // TODO(sjmiles): inline style may not be ideal, but avoids requiring a shadow-root
         svg.style.cssText = cssText;
@@ -13695,7 +13726,6 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       'keypress': '_onKeypress'
     },
 
-    /** @suppress {checkTypes} */
     registered: function() {
       // Feature detect whether we need to patch dispatchEvent (i.e. on FF and IE).
       if (!this._canDispatchEventOnDisabled()) {
@@ -13724,7 +13754,12 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       return canDispatch;
     },
 
-    _dispatchEventFirefoxIE: function() {
+    /**
+     * @this {Node}
+     * @param {!Event} event
+     * @return {boolean}
+     */
+    _dispatchEventFirefoxIE: function(event) {
       // Due to Firefox bug, events fired on disabled form controls can throw
       // errors; furthermore, neither IE nor Firefox will actually dispatch
       // events from disabled form controls; as such, we toggle disable around
@@ -13732,8 +13767,9 @@ is separate from validation, and `allowed-pattern` does not affect how the input
       // See issue #47 for details
       var disabled = this.disabled;
       this.disabled = false;
-      this._origDispatchEvent.apply(this, arguments);
+      var defaultPrevented = this._origDispatchEvent(event);
       this.disabled = disabled;
+      return defaultPrevented
     },
 
     get _patternRegExp() {
@@ -13975,7 +14011,11 @@ Custom property | Description | Default
 `--paper-input-container-label-focus` | Mixin applied to the label when the input is focused | `{}`
 `--paper-input-container-label-floating` | Mixin applied to the label when floating | `{}`
 `--paper-input-container-input` | Mixin applied to the input | `{}`
+`--paper-input-container-input-focus` | Mixin applied to the input when focused | `{}`
+`--paper-input-container-input-invalid` | Mixin applied to the input when invalid | `{}`
 `--paper-input-container-input-webkit-spinner` | Mixin applied to the webkit spinner | `{}`
+`--paper-input-container-input-webkit-clear` | Mixin applied to the webkit clear button | `{}`
+`--paper-input-container-ms-clear` | Mixin applied to the Internet Explorer clear button | `{}`
 `--paper-input-container-underline` | Mixin applied to the underline | `{}`
 `--paper-input-container-underline-focus` | Mixin applied to the underline when the input is focused | `{}`
 `--paper-input-container-underline-disabled` | Mixin applied to the underline when the input is disabled | `{}`
@@ -14095,6 +14135,8 @@ This element is `display:block` by default, but you can set the `inline` attribu
         transition: transform 0.25s, width 0.25s;
         -webkit-transform-origin: left top;
         transform-origin: left top;
+        /* Fix for safari not focusing 0-height date/time inputs with -webkit-apperance: none; */
+        min-height: 1px;
 
         @apply(--paper-font-common-nowrap);
         @apply(--paper-font-subhead);
@@ -14160,6 +14202,20 @@ This element is `display:block` by default, but you can set the `inline` attribu
 
         @apply(--paper-font-subhead);
         @apply(--paper-input-container-input);
+      }
+
+      .input-content.focused ::content input,
+      .input-content.focused ::content textarea,
+      .input-content.focused ::content iron-autogrow-textarea,
+      .input-content.focused ::content .paper-input-input {
+        @apply(--paper-input-container-input-focus);
+      }
+
+      .input-content.is-invalid ::content input,
+      .input-content.is-invalid ::content textarea,
+      .input-content.is-invalid ::content iron-autogrow-textarea,
+      .input-content.is-invalid ::content .paper-input-input {
+        @apply(--paper-input-container-input-invalid);
       }
 
       .input-content ::content input::-webkit-outer-spin-button,
@@ -14479,11 +14535,20 @@ This element is `display:block` by default, but you can set the `inline` attribu
           if (label) {
             this.$.labelAndInputContainer.style.position = 'relative';
           }
+          if (invalid) {
+            cls += ' is-invalid';
+          }
         }
       } else {
         if (_inputHasContent) {
           cls += ' label-is-hidden';
         }
+        if (invalid) {
+          cls += ' is-invalid';
+        }
+      }
+      if (focused) {
+        cls += ' focused';
       }
       return cls;
     },
@@ -15324,11 +15389,12 @@ layout means (e.g. the `flex` or `fit` classes).
       flex: 1 1 auto;
     }
   </style>
-
   <app-toolbar>App name</app-toolbar>
   <iron-list items="[[items]]">
     <template>
-      ...
+      <div>
+        ...
+      </div>
     </template>
   </iron-list>
 </template>
@@ -15347,7 +15413,9 @@ layout means (e.g. the `flex` or `fit` classes).
   </style>
   <iron-list items="[[items]]">
     <template>
-      ...
+      <div>
+        ...
+      </div>
     </template>
   </iron-list>
 </template>
@@ -15381,12 +15449,17 @@ layout means (e.g. the `flex` or `fit` classes).
     <app-toolbar>App name</app-toolbar>
     <iron-list scroll-target="document" items="[[items]]">
       <template>
-        ...
+        <div>
+          ...
+        </div>
       </template>
     </iron-list>
   </template>
 </body>
 ```
+
+`iron-list` must be given a `<template>` which contains exactly one element. In the examples
+above we used a `<div>`, but you can provide any element (including custom elements).
 
 ### Template model
 
@@ -15486,13 +15559,13 @@ document.querySelector('iron-list').fire('iron-resize');
 ### When should `<iron-list>` be used?
 
 `iron-list` should be used when a page has significantly more DOM nodes than the ones
-visible on the screen. e.g. the page has 500 nodes, but only 20 are visible at the time.
+visible on the screen. e.g. the page has 500 nodes, but only 20 are visible at a time.
 This is why we refer to it as a `virtual` list. In this case, a `dom-repeat` will still
 create 500 nodes which could slow down the web app, but `iron-list` will only create 20.
 
 However, having an `iron-list` does not mean that you can load all the data at once.
-Say, you have a million records in the database, you want to split the data into pages
-so you can bring a page at the time. The page could contain 500 items, and iron-list
+Say you have a million records in the database, you want to split the data into pages
+so you can bring in a page at the time. The page could contain 500 items, and iron-list
 will only render 20.
 
 @group Iron Element
@@ -15539,7 +15612,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       },
 
       /**
-       * True if this element is currently notifying its descedant elements of
+       * True if this element is currently notifying its descendant elements of
        * resize.
        */
       _notifyingDescendant: {
@@ -15638,7 +15711,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         return;
       }
 
-      // NOTE(cdata): In ShadowDOM, event retargetting makes echoing of the
+      // NOTE(cdata): In ShadowDOM, event retargeting makes echoing of the
       // otherwise non-bubbling event "just work." We do it manually here for
       // the case where Polymer is not using shadow roots for whatever reason:
       if (!Polymer.Settings.useShadow) {
@@ -16548,12 +16621,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       this._lastVisibleIndexVal = null;
 
       // Random access.
-      if (Math.abs(delta) > this._physicalSize) {
+      if (Math.abs(delta) > this._physicalSize && this._physicalSize > 0) {
         delta = delta - this._scrollOffset;
         var idxAdjustment = Math.round(delta / this._physicalAverage) * this._itemsPerRow;
-        this._physicalTop = this._physicalTop + delta;
         this._virtualStart = this._virtualStart + idxAdjustment;
         this._physicalStart = this._physicalStart + idxAdjustment;
+        // Estimate new physical offset.
+        this._physicalTop = Math.floor(this._virtualStart / this._itemsPerRow) * this._physicalAverage;
         this._update();
       } else {
         var reusables = this._getReusables(isScrollingDown);
@@ -17115,12 +17189,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     _adjustScrollPosition: function() {
       var deltaHeight = this._virtualStart === 0 ? this._physicalTop :
           Math.min(this._scrollPosition + this._physicalTop, 0);
-
-      if (deltaHeight > 0) {
+      // Note: the delta can be positive or negative.
+      if (deltaHeight !== 0) {
         this._physicalTop = this._physicalTop - deltaHeight;
+        var scrollTop = this._scrollTop;
         // juking scroll position during interial scrolling on iOS is no bueno
-        if (!IOS_TOUCH_SCROLLING) {
-          this._resetScrollPosition(this._scrollTop - deltaHeight);
+        if (!IOS_TOUCH_SCROLLING && scrollTop > 0) {
+          this._resetScrollPosition(scrollTop - deltaHeight);
         }
       }
     },
@@ -17129,7 +17204,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Sets the position of the scroll.
      */
     _resetScrollPosition: function(pos) {
-      if (this.scrollTarget) {
+      if (this.scrollTarget && pos >= 0) {
         this._scrollTop = pos;
         this._scrollPosition = this._scrollTop;
       }
@@ -17526,17 +17601,28 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       // Get the new physical index for the focused index.
       pidx = this._getPhysicalIndex(fidx);
 
-      if (pidx != null) {
+      var onScreenItem = this._physicalItems[pidx];
+      if (!onScreenItem) {
+        return;
+      }
+      var onScreenInstance = onScreenItem._templateInstance;
+      var offScreenInstance = this._offscreenFocusedItem._templateInstance;
+      // Restores the physical item only when it has the same model
+      // as the offscreen one. Use key for comparison since users can set
+      // a new item via set('items.idx').
+      if (onScreenInstance.__key__ === offScreenInstance.__key__) {
         // Flip the focus backfill.
-        this._focusBackfillItem = this._physicalItems[pidx];
-        this._focusBackfillItem._templateInstance.tabIndex = -1;
+        this._focusBackfillItem = onScreenItem;
+        onScreenInstance.tabIndex = -1;
         // Restore the focused physical item.
         this._physicalItems[pidx] = this._offscreenFocusedItem;
-        // Reset the offscreen focused item.
-        this._offscreenFocusedItem = null;
         // Hide the physical item that backfills.
         this.translate3d(0, HIDDEN_Y, 0, this._focusBackfillItem);
+      } else {
+        this._removeFocusedItem();
+        this._focusBackfillItem = null;
       }
+      this._offscreenFocusedItem = null;
     },
 
     _didFocus: function(e) {
@@ -19484,7 +19570,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
                 configArr.forEach(configItem => {
                     let configItemValue = configItem.value;
                     if (this._isNumeric(configItem.type)) {
-                        configItemValue = parseInt(configItem.value, 10);
+                        if (configItem.value % 1 === 0) {
+                            configItemValue = parseInt(configItem.value, 10);
+                        } else {
+                            configItemValue = parseFloat(configItem.value);
+                        }
                     }
 
                     configObj[configItem.label] = configItemValue;
@@ -19876,6 +19966,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
   Polymer.PaperInputHelper = {};
   Polymer.PaperInputHelper.NextLabelID = 1;
   Polymer.PaperInputHelper.NextAddonID = 1;
+  Polymer.PaperInputHelper.NextInputID = 1;
 
   /**
    * Use `Polymer.PaperInputBehavior` to implement inputs with `<paper-input-container>`. This
@@ -20225,6 +20316,11 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       _ariaLabelledBy: {
         type: String,
         value: ''
+      },
+
+      _inputId: {
+        type: String,
+        value: ''
       }
 
     },
@@ -20245,6 +20341,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
      * Returns a reference to the input element.
      */
     get inputElement() {
+      if (!this.$) {
+        this.$ = {}
+      }
+      if (!this.$.input) {
+        this._generateInputId();
+        this.$.input = this.$$('#' + this._inputId);
+      }
       return this.$.input;
     },
 
@@ -20307,7 +20410,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
       Polymer.IronControlState._focusBlurHandler.call(this, event);
 
       // Forward the focus to the nested input.
-      if (this.focused && !this._shiftTabPressed)
+      if (this.focused && !this._shiftTabPressed && this._focusableElement)
         this._focusableElement.focus();
     },
 
@@ -20374,6 +20477,12 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
         label.id = labelledBy;
       }
       this._ariaLabelledBy = labelledBy;
+    },
+
+    _generateInputId: function() {
+      if (!this._inputId || this._inputId === '') {
+        this._inputId =  'input-' + Polymer.PaperInputHelper.NextInputID++;
+      }
     },
 
     _onChange:function(event) {
@@ -20660,6 +20769,15 @@ Custom property | Description | Default
         display: none !important;
       }
 
+      input::-webkit-outer-spin-button,
+      input::-webkit-inner-spin-button {
+        @apply(--paper-input-container-input-webkit-spinner);
+      }
+
+      input::-webkit-clear-button {
+        @apply(--paper-input-container-input-webkit-clear);
+      }
+
       input::-webkit-input-placeholder {
         color: var(--paper-input-container-color, --secondary-text-color);
       }
@@ -20670,6 +20788,10 @@ Custom property | Description | Default
 
       input::-moz-placeholder {
         color: var(--paper-input-container-color, --secondary-text-color);
+      }
+
+      input::-ms-clear {
+        @apply(--paper-input-container-ms-clear);
       }
 
       input:-ms-input-placeholder {
@@ -20685,9 +20807,9 @@ Custom property | Description | Default
 
       <content select="[prefix]"></content>
 
-      <label hidden$="[[!label]]" aria-hidden="true" for="input">[[label]]</label>
+      <label hidden$="[[!label]]" aria-hidden="true" for$="[[_inputId]]">[[label]]</label>
 
-      <input is="iron-input" id="input" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" title$="[[title]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange" tabindex$="[[tabindex]]" autosave$="[[autosave]]" results$="[[results]]" accept$="[[accept]]" multiple$="[[multiple]]">
+      <input is="iron-input" id$="[[_inputId]]" class="input-element" aria-labelledby$="[[_ariaLabelledBy]]" aria-describedby$="[[_ariaDescribedBy]]" disabled$="[[disabled]]" title$="[[title]]" bind-value="{{value}}" invalid="{{invalid}}" prevent-invalid-input="[[preventInvalidInput]]" allowed-pattern="[[allowedPattern]]" validator="[[validator]]" type$="[[type]]" pattern$="[[pattern]]" required$="[[required]]" autocomplete$="[[autocomplete]]" autofocus$="[[autofocus]]" inputmode$="[[inputmode]]" minlength$="[[minlength]]" maxlength$="[[maxlength]]" min$="[[min]]" max$="[[max]]" step$="[[step]]" name$="[[name]]" placeholder$="[[placeholder]]" readonly$="[[readonly]]" list$="[[list]]" size$="[[size]]" autocapitalize$="[[autocapitalize]]" autocorrect$="[[autocorrect]]" on-change="_onChange" tabindex$="[[tabindex]]" autosave$="[[autosave]]" results$="[[results]]" accept$="[[accept]]" multiple$="[[multiple]]">
 
       <content select="[suffix]"></content>
 
@@ -21318,8 +21440,7 @@ Custom property | Description | Default
             }
         </style>
 
-        <ndb-card heading="Instance Statistics (per node, not aggregated across client driver instances)">
-
+        <ndb-card heading="Instance Statistics">
             <h4>[[ instance.HostName ]]</h4>
 
             <div id="legend"></div>
