@@ -42,6 +42,9 @@ public interface IConfiguration {
     @DefaultValue("false")
     boolean isPreloadKeys();
 
+    @DefaultValue("0.5")
+    double getZipfExponent();
+
     // NUM WORKERS
     default int getNumWriters() {
         return Runtime.getRuntime().availableProcessors() * 4;
