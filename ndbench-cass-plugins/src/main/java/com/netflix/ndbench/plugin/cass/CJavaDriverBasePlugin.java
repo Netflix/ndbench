@@ -29,8 +29,8 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
     protected PropertyFactory propertyFactory;
 
     // settings
-    protected static String ClusterName, KeyspaceName, TableName, ClusterContactPoint;
-    int port;
+    protected static String ClusterName, KeyspaceName, TableName, ClusterContactPoint, Replication;
+    int connections, port;
 
     protected ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
 
@@ -57,6 +57,8 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
         KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.keyspace").asString("dev1").get();
         TableName =propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cfname").asString("emp").get();
         port = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE + "cass.host.port").asInteger(9042).get();
+        Replication = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.replication").asString("{'class': 'NetworkTopologyStrategy','eu-west': '3','us-east': '3'}").get();
+        connections = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.connections").asInteger(2).get();
 
         ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
         WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
@@ -90,7 +92,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
         Logger.info("Cassandra  Cluster: " + ClusterName);
 
-        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint, port);
+        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint,connections,port);
         this.session = cassJavaDriverManager.getSession(cluster);
 
         upsertKeyspace(this.session);
@@ -105,7 +107,8 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
    protected void upsertGenereicKeyspace()
    {
-       session.execute("CREATE KEYSPACE IF NOT EXISTS " +KeyspaceName+" WITH replication = {'class': 'NetworkTopologyStrategy','eu-west': '3','us-east': '3'};");
+       System.out.println(Replication);
+       session.execute("CREATE KEYSPACE IF NOT EXISTS " +KeyspaceName+" WITH replication = " +Replication+ ";");
        session.execute("Use " + KeyspaceName);
    }
 }
