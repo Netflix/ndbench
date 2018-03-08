@@ -1,4 +1,4 @@
-NdBench Cassandra Plugins Configuration
+NDBench Cassandra Plugins Configuration
 ===================
 
 NdBench configuration is backed by **Netflix OSS** - **Archaius-2** implementation

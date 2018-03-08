@@ -18,6 +18,7 @@ package com.netflix.ndbench.plugin.dynamodb.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.archaius.api.annotations.PropertyName;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 
@@ -29,6 +30,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dynamodb")
 public interface DynamoDBConfigs {
 
+        @PropertyName(name = "tablename")
 	@DefaultValue("ndbench-table")
 	String getTableName();
 
@@ -37,16 +39,19 @@ public interface DynamoDBConfigs {
 	 * a fundamental data element, something that does not need to be broken down
 	 * any further.
 	 */
-	@DefaultValue("name")
+	@PropertyName(name = "attributename")
+	@DefaultValue("id")
 	String getAttributeName();
 
 	/*
 	 * Used for provisioned throughput
 	 */
-	@DefaultValue("1")
+	@PropertyName(name = "rcu")
+	@DefaultValue("2")
 	String getReadCapacityUnits();
 
-	@DefaultValue("1")
+	@PropertyName(name = "wcu")
+	@DefaultValue("2")
 	String getWriteCapacityUnits();
 
 	/*
@@ -54,7 +59,24 @@ public interface DynamoDBConfigs {
 	 * response with the most up-to-date data, reflecting the updates from all prior
 	 * write operations that were successful.
 	 */
+	@PropertyName(name = "consistentread")
 	@DefaultValue("false")
 	Boolean consistentRead();
+	
+	/*
+	 * This configuration allows to create a table programmatically (through NDBench).
+	 * In the init phase, we create a table. 
+	 * In the shutdown phase, we delete the table.
+	 * 
+	 * In a single node case it works fine. In a multi-node deployment, there 
+	 * are a number of race conditions.
+	 * * The first instance will create the table. It does not matter too much which does it
+	 * because we create the table only if does not exist.
+	 * * The first instance will delete the table. It does not matter too much which does it
+	 * because the table will be eventually deleted. All others will show exceptions.
+	 * 
+	 */
+	@DefaultValue("false")
+	Boolean programTables();
 	
 }
