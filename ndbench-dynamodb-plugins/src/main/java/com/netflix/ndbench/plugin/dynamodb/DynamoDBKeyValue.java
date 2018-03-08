@@ -54,7 +54,7 @@ import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
  * @author ipapapa
  */
 @Singleton
-@NdBenchClientPlugin("DynamoDBKeyValueWithTableCreation")
+@NdBenchClientPlugin("DynamoDBKeyValue")
 public class DynamoDBKeyValue implements NdBenchClient {
     private final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
     private static AmazonDynamoDB client;
@@ -87,7 +87,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
     public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
 
-	logger.info("Initing DynamoDB plugin");
+	logger.info("Initing DynamoDBKeyValue plugin");
 	client = AmazonDynamoDBClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
 
 	if (this.config.programTables()) {
@@ -182,7 +182,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
      */
     @Override
     public String getConnectionInfo() throws Exception {
-	return null;
+	return String.format("Table Name - %s : Attribute Name - %s : Consistent Read - %b", this.config.getTableName(), this.config.getAttributeName(), this.config.consistentRead());
     }
 
     @Override
