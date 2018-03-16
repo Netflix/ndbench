@@ -79,4 +79,21 @@ public interface DynamoDBConfigs {
 	@DefaultValue("false")
 	Boolean programTables();
 	
+	/**
+	 * DAX: In-memory DynamoDB cache configuration
+	 */
+	
+	/*
+	 * Enable/Disable usage of DAX
+	 */
+	@PropertyName(name = "dax")
+	@DefaultValue("true")
+	Boolean isDax();
+	
+	/*
+	 * DAX endpoint
+	 */
+	@DefaultValue("xxx:8111")
+	String getDaxEndpoint();
+	
 }

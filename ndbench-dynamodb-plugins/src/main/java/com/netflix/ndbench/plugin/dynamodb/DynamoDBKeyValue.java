@@ -22,9 +22,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.amazon.dax.client.dynamodbv2.AmazonDaxClientBuilder;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentialsProvider;
+
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -58,6 +60,7 @@ import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 public class DynamoDBKeyValue implements NdBenchClient {
     private final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
     private static AmazonDynamoDB client;
+    private static AmazonDynamoDB daxClient;
     private static AWSCredentialsProvider awsCredentialsProvider;
     private static Table table;
 
@@ -100,9 +103,20 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	TableDescription tableDescription = client.describeTable(describeTableRequest).getTable();
 	logger.info("Table Description: " + tableDescription);
 
-	DynamoDB dynamoDB = new DynamoDB(client);
-	table = dynamoDB.getTable(this.config.getTableName());
 	
+	DynamoDB dynamoDB = null;
+	if (this.config.isDax()) {
+	    logger.info("Using DAX");
+	    AmazonDaxClientBuilder amazonDaxClientBuilder = AmazonDaxClientBuilder.standard();
+	    amazonDaxClientBuilder.withEndpointConfiguration(this.config.getDaxEndpoint());
+	    daxClient = amazonDaxClientBuilder.build();
+            dynamoDB = new DynamoDB(daxClient);
+	}
+	else {
+	    dynamoDB = new DynamoDB(client);
+	}
+	table = dynamoDB.getTable(this.config.getTableName());
+
 	logger.info("DynamoDB Plugin initialized");
     }
 
@@ -116,7 +130,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
     public String readSingle(String key) throws Exception {
 	Item item = null;
 	try {
-	    GetItemSpec spec = new GetItemSpec().withPrimaryKey("Id", key).withConsistentRead(config.consistentRead());
+	    GetItemSpec spec = new GetItemSpec()
+		    .withPrimaryKey("id", key)
+		    .withConsistentRead(config.consistentRead());
 	    item = table.getItem(spec);
 	    if (item == null) {
 		return null;
@@ -172,6 +188,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	    deleteTable();
 	}
 	client.shutdown();
+	if (daxClient !=null) {
+	    daxClient.shutdown();
+	}
 	logger.info("DynamoDB shutdown");
     }
 
