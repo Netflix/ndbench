@@ -87,7 +87,7 @@ public interface DynamoDBConfigs {
 	 * Enable/Disable usage of DAX
 	 */
 	@PropertyName(name = "dax")
-	@DefaultValue("true")
+	@DefaultValue("false")
 	Boolean isDax();
 	
 	/*
