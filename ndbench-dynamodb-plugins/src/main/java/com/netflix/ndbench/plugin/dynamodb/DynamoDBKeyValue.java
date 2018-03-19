@@ -26,7 +26,7 @@ import com.amazon.dax.client.dynamodbv2.AmazonDaxClientBuilder;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentialsProvider;
-
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.document.DynamoDB;
@@ -48,6 +48,7 @@ import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 
 /**
@@ -74,21 +75,26 @@ public class DynamoDBKeyValue implements NdBenchClient {
     @Inject
     public DynamoDBKeyValue(AWSCredentialsProvider credential, DynamoDBConfigs config) {
 	this.config = config;
-	// if (System.getenv(NdBenchConstants.DISCOVERY_ENV).equals("AWS")) {
-	awsCredentialsProvider = credential;
-	/**
-	 * } else { awsCredentialsProvider = new ProfileCredentialsProvider(); try {
-	 * awsCredentialsProvider.getCredentials(); } catch (Exception e) { throw new
-	 * AmazonClientException("Cannot load the credentials from the credential
-	 * profiles file. " + "Please make sure that your credentials file is at the
-	 * correct " + "location (/home/<username>/.aws/credentials), and is in valid
-	 * format.", e); } }
-	 **/
+        String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
+        logger.error("Discovery Environment Variable: " + discoveryEnv);
+	if (discoveryEnv == null || discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {
+	    awsCredentialsProvider = credential;
+	} else {
+	    awsCredentialsProvider = new ProfileCredentialsProvider();
+	    try {
+
+		awsCredentialsProvider.getCredentials();
+	    } catch (AmazonClientException ace) {
+		throw new AmazonClientException("Cannot load the credentials from the credential profiles file. "
+			+ "Please make sure that your credentials file is at the correct "
+			+ "location (/home/<username>/.aws/credentials), and is in validformat.", ace);
+	    }
+	}
     }
 
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
-        this.dataGenerator = dataGenerator;
+	this.dataGenerator = dataGenerator;
 
 	logger.info("Initing DynamoDBKeyValue plugin");
 	client = AmazonDynamoDBClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
@@ -103,16 +109,14 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	TableDescription tableDescription = client.describeTable(describeTableRequest).getTable();
 	logger.info("Table Description: " + tableDescription);
 
-	
 	DynamoDB dynamoDB = null;
 	if (this.config.isDax()) {
 	    logger.info("Using DAX");
 	    AmazonDaxClientBuilder amazonDaxClientBuilder = AmazonDaxClientBuilder.standard();
 	    amazonDaxClientBuilder.withEndpointConfiguration(this.config.getDaxEndpoint());
 	    daxClient = amazonDaxClientBuilder.build();
-            dynamoDB = new DynamoDB(daxClient);
-	}
-	else {
+	    dynamoDB = new DynamoDB(daxClient);
+	} else {
 	    dynamoDB = new DynamoDB(client);
 	}
 	table = dynamoDB.getTable(this.config.getTableName());
@@ -184,11 +188,11 @@ public class DynamoDBKeyValue implements NdBenchClient {
 
     @Override
     public void shutdown() throws Exception {
-	if(this.config.programTables()) {
+	if (this.config.programTables()) {
 	    deleteTable();
 	}
 	client.shutdown();
-	if (daxClient !=null) {
+	if (daxClient != null) {
 	    daxClient.shutdown();
 	}
 	logger.info("DynamoDB shutdown");
@@ -201,7 +205,8 @@ public class DynamoDBKeyValue implements NdBenchClient {
      */
     @Override
     public String getConnectionInfo() throws Exception {
-	return String.format("Table Name - %s : Attribute Name - %s : Consistent Read - %b", this.config.getTableName(), this.config.getAttributeName(), this.config.consistentRead());
+	return String.format("Table Name - %s : Attribute Name - %s : Consistent Read - %b", this.config.getTableName(),
+		this.config.getAttributeName(), this.config.consistentRead());
     }
 
     @Override
@@ -226,7 +231,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 		+ "such as not being able to access the network.");
 	logger.error("Error Message: " + ace.getMessage());
     }
-    
+
     private void initializeTable() {
 	/*
 	 * Create a table with a primary hash key named 'name', which holds a string.
@@ -261,7 +266,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	// Creating table
 	if (TableUtils.createTableIfNotExists(client, request))
 	    logger.info("Table already exists.  No problem!");
-	
+
 	// Waiting util the table is ready
 	try {
 	    logger.debug("Waiting until the table is in ACTIVE state");
@@ -270,9 +275,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	    logger.error("Table didn't become active: " + e);
 	} catch (InterruptedException e) {
 	    logger.error("Table interrupted exception: " + e);
-	}	
+	}
     }
-    
+
     private void deleteTable() {
 	try {
 	    logger.info("Issuing DeleteTable request for " + config.getTableName());
