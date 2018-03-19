@@ -15,9 +15,7 @@ dependencies {
         overwrite false
     }
     
-    compile name: 'DaxJavaClient-latest'
-    
-//    compile files('/home/ipapapanagiotou/Downloads/DaxJavaClient-1.0.841.27.jar')
-    
+    compileOnly name: 'DaxJavaClient-latest'
+        
 }
 
