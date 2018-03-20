@@ -77,7 +77,7 @@ public interface DynamoDBConfigs {
 	 * 
 	 */
 	@DefaultValue("false")
-	Boolean programTables();
+	Boolean programmableTables();
 	
 	/**
 	 * DAX: In-memory DynamoDB cache configuration

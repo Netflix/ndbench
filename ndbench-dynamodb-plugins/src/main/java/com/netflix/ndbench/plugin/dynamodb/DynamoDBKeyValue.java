@@ -99,7 +99,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	logger.info("Initing DynamoDBKeyValue plugin");
 	client = AmazonDynamoDBClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
 
-	if (this.config.programTables()) {
+	if (this.config.programmableTables()) {
 	    logger.info("Creating table programmatically");
 	    initializeTable();
 	}
@@ -188,7 +188,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 
     @Override
     public void shutdown() throws Exception {
-	if (this.config.programTables()) {
+	if (this.config.programmableTables()) {
 	    deleteTable();
 	}
 	client.shutdown();
