@@ -1,4 +1,21 @@
-dependencies {
-    compile project(':ndbench-api')
-    compile "com.amazonaws:aws-java-sdk:latest.release"
+repositories {
+   flatDir {
+       dirs buildDir
+   }
 }
+
+
+dependencies {
+    compile project(':ndbench-api')    
+    compile "com.amazonaws:aws-java-sdk:latest.release"
+    
+    download {
+        src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
+        dest buildDir
+        overwrite false
+    }
+    
+    compileOnly name: 'DaxJavaClient-latest'
+        
+}
+
