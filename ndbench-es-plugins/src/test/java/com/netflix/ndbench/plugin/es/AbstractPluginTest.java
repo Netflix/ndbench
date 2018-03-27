@@ -144,6 +144,11 @@ public class AbstractPluginTest {
             }
 
             @Override
+            public double getZipfExponent() {
+                return 0.5;
+            }
+
+            @Override
             public int getNumBackfill() {
                 return 0;
             }

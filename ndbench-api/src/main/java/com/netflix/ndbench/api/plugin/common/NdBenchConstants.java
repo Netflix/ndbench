@@ -53,5 +53,5 @@ public final class NdBenchConstants {
     public static final String DISCOVERY_ENV_CF="CF";
     public static final String DISCOVERY_ENV_AWS="AWS";
     public static final String DISCOVERY_ENV_AWS_ASG="AWS_ASG";
-
+    public static final String DISCOVERY_ENV_AWS_CONFIG_FILE="CONFIG_FILE";
 }

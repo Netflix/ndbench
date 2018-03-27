@@ -303,7 +303,11 @@
                 configArr.forEach(configItem => {
                     let configItemValue = configItem.value;
                     if (this._isNumeric(configItem.type)) {
-                        configItemValue = parseInt(configItem.value, 10);
+                        if (configItem.value % 1 === 0) {
+                            configItemValue = parseInt(configItem.value, 10);
+                        } else {
+                            configItemValue = parseFloat(configItem.value);
+                        }
                     }
 
                     configObj[configItem.label] = configItemValue;

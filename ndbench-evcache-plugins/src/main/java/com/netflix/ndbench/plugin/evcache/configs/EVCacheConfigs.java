@@ -14,13 +14,21 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugins.janusgraph;
+package com.netflix.ndbench.plugin.evcache.configs;
 
-import org.janusgraph.core.JanusGraphFactory;
+import com.netflix.archaius.api.annotations.Configuration;
+import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-/**
- * @author pencal
- */
-public interface IJanusGraphBuilder {
-    JanusGraphFactory.Builder getGraphBuilder();
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "evcache")
+public interface EVCacheConfigs {
+	
+	@DefaultValue("EVCACHE")
+	String getName();
+	
+	@DefaultValue("prefix")
+	String getPrefix();
+
+	@DefaultValue("900")
+	int getTTL();
 }

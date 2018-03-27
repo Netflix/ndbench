@@ -1,2 +1,3 @@
 rootProject.name='ndbench'
-include 'ndbench-web','ndbench-api','ndbench-core','ndbench-cass-plugins','ndbench-sample-plugins','ndbench-dyno-plugins','ndbench-es-plugins','ndbench-geode-plugins','ndbench-janusgraph-plugins', 'ndbench-evcache-plugins'
+include 'ndbench-web','ndbench-api','ndbench-core','ndbench-cass-plugins','ndbench-sample-plugins','ndbench-dyno-plugins','ndbench-es-plugins','ndbench-geode-plugins','ndbench-janusgraph-plugins', 'ndbench-evcache-plugins', 'ndbench-dynamodb-plugins'
+

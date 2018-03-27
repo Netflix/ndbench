@@ -12,7 +12,10 @@ buildscript {
 
 plugins {
     id 'nebula.netflixoss' version '4.0.1'
+    id "de.undercouch.download" version "3.4.2"
+
 }
+
 
 ext.githubProjectName = rootProject.name // Change if github project name is not the same as the root project's name
 
@@ -30,7 +33,6 @@ allprojects {
     // handy command display all transitive dependencies of each subproject
     task allDeps(type: DependencyReportTask) {}
 }
-
 
 subprojects {
     apply plugin: 'nebula.netflixoss'

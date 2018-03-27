@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 public class KeyGeneratorFactory {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(KeyGeneratorFactory.class);
 
-    public KeyGenerator<String> getKeyGenerator(LoadPattern loadPattern, int numKeys, int windowSize, long durationInSec, boolean preLoadKeys) {
+    public KeyGenerator<String> getKeyGenerator(LoadPattern loadPattern, int numKeys, int windowSize, long durationInSec, boolean preLoadKeys, double zipfExponent) {
         Logger.info("Loading "+loadPattern.toString()+" KeyGenerator");
 
         if (loadPattern.equals(LoadPattern.SLIDING_WINDOW)) {
@@ -33,9 +33,11 @@ public class KeyGeneratorFactory {
         }
         else if (loadPattern.equals(LoadPattern.SLIDING_WINDOW_FLIP)) {
             return new SlidingWindowFlipStringKeyGenerator(windowSize, durationInSec, preLoadKeys, numKeys);
+        } else if (loadPattern.equals(LoadPattern.ZIPFIAN)) {
+            return new ZipfianStringKeyGenerator(preLoadKeys, numKeys, zipfExponent);
+        } else {
+            return new RandomStringKeyGenrator(preLoadKeys, numKeys);
         }
-        else
-            return new RandomStringKeyGenrator(preLoadKeys,numKeys);
     }
 
 }

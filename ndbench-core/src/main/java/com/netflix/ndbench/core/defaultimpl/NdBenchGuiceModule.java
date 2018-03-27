@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 public class NdBenchGuiceModule extends AbstractModule {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchGuiceModule.class);
 
-    
+
     @Override
     protected void configure() {
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
@@ -47,7 +47,10 @@ public class NdBenchGuiceModule extends AbstractModule {
             bind(IClusterDiscovery.class).to(AWSLocalClusterDiscovery.class);
         } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS_ASG)) {
             bind(IClusterDiscovery.class).to(AwsAsgDiscovery.class);
-        } else {
+        } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS_CONFIG_FILE)) {
+            bind(IClusterDiscovery.class).to(ConfigFileDiscovery.class);
+        }
+          else {
             bind(IClusterDiscovery.class).to(LocalClusterDiscovery.class);
         }
         bind(DataGenerator.class).to(DefaultDataGenerator.class);

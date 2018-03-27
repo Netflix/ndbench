@@ -26,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -170,7 +169,7 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
         HostSupplier hSupplier = new HostSupplier() {
 
             @Override
-            public Collection<Host> getHosts() {
+            public List<Host> getHosts() {
 
                 List<Host> hosts = new ArrayList<Host>();
                 hosts.add(new Host("localhost", 8102, "local-dc",Host.Status.Up));
