@@ -1,8 +1,37 @@
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven { url "http://repo.spring.io/libs-snapshot" }
+}
+
+subprojects{
+    apply plugin: 'java'
+}
+
 dependencies {
     // We have dependency on the main project.
-    compile project(':ndbench-api')
+    compile (project(':ndbench-api')){
+        exclude group: 'org.slf4j'
+    }
+
 
     testCompile 'org.mockito:mockito-all:1.10.19'
-    compile 'org.springframework.data:spring-data-geode:1.0.0.INCUBATING-RELEASE'
+//    compile('org.springframework.data:spring-data-geode:2.0.2.RELEASE'){
+    compile('org.apache.geode:geode-core:1.4.0')
+//        exclude group: 'org.log4j'
 
+//        exclude group: 'org.slf4j'
+//    compile group: 'org.springframework.boot', name: 'spring-boot-starter-logging', version:'1.5.9.RELEASE'
+    runtime group: 'org.slf4j', name: 'jcl-over-slf4j', version: '1.8.0-alpha2'
+    runtime ('org.slf4j:jul-to-slf4j:1.8.0-alpha2')
+    compile ('org.apache.logging.log4j:log4j-slf4j-impl:2.10.0')
+}
+
+task compileDeps(type: DependencyReportTask) {
+    configurations = [project.configurations.compile] as Set
+}
+
+configurations {
+    all*.exclude group: 'org.slf4j', module: 'slf4j-log4j12'
+//    all*.exclude group: 'log4j', module: 'log4j'
 }
