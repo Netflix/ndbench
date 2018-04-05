@@ -9,8 +9,8 @@ repositories {
 }
 
 dependencies {
+        compile project(':ndbench-api')
         compile group:"com.netflix.evcache",          name:"evcache-client",                   version:"4.+"
         compile group:"net.spy",                      name:"spymemcached",                     version:"2.11.4"
-        compile group:"com.netflix.ndbench",          name:"ndbench-api",                      version:"latest.release"
         compile group:"org.slf4j",                    name:"slf4j-api",                        version:"1.7.+"
 }
