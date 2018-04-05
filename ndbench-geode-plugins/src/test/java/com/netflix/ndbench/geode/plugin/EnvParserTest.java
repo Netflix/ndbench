@@ -3,6 +3,8 @@ package com.netflix.ndbench.geode.plugin;
 import com.netflix.archaius.api.Property;
 import com.netflix.archaius.api.PropertyContainer;
 import com.netflix.archaius.api.PropertyFactory;
+import com.netflix.ndbench.plugin.geode.EnvParser;
+
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Before;
