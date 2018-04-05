@@ -19,6 +19,9 @@ package com.netflix.ndbench.plugin.evcache.configs;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
+import com.netflix.discovery.guice.EurekaModule;
+import com.netflix.evcache.EVCacheModule;
+import com.netflix.evcache.connection.ConnectionModule;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 
 /**
@@ -30,6 +33,10 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule
 public class EVCachePluginModule extends AbstractModule {
 	@Override
 	protected void configure() {
+		install(new  EurekaModule());
+        install(new EVCacheModule());
+        install(new ConnectionModule());
+        
 	}
 
 	@Provides

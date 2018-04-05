@@ -96,4 +96,11 @@ public interface DynamoDBConfigs {
 	@DefaultValue("xxx:8111")
 	String getDaxEndpoint();
 	
+	
+	@PropertyName(name = "AWSAccessKey")
+	String accessKey();
+	
+	@PropertyName(name = "AWSSecretKey")
+	String secretKey();
+	
 }
