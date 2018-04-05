@@ -49,15 +49,18 @@ import java.util.List;
      * @return
      * @throws Exception
      */
-    List<String> readBulk(final List<String> keys) throws Exception;
+    default List<String> readBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
 
     /**
 	 * Perform a bulk write operation
 	 * @return
 	 * @throws Exception
 	 */
-	List<String> writeBulk(final List<String> keys) throws Exception;
-
+    default List<String> writeBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
 
 	/**
      * shutdown the client
