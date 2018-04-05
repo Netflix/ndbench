@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugins.janusgraph.configs;
+package com.netflix.ndbench.plugin.janusgraph.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;

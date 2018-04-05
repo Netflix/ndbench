@@ -14,14 +14,14 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugins.janusgraph;
+package com.netflix.ndbench.plugin.janusgraph;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
-import com.netflix.ndbench.plugins.janusgraph.configs.IJanusGraphConfig;
-import com.netflix.ndbench.plugins.janusgraph.configs.cql.ICQLConfig;
+import com.netflix.ndbench.plugin.janusgraph.configs.IJanusGraphConfig;
+import com.netflix.ndbench.plugin.janusgraph.configs.cql.ICQLConfig;
 
 /**
  * @author pencal

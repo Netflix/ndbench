@@ -14,13 +14,14 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugins.janusgraph;
+package com.netflix.ndbench.plugin.janusgraph;
 
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.plugins.janusgraph.configs.IJanusGraphConfig;
-import com.netflix.ndbench.plugins.janusgraph.cql.JanusGraphBuilderCQLProvider;
+import com.netflix.ndbench.plugin.janusgraph.configs.IJanusGraphConfig;
+import com.netflix.ndbench.plugin.janusgraph.cql.JanusGraphBuilderCQLProvider;
+
 import org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.GraphTraversalSource;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
