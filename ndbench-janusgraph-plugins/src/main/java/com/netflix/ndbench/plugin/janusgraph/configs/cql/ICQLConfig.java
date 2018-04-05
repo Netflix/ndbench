@@ -1,4 +1,4 @@
-package com.netflix.ndbench.plugins.janusgraph.configs.cql;
+package com.netflix.ndbench.plugin.janusgraph.configs.cql;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;

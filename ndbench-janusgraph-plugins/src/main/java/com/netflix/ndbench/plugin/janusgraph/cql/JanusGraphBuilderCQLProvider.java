@@ -1,8 +1,9 @@
-package com.netflix.ndbench.plugins.janusgraph.cql;
+package com.netflix.ndbench.plugin.janusgraph.cql;
 
-import com.netflix.ndbench.plugins.janusgraph.IJanusGraphBuilder;
-import com.netflix.ndbench.plugins.janusgraph.configs.IJanusGraphConfig;
-import com.netflix.ndbench.plugins.janusgraph.configs.cql.ICQLConfig;
+import com.netflix.ndbench.plugin.janusgraph.IJanusGraphBuilder;
+import com.netflix.ndbench.plugin.janusgraph.configs.IJanusGraphConfig;
+import com.netflix.ndbench.plugin.janusgraph.configs.cql.ICQLConfig;
+
 import org.janusgraph.core.JanusGraphFactory;
 
 import javax.inject.Inject;
