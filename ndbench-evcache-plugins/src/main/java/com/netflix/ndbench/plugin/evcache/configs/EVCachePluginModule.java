@@ -33,7 +33,7 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule
 public class EVCachePluginModule extends AbstractModule {
 	@Override
 	protected void configure() {
-		install(new  EurekaModule());
+		install(new EurekaModule());
         install(new EVCacheModule());
         install(new ConnectionModule());
         
