@@ -36,7 +36,7 @@ public class KeyGeneratorFactory {
         } else if (loadPattern.equals(LoadPattern.ZIPFIAN)) {
             return new ZipfianStringKeyGenerator(preLoadKeys, numKeys, zipfExponent);
         } else {
-            return new RandomStringKeyGenrator(preLoadKeys, numKeys);
+            return new RandomStringKeyGenerator(preLoadKeys, numKeys);
         }
     }
 
