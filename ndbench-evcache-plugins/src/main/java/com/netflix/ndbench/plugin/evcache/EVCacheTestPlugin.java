@@ -28,6 +28,8 @@ import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.plugin.evcache.configs.EVCacheConfigs;
 
+import java.util.List;
+
 /**
  * @author smadappa
  */
@@ -94,6 +96,16 @@ public class EVCacheTestPlugin implements NdBenchClient {
 	public String writeSingle(String key) throws Exception {
 		evcache.set(key, this.dataGenerator.getRandomValue());
 		return ResultOK;
+	}
+
+	@Override
+	public List<String> readBulk(List<String> keys) throws Exception {
+		return null;
+	}
+
+	@Override
+	public List<String> writeBulk(List<String> keys) throws Exception {
+		return null;
 	}
 
 	/**
