@@ -46,7 +46,7 @@ public class DynoJedisGetSetPipeline implements NdBenchClient {
 
     private static final String ClusterName = "dynomite_redis";
 
-    private final AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<DynoJedisClient>(null);
+    private final AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<>(null);
 
     private DataGenerator dataGenerator;
 
@@ -74,17 +74,12 @@ public class DynoJedisGetSetPipeline implements NdBenchClient {
 
         logger.info("\nDynomite Cluster: " + ClusterName);
 
-        HostSupplier hSupplier = new HostSupplier() {
+        HostSupplier hSupplier = () -> {
 
-            @Override
-            public List<Host> getHosts() {
+            List<Host> hosts = new ArrayList<>();
+            hosts.add(new Host("localhost", 8102, "local-dc", Host.Status.Up));
 
-                List<Host> hosts = new ArrayList<Host>();
-                hosts.add(new Host("localhost", 8102, "local-dc", Host.Status.Up));
-
-                return hosts;
-            }
-
+            return hosts;
         };
 
         DynoJedisClient jClient = new DynoJedisClient.Builder().withApplicationName(ClusterName)

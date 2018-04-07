@@ -4,15 +4,11 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
-import com.netflix.archaius.api.PropertyFactory;
-import com.netflix.archaius.api.PropertyListener;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
-import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraConfigurationBase;
 import org.slf4j.Logger;
@@ -21,9 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author vchella

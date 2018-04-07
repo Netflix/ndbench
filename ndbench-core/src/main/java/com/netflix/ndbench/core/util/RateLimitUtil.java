@@ -35,7 +35,7 @@ public class RateLimitUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(RateLimitUtil.class);
 
-    private final AtomicReference<InnerState> ref = new AtomicReference<InnerState>(null);
+    private final AtomicReference<InnerState> ref = new AtomicReference<>(null);
     
     private RateLimitUtil(int rps) {
         this.ref.set(new InnerState(rps));
@@ -132,19 +132,15 @@ public class RateLimitUtil {
                 
                 for (int i=0; i<nThreads; i++) {
                 
-                    thPool.submit(new Callable<Void>() {
-                        
-                        @Override
-                        public Void call() throws Exception {
-                            barrier.await();
-                            while (!stop.get()) {
-                                if(rateLimiter.acquire()) {
-                                    counter.incrementAndGet();
-                                }
+                    thPool.submit(() -> {
+                        barrier.await();
+                        while (!stop.get()) {
+                            if(rateLimiter.acquire()) {
+                                counter.incrementAndGet();
                             }
-                            latch.countDown();
-                            return null;
                         }
+                        latch.countDown();
+                        return null;
                     });
                 }
                 

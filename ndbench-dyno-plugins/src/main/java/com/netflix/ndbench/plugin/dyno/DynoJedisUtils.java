@@ -75,7 +75,7 @@ public class DynoJedisUtils {
 
         DynoJedisPipeline pipeline = this.jedisClient.get().pipelined();
 
-        Map<String, Response<String>> responses = new HashMap<String, Response<String>>();
+        Map<String, Response<String>> responses = new HashMap<>();
         for (int n = 0; n < pipe_keys; ++n) {
             String nth_key = key + "_" + n;
             // NOTE: Dyno Jedis works on only one key, so we always use the same
@@ -149,11 +149,7 @@ public class DynoJedisUtils {
             return null;
         }
 
-        for (Iterator<String> it = returnEntries.iterator(); it.hasNext();) {
-            String f = it.next();
-            sb.append(f);
-        }
-
+        returnEntries.forEach(sb::append);
         return sb.toString();
     }
 
@@ -192,7 +188,7 @@ public class DynoJedisUtils {
         pipe_keys = Math.max(min_pipe_keys, pipe_keys);
 
         DynoJedisPipeline pipeline = this.jedisClient.get().pipelined();
-        Map<String, Response<String>> responses = new HashMap<String, Response<String>>();
+        Map<String, Response<String>> responses = new HashMap<>();
 
         /**
          * writeSingle returns a single string, so we want to create a
@@ -219,7 +215,7 @@ public class DynoJedisUtils {
      * @return the keys of the hash that was stored.
      */
     public String pipelineWriteHMSET(String key, DataGenerator dataGenerator, String hm_key_prefix) {
-        Map<String, String> map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<>();
         String hmKey = hm_key_prefix + key;
         map.put((hmKey + "__1"), (key + "__" + dataGenerator.getRandomValue() + "__" + key));
         map.put((hmKey + "__2"), (key + "__" + dataGenerator.getRandomValue() + "__" + key));

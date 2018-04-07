@@ -16,35 +16,18 @@
  */
 package com.netflix.ndbench.plugin.dynamodb;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.retry.RetryPolicy;
-import com.google.common.base.Preconditions;
-
 import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfiguration;
 
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadBulk;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadSingle;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteBulk;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteSingle;
-
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-
-import static com.amazonaws.retry.PredefinedRetryPolicies.DEFAULT_RETRY_CONDITION;
-import static com.amazonaws.retry.PredefinedRetryPolicies.DYNAMODB_DEFAULT_BACKOFF_STRATEGY;
-import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
 
 /**
  * This NDBench plugin provides a single key value for AWS DynamoDB.

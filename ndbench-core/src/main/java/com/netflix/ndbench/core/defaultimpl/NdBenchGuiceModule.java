@@ -16,7 +16,6 @@
  */
 package com.netflix.ndbench.core.defaultimpl;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;

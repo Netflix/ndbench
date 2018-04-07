@@ -94,7 +94,7 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
             return ImmutableList.of(prefix);
         }
 
-        List<String> retval = new ArrayList<String>();
+        List<String> retval = new ArrayList<>();
         for (char ch = rangeStart; ch <= rangeEnd; ch++) {
             retval.addAll(generate(prefix + ch, remaining - 1, rangeStart, rangeEnd));
         }

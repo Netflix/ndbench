@@ -17,7 +17,6 @@
 package com.netflix.ndbench.core.monitoring;
 
 import com.codahale.metrics.Histogram;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.SlidingTimeWindowReservoir;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -31,8 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
-
-import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * @author vchella
@@ -73,7 +70,8 @@ public class FakeMonitor implements NdBenchMonitor {
             timer = Executors.newScheduledThreadPool(1);
             logger.info(String.format("Initializing NdBenchMonitor with timing counter reset frequency %d seconds",
                     config.getStatsResetFreqSeconds()));
-            timer.scheduleAtFixedRate(this::setReadWriteHistograms, 1, config.getStatsResetFreqSeconds(), TimeUnit.SECONDS);
+            timer.scheduleAtFixedRate(this::setReadWriteHistograms, 1, config.getStatsResetFreqSeconds(),
+                    TimeUnit.SECONDS);
             timerRef.set(timer);
         }
     }

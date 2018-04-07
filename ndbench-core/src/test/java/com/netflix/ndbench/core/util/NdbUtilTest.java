@@ -1,6 +1,5 @@
 package com.netflix.ndbench.core.util;
 
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 
