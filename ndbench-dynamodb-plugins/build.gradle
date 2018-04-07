@@ -1,7 +1,7 @@
 repositories {
-   flatDir {
-       dirs buildDir
-   }
+    flatDir {
+        dirs buildDir
+    }
 }
 
 
@@ -14,8 +14,7 @@ dependencies {
         dest buildDir
         overwrite false
     }
-    
-    compileOnly name: 'DaxJavaClient-latest'
-        
-}
 
+    compileOnly name: 'DaxJavaClient-latest'
+
+}

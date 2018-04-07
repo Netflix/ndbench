@@ -17,6 +17,7 @@
 package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
 
 import com.amazonaws.AmazonClientException;
+import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
@@ -88,8 +89,10 @@ public class CreateDynamoDBTable extends AbstractDynamoDBOperation implements Su
             logger.debug("Waiting until the table is in ACTIVE state");
             TableUtils.waitUntilActive(dynamoDB, tableName);
             return dynamoDB.describeTable(tableName).getTable();
-        } catch (AmazonClientException e) {
-            throw new IllegalStateException("Table didn't become active", e);
+        } catch (AmazonServiceException ase) {
+            throw amazonServiceException(ase);
+        } catch (AmazonClientException ace) {
+            throw amazonClientException(ace);
         } catch (InterruptedException e) {
             throw new IllegalStateException("Table interrupted exception", e);
         }

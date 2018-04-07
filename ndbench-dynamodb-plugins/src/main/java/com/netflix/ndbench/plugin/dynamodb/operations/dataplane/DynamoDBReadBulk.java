@@ -53,11 +53,9 @@ public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation implements F
                     .map(Map::toString)
                     .collect(Collectors.toList());
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 

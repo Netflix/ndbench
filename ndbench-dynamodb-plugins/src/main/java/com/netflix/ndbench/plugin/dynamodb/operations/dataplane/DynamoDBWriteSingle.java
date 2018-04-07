@@ -45,11 +45,9 @@ public class DynamoDBWriteSingle extends AbstractDynamoDBDataPlaneOperation impl
                     .addItemEntry(ATTRIBUTE_NAME, new AttributeValue().withS(dataGenerator.getRandomValue())));
             return outcome == null ? null : outcome.toString();
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 }

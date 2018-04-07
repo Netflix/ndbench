@@ -19,7 +19,9 @@ package com.netflix.ndbench.core;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.inject.Inject;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.netflix.archaius.api.config.SettableConfig;
 import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.DataGenerator;
@@ -115,7 +117,6 @@ public class NdBenchDriver {
             }
         });
     }
-
 
     public void start(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         logger.info("Starting Load Test Driver...");
