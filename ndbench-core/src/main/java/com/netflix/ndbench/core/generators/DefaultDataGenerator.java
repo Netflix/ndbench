@@ -39,7 +39,7 @@ public class DefaultDataGenerator implements DataGenerator {
     protected final IConfiguration config;
 
 
-    private final List<String> values = new ArrayList<String>();
+    private final List<String> values = new ArrayList<>();
 
     private final Random vRandom = new Random();
     private final Random vvRandom = new Random(DateTime.now().getMillis()); // variable value random
