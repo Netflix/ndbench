@@ -19,6 +19,10 @@ package com.netflix.ndbench.plugin.dynamodb;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.client.builder.AwsClientBuilder;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +101,17 @@ public class DynamoDBKeyValue implements NdBenchClient {
 	this.dataGenerator = dataGenerator;
 
 	logger.info("Initing DynamoDBKeyValue plugin");
-	client = AmazonDynamoDBClientBuilder.standard().withCredentials(awsCredentialsProvider).build();
+	AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
+	builder.withClientConfiguration(new ClientConfiguration()
+			.withMaxConnections(config.getMaxConnections())
+			.withGzip(config.isCompressing()));
+	builder.withCredentials(awsCredentialsProvider);
+	if (!Strings.isNullOrEmpty(this.config.getEndpoint())) {
+		Preconditions.checkState(!Strings.isNullOrEmpty(config.getRegion()),
+				"If you set the endpoint you must set the region");
+		builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config.getEndpoint(), config.getRegion()));
+	}
+	client = builder.build();
 
 	if (this.config.programmableTables()) {
 	    logger.info("Creating table programmatically");
