@@ -258,7 +258,7 @@ public class NdBenchDriver {
                     } // eo if read or write
 
                     if (noMoreKey) {
-                        Logger.info("No more keys to process, hence stopping the process.");
+                        Logger.info("No more keys to process, hence stopping this thread.");
                         if (operation.isReadType()) {
                             stopReads();
                         } else if (operation.isWriteType()) {
