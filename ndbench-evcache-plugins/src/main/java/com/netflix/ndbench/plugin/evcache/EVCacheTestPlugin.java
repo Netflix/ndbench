@@ -36,102 +36,102 @@ import java.util.List;
 @Singleton
 @NdBenchClientPlugin("EVCacheTest")
 public class EVCacheTestPlugin implements NdBenchClient {
-	private static final Logger log = LoggerFactory.getLogger(EVCacheTestPlugin.class);
+    private static final Logger log = LoggerFactory.getLogger(EVCacheTestPlugin.class);
 
-	private DataGenerator dataGenerator;
-	private static final String ResultOK = "Ok";
-	private static final String CacheMiss = null;
+    private DataGenerator dataGenerator;
+    private static final String ResultOK = "Ok";
+    private static final String CacheMiss = null;
 
-	private EVCache evcache;
-	private final EVCacheClientPoolManager manager;
-	private final EVCache.Builder builder;
-	private final EVCacheConfigs configs;
+    private EVCache evcache;
+    private final EVCacheClientPoolManager manager;
+    private final EVCache.Builder builder;
+    private final EVCacheConfigs configs;
 
-	@Inject
-	public EVCacheTestPlugin(EVCacheConfigs configs, EVCache.Builder builder, EVCacheClientPoolManager manager) {
-		this.manager = manager;
-		this.builder = builder;
-		this.configs = configs;
-	}
+    @Inject
+    public EVCacheTestPlugin(EVCacheConfigs configs, EVCache.Builder builder, EVCacheClientPoolManager manager) {
+        this.manager = manager;
+        this.builder = builder;
+        this.configs = configs;
+    }
 
-	/**
-	 * Initialize the client
-	 *
-	 * @throws Exception
-	 */
-	@Override
-	public void init(DataGenerator dataGenerator) throws Exception {
-		this.dataGenerator = dataGenerator;
-		log.info("Initialized EVCacheTestPlugin");
-		this.evcache = builder.setAppName(configs.getName()).setCachePrefix(configs.getPrefix())
-				.setDefaultTTL(configs.getTTL()).build();
-		log.info("Initialized EVCacheTestPlugin");
-	}
+    /**
+     * Initialize the client
+     *
+     * @throws Exception
+     */
+    @Override
+    public void init(DataGenerator dataGenerator) throws Exception {
+        this.dataGenerator = dataGenerator;
+        log.info("Initialized EVCacheTestPlugin");
+        this.evcache = builder.setAppName(configs.getName()).setCachePrefix(configs.getPrefix())
+                .setDefaultTTL(configs.getTTL()).build();
+        log.info("Initialized EVCacheTestPlugin");
+    }
 
-	/**
-	 * Perform a single read operation
-	 *
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public String readSingle(String key) throws Exception {
-		String res = evcache.get(key);
-		if (res == null) {
-			return CacheMiss;
-		}
+    /**
+     * Perform a single read operation
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public String readSingle(String key) throws Exception {
+        String res = evcache.get(key);
+        if (res == null) {
+            return CacheMiss;
+        }
 
-		return ResultOK;
-	}
+        return ResultOK;
+    }
 
-	/**
-	 * Perform a single write operation
-	 *
-	 * @param key
-	 * @return
-	 * @throws Exception
-	 */
-	@Override
-	public String writeSingle(String key) throws Exception {
-		evcache.set(key, this.dataGenerator.getRandomValue());
-		return ResultOK;
-	}
+    /**
+     * Perform a single write operation
+     *
+     * @param key
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public String writeSingle(String key) throws Exception {
+        evcache.set(key, this.dataGenerator.getRandomValue());
+        return ResultOK;
+    }
 
-	@Override
-	public List<String> readBulk(List<String> keys) throws Exception {
-		return null;
-	}
+    @Override
+    public List<String> readBulk(List<String> keys) throws Exception {
+        return null;
+    }
 
-	@Override
-	public List<String> writeBulk(List<String> keys) throws Exception {
-		return null;
-	}
+    @Override
+    public List<String> writeBulk(List<String> keys) throws Exception {
+        return null;
+    }
 
-	/**
-	 * shutdown the client
-	 */
-	@Override
-	public void shutdown() throws Exception {
-		log.info("Shutting down EVCacheClientPoolManager");
-		this.manager.shutdown();
-	}
+    /**
+     * shutdown the client
+     */
+    @Override
+    public void shutdown() throws Exception {
+        log.info("Shutting down EVCacheClientPoolManager");
+        this.manager.shutdown();
+    }
 
-	/**
-	 * Get connection info
-	 */
-	@Override
-	public String getConnectionInfo() throws Exception {
-		return String.format("EVCacheTestPlugin - EVCache : " + evcache);
-	}
+    /**
+     * Get connection info
+     */
+    @Override
+    public String getConnectionInfo() throws Exception {
+        return String.format("EVCacheTestPlugin - EVCache : " + evcache);
+    }
 
-	/**
-	 * Run workflow for functional testing
-	 *
-	 * @throws Exception
-	 */
-	@Override
-	public String runWorkFlow() throws Exception {
-		return null;
-	}
+    /**
+     * Run workflow for functional testing
+     *
+     * @throws Exception
+     */
+    @Override
+    public String runWorkFlow() throws Exception {
+        return null;
+    }
 }

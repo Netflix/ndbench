@@ -41,8 +41,8 @@ DynamoDB supports [eventually consistent and strongly consistent reads](https://
 ### Amazon DynamoDB Accelerator (DAX)
 
 You can configure the properties for DAX. The following two properties can be used
-	* `ndbench.config.dax`: Enabling/Disabling the use of DAX. Defaults to `false`
-	* `ndbench.config.daxEndpoint`: Adding the DAX endpoint. It can be found in the AWS console.
+    * `ndbench.config.dax`: Enabling/Disabling the use of DAX. Defaults to `false`
+    * `ndbench.config.daxEndpoint`: Adding the DAX endpoint. It can be found in the AWS console.
 
 
 

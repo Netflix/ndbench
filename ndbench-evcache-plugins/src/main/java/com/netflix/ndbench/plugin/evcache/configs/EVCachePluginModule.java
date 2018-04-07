@@ -31,16 +31,16 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule
  */
 @NdBenchClientPluginGuiceModule
 public class EVCachePluginModule extends AbstractModule {
-	@Override
-	protected void configure() {
-		install(new EurekaModule());
+    @Override
+    protected void configure() {
+        install(new EurekaModule());
         install(new EVCacheModule());
         install(new ConnectionModule());
         
-	}
+    }
 
-	@Provides
-	EVCacheConfigs getEVCachePlugins(ConfigProxyFactory factory) {
-		return factory.newProxy(EVCacheConfigs.class);
-	}
+    @Provides
+    EVCacheConfigs getEVCachePlugins(ConfigProxyFactory factory) {
+        return factory.newProxy(EVCacheConfigs.class);
+    }
 }

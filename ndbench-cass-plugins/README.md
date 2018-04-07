@@ -17,17 +17,17 @@ Every config has to be prefixed with configuration prefix mentioned above
 #### Cassandra Plugins Common configurations
 | Config Name     | Default value | Description   |
 | :------- | :---- | :--- |
-|cass.cluster| 	localhost | Destination C* Cluster Name |
+|cass.cluster| localhost | Destination C* Cluster Name |
 |cass.host| 127.0.0.1 | IP of one of the C* nodes
-|cass.keyspace| 	dev1 | Destination Keyspace Name|
-|cass.cfname| 	emp | Destination CF Name|
-|cass.readConsistencyLevel| 	LOCAL_ONE | Read CL|
-|cass.writeConsistencyLevel| 	LOCAL_ONE | Write CL|
+|cass.keyspace| dev1 | Destination Keyspace Name|
+|cass.cfname| emp | Destination CF Name|
+|cass.readConsistencyLevel| LOCAL_ONE | Read CL|
+|cass.writeConsistencyLevel| LOCAL_ONE | Write CL|
 
 #### Cassandra *CassJavaDriverGeneric* Plugin configurations
 | Config Name     | Default value | Description   |
 | :------- | :---- | :--- |
-|cass.colsPerRow| 	100 | Number of columns per row|
+|cass.colsPerRow| 100 | Number of columns per row|
 
 #### Cassandra *CassJavaDriverBatch* Plugin configurations
 
@@ -42,8 +42,8 @@ Every config has to be prefixed with configuration prefix mentioned above
 #### Cassandra *CassJavaDriverPlugin* Plugin configurations
 | Config Name     | Default value | Description   |
 | :------- | :---- | :--- |
-|cass.cluster| 	localhost | Destination C* Cluster Name |
-\|cass.cfname| 	empl | Destination CF Name|
+|cass.cluster| localhost | Destination C* Cluster Name |
+\|cass.cfname| empl | Destination CF Name|
 
 > **Note:**
 Definitions of C* keyspaces and tables used in these plugins are available @ setupCassTables.cql (https://github.com/Netflix/ndbench/blob/master/ndbench-cass-plugins/src/main/resources/setupCassTables.cql)

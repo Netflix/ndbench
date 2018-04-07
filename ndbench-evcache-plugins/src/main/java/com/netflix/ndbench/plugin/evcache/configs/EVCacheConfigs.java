@@ -22,13 +22,13 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "evcache")
 public interface EVCacheConfigs {
-	
-	@DefaultValue("EVCACHE")
-	String getName();
-	
-	@DefaultValue("prefix")
-	String getPrefix();
 
-	@DefaultValue("900")
-	int getTTL();
+    @DefaultValue("EVCACHE")
+    String getName();
+
+    @DefaultValue("prefix")
+    String getPrefix();
+
+    @DefaultValue("900")
+    int getTTL();
 }

@@ -23,5 +23,5 @@ import java.util.List;
  */
 public interface InstanceDiscovery {
 
-	List<String> getEndpoints(String clusterName) throws Exception;
+    List<String> getEndpoints(String clusterName) throws Exception;
 }

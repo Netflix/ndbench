@@ -19,8 +19,8 @@ import com.netflix.dyno.connectionpool.impl.lb.HttpEndpointBasedTokenMapSupplier
 
 public class LocalHttpEndpointBasedTokenMapSupplier extends HttpEndpointBasedTokenMapSupplier{
 
-	public LocalHttpEndpointBasedTokenMapSupplier() {
-		super("http://{hostname}:8081/REST/v1/admin/cluster_describe", 8081);
-	}
-	
+    public LocalHttpEndpointBasedTokenMapSupplier() {
+        super("http://{hostname}:8081/REST/v1/admin/cluster_describe", 8081);
+    }
+
 }
