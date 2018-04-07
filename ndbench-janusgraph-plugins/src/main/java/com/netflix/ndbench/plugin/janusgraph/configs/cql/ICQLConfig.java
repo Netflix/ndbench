@@ -14,27 +14,24 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugins.janusgraph.configs;
+package com.netflix.ndbench.plugin.janusgraph.configs.cql;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 /**
- * Common configs for JanusGraph benchmark
- *
+ * Specific configs for JanusGraph's CQL backend
+ * 
  * @author pencal
  */
-@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + "janusgraph")
-public interface IJanusGraphConfig {
-	// One can benchmark either the Tinkerpop API or the JanusGraph Core API if
-	// needed
-	@DefaultValue("false")
-	boolean useJanusgraphTransaction();
 
-	@DefaultValue("127.0.0.1")
-	String getStorageHostname();
+@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + ".janusgraph.storage.cql")
+public interface ICQLConfig {
 
-	@DefaultValue("9042")
-	String getStoragePort();
+	@DefaultValue("ndbench_cql")
+	String getKeyspace();
+
+	@DefaultValue("na")
+	String getClusterName();
 }

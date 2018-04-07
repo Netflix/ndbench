@@ -19,6 +19,10 @@ package com.netflix.ndbench.core.util;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.netflix.ndbench.core.NdBenchDriver;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -30,6 +34,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author vchella
  */
 public class RateLimitUtil {
+
+    private static final Logger Logger = LoggerFactory.getLogger(RateLimitUtil.class);
 
     private final AtomicReference<InnerState> ref = new AtomicReference<InnerState>(null);
     
@@ -155,10 +161,10 @@ public class RateLimitUtil {
                 long duration = end.get() - start;
                 long totalCount = counter.get();
                 double resultRps = ((double)(totalCount)/((double)duration/1000.0));
-                System.out.println("Total Count : " + totalCount + ", duration:  " + duration + ", getSuccess rps: " + resultRps);
+                Logger.info("Total Count : " + totalCount + ", duration:  " + duration + ", getSuccess rps: " + resultRps);
                 
                 double percentageDiff = Math.abs(expectedRps-resultRps)*100/resultRps;
-                System.out.println("Percentage diff: " + percentageDiff);
+                Logger.info("Percentage diff: " + percentageDiff);
                 
                 Assert.assertTrue(percentageDiff < 12.0);
             }

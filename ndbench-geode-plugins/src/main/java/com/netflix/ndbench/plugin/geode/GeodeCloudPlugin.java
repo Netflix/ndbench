@@ -1,4 +1,4 @@
-package com.netflix.ndbench.geode.plugin;
+package com.netflix.ndbench.plugin.geode;
 
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;

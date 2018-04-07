@@ -27,8 +27,8 @@ import java.util.Random;
 /**
  * @author vchella
  */
-public class RandomStringKeyGenrator implements KeyGenerator<String> {
-    private static Logger logger = LoggerFactory.getLogger(RandomStringKeyGenrator.class);
+public class RandomStringKeyGenerator implements KeyGenerator<String> {
+    private static Logger logger = LoggerFactory.getLogger(RandomStringKeyGenerator.class);
 
     private final Random kRandom = new Random();
 
@@ -37,7 +37,7 @@ public class RandomStringKeyGenrator implements KeyGenerator<String> {
     private final int numKeys;
     private final boolean preLoadKeys;
 
-    public RandomStringKeyGenrator(boolean preLoadKeys, int numKeys)
+    public RandomStringKeyGenerator(boolean preLoadKeys, int numKeys)
     {
         this.preLoadKeys = preLoadKeys;
         this.numKeys = numKeys;

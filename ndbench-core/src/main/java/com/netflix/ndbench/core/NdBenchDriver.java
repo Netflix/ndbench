@@ -102,7 +102,7 @@ public class NdBenchDriver {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                System.err.println("*** shutting down NdBench server since JVM is shutting down");
+                Logger.info("*** shutting down NdBench server since JVM is shutting down");
                 NdBenchDriver.this.stop();
                 try {
                     NdBenchDriver.this.shutdownClient();
@@ -226,7 +226,7 @@ public class NdBenchDriver {
             throw new RuntimeException("Unknown threadpool when performing tpRef CAS operation");
         }
 
-        System.out.println("\n\nWorker threads: " + numWorkersConfig + ", Num Keys: " + config.getNumKeys() + "\n\n");
+        Logger.info("\n\nWorker threads: " + numWorkersConfig + ", Num Keys: " + config.getNumKeys() + "\n\n");
 
         for (int i = 0; i < numWorkersConfig; i++) {
 
