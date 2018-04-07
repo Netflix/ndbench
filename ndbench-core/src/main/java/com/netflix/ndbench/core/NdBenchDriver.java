@@ -36,7 +36,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -240,8 +242,8 @@ public class NdBenchDriver {
                             (operation.isWriteType() && writesStarted.get())) {
                         if (rateLimiter.get().tryAcquire()) {
 
-                            List<String> keys = new ArrayList<>(bulkSize);
-                            for (int j = 0; j < bulkSize; j++) {
+                            final Set<String> keys = new HashSet<>(bulkSize * 2);
+                            while (keys.size() < bulkSize) {
                                 keys.add(keyGenerator.getNextKey());
                                 if (!keyGenerator.hasNextKey()) {
                                     noMoreKey = true;
@@ -252,7 +254,7 @@ public class NdBenchDriver {
                             operation.process(
                                     NdBenchDriver.this,
                                     ndBenchMonitor,
-                                    keys,
+                                    new ArrayList<>(keys),
                                     rateLimiter,
                                     isAutoTuneEnabled);
                         } // eo rateLimiter tryGet
