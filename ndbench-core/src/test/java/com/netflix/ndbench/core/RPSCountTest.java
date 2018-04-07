@@ -119,6 +119,8 @@ public class RPSCountTest extends TestBase {
 
         IConfiguration config = mock(IConfiguration.class);
         when(config.getStatsUpdateFreqSeconds()).thenReturn(10);
+        when(config.isReadEnabled()).thenReturn(true);
+        when(config.isWriteEnabled()).thenReturn(true);
 
 
         NdBenchMonitor monitor = mock(NdBenchMonitor.class);

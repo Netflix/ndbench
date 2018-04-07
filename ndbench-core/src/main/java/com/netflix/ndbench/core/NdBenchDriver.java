@@ -513,12 +513,12 @@ public class NdBenchDriver {
             long expectedwriteRate = (long) this.writeLimiter.get().getRate();
             String bottleneckMsg = "If this occurs consistently the benchmark client could be the bottleneck.";
 
-            if (readsStarted.get() && readRps < expectedReadRate) {
-                Logger.warn("Observed Read RPS  ({}) less than expected read rate + ({}).\n{}",
+            if (this.config.isReadEnabled() && readsStarted.get() && readRps < expectedReadRate) {
+                Logger.warn("Observed Read RPS ({}) less than expected read rate + ({}).\n{}",
                         readRps, expectedReadRate, bottleneckMsg);
             }
-            if (writesStarted.get() && writeRps < expectedwriteRate) {
-                Logger.warn("Observed Write RPS  ({}) less than expected write rate + ({}).\n{}",
+            if (this.config.isWriteEnabled() && writesStarted.get() && writeRps < expectedwriteRate) {
+                Logger.warn("Observed Write RPS ({}) less than expected write rate + ({}).\n{}",
                         writeRps, expectedwriteRate, bottleneckMsg);
             }
         }
