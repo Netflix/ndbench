@@ -226,7 +226,7 @@ public class NdBenchDriver {
             throw new RuntimeException("Unknown threadpool when performing tpRef CAS operation");
         }
 
-        System.out.println("\n\nWorker threads: " + numWorkersConfig + ", Num Keys: " + config.getNumKeys() + "\n\n");
+        Logger.info("Worker threads: " + numWorkersConfig + ", Num Keys: " + config.getNumKeys());
 
         for (int i = 0; i < numWorkersConfig; i++) {
 
