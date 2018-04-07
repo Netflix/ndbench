@@ -289,6 +289,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
         } catch (InterruptedException e) {
             logger.error("Table interrupted exception: " + e);
         }
+
     }
 
     private void deleteTable() {

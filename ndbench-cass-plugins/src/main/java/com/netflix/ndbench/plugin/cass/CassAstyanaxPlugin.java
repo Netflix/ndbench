@@ -99,7 +99,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
 
 
         //ColumnFamily Definition
-        CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
+        CF = new ColumnFamily<>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
 
         Logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
