@@ -25,7 +25,7 @@ import com.netflix.ndbench.core.util.LoadPattern;
 import org.slf4j.LoggerFactory;
 
 /**
- * This class is a CLI entry point to facilitate quick testing of the Netflix Database Benchmark.
+ * This class is a CLI entry point to facilitate quick testing of the Netflix Data Benchmark (NdBench).
  * In particular, this class does not require deploying a WAR to Tomcat to run the benchmark.
  * Nor does this class require running a Context in a web container.
  *
@@ -40,11 +40,14 @@ public class NdbenchCli {
 
         try {
             driver.init(injector.getInstance(NdBenchClientFactory.class).getClient(cliConfigs.getClientName()));
+            long millisToWait = Integer.valueOf(cliConfigs.getCliTimeoutMillis());
+
             logger.info("Starting driver in CLI with loadPattern=" + cliConfigs.getLoadPattern()
                     + ", windowSize=" + cliConfigs.getWindowSize()
                     + ", windowDurationInSec=" + cliConfigs.getWindowDurationInSec()
                     + ", bulkSize=" + cliConfigs.getBulkSize()
-                    + ", timeout(ms)=" + cliConfigs.getCliTimeoutMillis()
+                    + ", timeout(ms)=" + (millisToWait == 0L ? "no timeout" : cliConfigs.getCliTimeoutMillis())
+
                     + ", clientName=" + cliConfigs.getClientName());
             driver.start(
                     LoadPattern.fromString(cliConfigs.getLoadPattern()),
@@ -52,13 +55,15 @@ public class NdbenchCli {
                     Integer.valueOf(cliConfigs.getWindowDurationInSec()),
                     Integer.valueOf(cliConfigs.getBulkSize())
             );
-            long millisToWait = Integer.valueOf(cliConfigs.getCliTimeoutMillis());
-            logger.info("Waiting " + millisToWait + " ms for reads and writes to finish");
-            Thread.sleep(millisToWait); //blocking
-            logger.info("Waited " + millisToWait + " ms for reads and writes to finish. Stopping driver.");
-            driver.stop(); //blocking
-            logger.info("Stopped driver");
-            System.exit(0);
+
+            if (millisToWait > 0) {
+                logger.info("Waiting " + millisToWait + " ms for reads and writes to finish");
+                Thread.sleep(millisToWait); //blocking
+                logger.info("Waited " + millisToWait + " ms for reads and writes to finish. Stopping driver.");
+                driver.stop(); //blocking
+                logger.info("Stopped driver");
+                System.exit(0);
+            }
         } catch(Exception e) {
             logger.error("Encountered an exception when driving load", e);
             System.exit(-1);

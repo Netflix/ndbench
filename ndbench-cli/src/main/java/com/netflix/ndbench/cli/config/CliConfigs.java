@@ -34,7 +34,7 @@ public interface CliConfigs {
     String getBulkSize();
 
     @PropertyName(name = "timeoutMillis")
-    @DefaultValue("360000")
+    @DefaultValue("0")
     String getCliTimeoutMillis();
 
     @PropertyName(name = "loadPattern")
