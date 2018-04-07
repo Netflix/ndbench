@@ -52,6 +52,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Singleton
 public class NdBenchDriver {
     private static final Logger Logger = LoggerFactory.getLogger(NdBenchDriver.class);
+    public static final int TIMEOUT = 5;
 
     private final AtomicInteger readWorkers = new AtomicInteger(0);
     private final AtomicInteger writeWorkers = new AtomicInteger(0);
@@ -317,10 +318,10 @@ public class NdBenchDriver {
                 Logger.info("Waiting for worker pool to stop, sleeping for 5 to 10 seconds");
 
                 // Wait a while for existing tasks to terminate
-                if (!tp.awaitTermination(5, TimeUnit.SECONDS)) {
+                if (!tp.awaitTermination(TIMEOUT, TimeUnit.SECONDS)) {
                     tp.shutdownNow(); // Cancel currently executing tasks
                     // Wait a while for tasks to respond to being cancelled
-                    if (!tp.awaitTermination(5, TimeUnit.SECONDS))
+                    if (!tp.awaitTermination(TIMEOUT, TimeUnit.SECONDS))
                         Logger.error("Error while shutting down executor service : ");
                 }
                 Logger.info("Threadpool has terminated!");
