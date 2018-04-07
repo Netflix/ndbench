@@ -25,7 +25,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.lang.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +43,8 @@ public class DefaultDataGenerator implements DataGenerator
 {
     private static Logger logger = LoggerFactory.getLogger(DefaultDataGenerator.class);
     protected final IConfiguration config;
-    private final List<String> values = new ArrayList<String>();
+    private final List<String> values = new ArrayList<>();
+
     private final Random vRandom = new Random();
     private final Random vvRandom = new Random(DateTime.now().getMillis()); // variable value random
 

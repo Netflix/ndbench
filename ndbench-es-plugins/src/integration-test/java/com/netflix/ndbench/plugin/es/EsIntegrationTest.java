@@ -28,7 +28,7 @@ public class EsIntegrationTest extends AbstractPluginIntegrationTest {
      * <p>
      * Note: This is similar to check code in test for transport protocol: could be refactored.
      */
-    private static FutureTask<Boolean> checkEsServerUpTask = new FutureTask<Boolean>(new Callable<Boolean>() {
+    private static FutureTask<Boolean> checkEsServerUpTask = new FutureTask<>(new Callable<Boolean>() {
 
 
         @Override

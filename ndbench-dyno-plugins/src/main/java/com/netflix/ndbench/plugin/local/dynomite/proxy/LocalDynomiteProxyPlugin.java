@@ -48,7 +48,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
 
     private DataGenerator dataGenerator;
 
-    private final AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<DynoJedisClient>(null);
+    private final AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<>(null);
 
 
     @Override
@@ -64,17 +64,12 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
         logger.info("\nDynomite Cluster: " + ClusterName);
 
 
-        HostSupplier hSupplier = new HostSupplier() {
+        HostSupplier hSupplier = () -> {
 
-            @Override
-            public List<Host> getHosts() {
+            List<Host> hosts = new ArrayList<>();
+            hosts.add(new Host("localhost", dynomitePort, "local-dc", Host.Status.Up));
 
-                List<Host> hosts = new ArrayList<Host>();
-                hosts.add(new Host("localhost", dynomitePort, "local-dc", Host.Status.Up));
-
-                return hosts;
-            }
-
+            return hosts;
         };
 
 

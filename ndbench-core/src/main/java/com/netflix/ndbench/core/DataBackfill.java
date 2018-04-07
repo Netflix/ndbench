@@ -20,7 +20,6 @@ package com.netflix.ndbench.core;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,12 +48,12 @@ public class DataBackfill {
 
     private final IConfiguration config;
     private final AtomicBoolean stop = new AtomicBoolean(false);
-    private final AtomicReference<ExecutorService> threadPool = new AtomicReference<ExecutorService>(null);
+    private final AtomicReference<ExecutorService> threadPool = new AtomicReference<>(null);
     private final AtomicInteger missCount = new AtomicInteger(0);
     final AtomicInteger count = new AtomicInteger(0);
     private final Random random = new Random();
 
-    private final AtomicReference<Future<Void>> futureRef = new AtomicReference<Future<Void>>(null);
+    private final AtomicReference<Future<Void>> futureRef = new AtomicReference<>(null);
     @Inject
     public DataBackfill(IConfiguration config) {
         this.config = config;
@@ -105,51 +104,45 @@ public class DataBackfill {
             final int startKey = keyRanges.get(i).getLeft();
             final int endKey = keyRanges.get(i).getRight();
 
-            threadPool.get().submit(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    int k = startKey;
+            threadPool.get().submit(() -> {
+                int k = startKey;
 
-                    while (k < endKey && !stop.get()) {
-                        try {
-                            String key = "T" + k;
-                            String result = backfillOperation.process(client, key);
-                            logger.debug("Backfill Key:" + key + " | Result: " + result);
-                            k++;
-                            count.incrementAndGet();
-                        } catch (Exception e) {
-                            logger.error("Retrying after failure", e);
-                        }
+                while (k < endKey && !stop.get()) {
+                    try {
+                        String key = "T" + k;
+                        String result = backfillOperation.process(client, key);
+                        logger.info("Backfill Key:" + key + " | Result: " + result);
+                        k++;
+                        count.incrementAndGet();
+                    } catch (Exception e) {
+                        logger.error("Retrying after failure", e);
                     }
-
-                    latch.countDown();
-                    logger.info("Stopping datafill writer");
-                    return null;
                 }
+
+                latch.countDown();
+                logger.info("Stopping datafill writer");
+                return null;
             });
         }
 
 
-        Future<Void> future = threadPool.get().submit(new Callable<Void>() {
-            @Override
-            public Void call() throws Exception {
-                final AtomicBoolean stopCounting = new AtomicBoolean(false);
+        Future<Void> future = threadPool.get().submit(() -> {
+            final AtomicBoolean stopCounting = new AtomicBoolean(false);
 
-                while (!Thread.currentThread().isInterrupted() && !stopCounting.get()) {
-                    logger.info("Backfill so far: " + count.get() + ", miss count: " + missCount.get());
-                    try {
-                        boolean done = latch.await(5000, TimeUnit.MILLISECONDS);
-                        if (done) {
-                            stopCounting.set(true);
-                        }
-                    } catch (InterruptedException e) {
-                        // return from here.
+            while (!Thread.currentThread().isInterrupted() && !stopCounting.get()) {
+                logger.info("Backfill so far: " + count.get() + ", miss count: " + missCount.get());
+                try {
+                    boolean done = latch.await(5000, TimeUnit.MILLISECONDS);
+                    if (done) {
                         stopCounting.set(true);
                     }
+                } catch (InterruptedException e) {
+                    // return from here.
+                    stopCounting.set(true);
                 }
-                logger.info("Stopping datafill status poller");
-                return null;
             }
+            logger.info("Stopping datafill status poller");
+            return null;
         });
 
         futureRef.set(future);

@@ -21,8 +21,6 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.model.PutMetricAlarmRequest;
 import com.amazonaws.services.cloudwatch.model.PutMetricAlarmResult;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.AbstractCloudWatchOperation;
 
 import java.util.function.Function;

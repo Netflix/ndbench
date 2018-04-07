@@ -77,7 +77,7 @@ public class AutotuneTest extends AbstractPluginTest {
 
         List<Double> result;
 
-        ArrayList<Double> returnValue = new ArrayList<Double>();
+        ArrayList<Double> returnValue = new ArrayList<>();
 
         Double res1 = plugin.autoTuneWriteRateLimit(0D, Collections.singletonList(okWriteResult), m1);      // assume current rate is zero
         returnValue.add(res1);
