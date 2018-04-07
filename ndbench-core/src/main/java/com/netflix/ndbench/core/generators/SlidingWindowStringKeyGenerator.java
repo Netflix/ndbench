@@ -19,60 +19,43 @@ package com.netflix.ndbench.core.generators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
  * @author vchella
  */
-public class SlidingWindowStringKeyGenerator implements KeyGenerator<String> {
+public class SlidingWindowStringKeyGenerator extends StringKeyGenerator {
 
     private static Logger logger = LoggerFactory.getLogger(SlidingWindowStringKeyGenerator.class);
 
     private final int windowSize;
     private final long testDurationInSeconds;
-    private final int numKeys;
-    private final boolean preLoadKeys;
 
     private final Random kRandom = new Random();
 
     private long startTime;
     private long endTime;
 
-    private final List<String> keys = new ArrayList<String>();
-
     public SlidingWindowStringKeyGenerator(int windowSize, long testDurationInSeconds, boolean preLoadKeys, int numKeys)
     {
+        super(numKeys, preLoadKeys);
         logger.info("Initialized SlidingWindowKeyGenerator with WindowSize: "+windowSize+", Test Duration (Secs): "+testDurationInSeconds+", NumKeys: "+numKeys);
         this.windowSize = windowSize;
         this.testDurationInSeconds = testDurationInSeconds;
-        this.numKeys = numKeys;
-        this.preLoadKeys = preLoadKeys;
     }
 
     @Override
     public void init() {
-        if (this.isPreLoadKeys()) {
-            for (int i = 0; i < getNumKeys(); i++) {
-                if (i % 10000 == 0)
-                    logger.info("Still initializing sample data for Keys. So far: "+ i+" /"+numKeys);
-
-                keys.add("T" + i);
-            }
-        }
+        super.init();
         startTime = System.currentTimeMillis();
         endTime = startTime + (testDurationInSeconds*1000);
     }
-
-
 
     @Override
     public String getNextKey() {
 
 
         int min = getCurrentRecord();
-//        int max = Math.max(min + this.windowSize,numKeys);
         int max = min + this.windowSize;
         int nextKey = randomnum(min, max);
         logger.debug("NumKeys: "+numKeys+" | CurrentKeySet: [" +min +" - " +max+"] | getNextKey(): "+nextKey);
@@ -87,16 +70,6 @@ public class SlidingWindowStringKeyGenerator implements KeyGenerator<String> {
             return false;
         }
         return true;
-    }
-
-    @Override
-    public boolean isPreLoadKeys() {
-        return this.preLoadKeys;
-    }
-
-    @Override
-    public int getNumKeys() {
-        return this.numKeys;
     }
 
     private int randomnum(int minNum, int maxNum) {
