@@ -146,21 +146,20 @@ public class DynamoDBKeyValue implements NdBenchClient {
      */
     @Override
     public String readSingle(String key) throws Exception {
-        Item item = null;
-        try {
-            GetItemSpec spec = new GetItemSpec()
+        final GetItemSpec spec = new GetItemSpec()
                 .withPrimaryKey("id", key)
                 .withConsistentRead(config.consistentRead());
-            item = table.getItem(spec);
-            if (item == null) {
-                return null;
-            }
+        final Item item;
+        try {
+            item = table.getItem(spec); //will return null if the item does not exist.
+            return item == null ? null : item.toString();
         } catch (AmazonServiceException ase) {
             amazonServiceException(ase);
+            throw ase;
         } catch (AmazonClientException ace) {
             amazonClientException(ace);
+            throw ace;
         }
-        return item.toString();
     }
 
     /**
@@ -171,23 +170,20 @@ public class DynamoDBKeyValue implements NdBenchClient {
      */
     @Override
     public String writeSingle(String key) throws Exception {
-        PutItemOutcome outcome = null;
         try {
-            Item item = new Item()
-                .withPrimaryKey("id", key)
-                .withString("value", this.dataGenerator.getRandomValue());
+            final Item item = new Item()
+                    .withPrimaryKey("id", key)
+                    .withString("value", this.dataGenerator.getRandomValue());
             // Write the item to the table
-            outcome = table.putItem(item);
-            if (outcome == null) {
-                return null;
-            }
-
+            final PutItemOutcome outcome = table.putItem(item);
+            return outcome == null ? null : outcome.toString();
         } catch (AmazonServiceException ase) {
             amazonServiceException(ase);
+            throw ase;
         } catch (AmazonClientException ace) {
             amazonClientException(ace);
+            throw ace;
         }
-        return outcome.toString();
     }
 
     @Override
