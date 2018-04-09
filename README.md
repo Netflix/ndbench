@@ -67,7 +67,7 @@ For Amazon Web Services use `AWS`, for Cloud Foundry use `CF`, and for local dep
 For Cloud Foundry, build and upload the ndbench war to CF using `cf push`.
 
 ## Run
-	    ./gradlew appRun
+    ./gradlew appRun
 
 ## Configuration
 

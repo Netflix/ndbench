@@ -121,12 +121,12 @@
           <property name="option" value="text"/>
         </module>
         <module name="LeftCurly">
-	  <property name="option" value="nl"/>
-	</module>
+      <property name="option" value="nl"/>
+    </module>
         <module name="NeedBraces"/>
         <module name="RightCurly">
-	  <property name="option" value="alone"/>
-	</module>
+      <property name="option" value="alone"/>
+    </module>
 
 
         <!-- Checks for common coding problems               -->

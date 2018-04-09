@@ -34,7 +34,7 @@ import java.util.Set;
  * The implementing class of each thusly discovered client plugin and the plugin's name (extracted as the
  * parameter to each annotation) are used as entries in a map that enables the plugin's class to be looked up by name.
  * <p>
- * This class uses similar reflection-based discovery to find all Guice modules required by  client plugins.
+ * This class uses similar reflection-based discovery to find all Guice modules required by client plugins.
  * Any plugin client which needs Guice bindings only needs to annotate its Guice module with
  * {@link com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule}, and that module will be
  * auto-installed by this class.
@@ -74,7 +74,7 @@ public class NdBenchClientModule extends AbstractModule {
     @Override
     protected void configure() {
         //Get all implementations of NdBenchClient Interface and install them as Plugins
-        Reflections reflections = new Reflections("com.netflix.ndbench");
+        Reflections reflections = new Reflections("com.netflix.ndbench.plugin");
         final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(NdBenchClientPlugin.class);
         for (Class<?> ndb : classes) {
             installNdBenchClientPlugin(ndb);
@@ -84,7 +84,7 @@ public class NdBenchClientModule extends AbstractModule {
 
     private void installGuiceBindingsRequiredByClientPlugins() {
         // Discover guice binding modules for ndbench client plugins, and add them to list
-        Reflections reflections = new Reflections("com.netflix.ndbench");
+        Reflections reflections = new Reflections("com.netflix.ndbench.plugin");
         final Set<Class<?>> classes = reflections.getTypesAnnotatedWith(NdBenchClientPluginGuiceModule.class);
         for (Class<?> ndb : classes) {
             AbstractModule e = instantiateGuiceModule(ndb);
