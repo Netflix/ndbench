@@ -29,9 +29,9 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 @Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + ".janusgraph.storage.cql")
 public interface ICQLConfig {
 
-	@DefaultValue("ndbench_cql")
-	String getKeyspace();
+    @DefaultValue("ndbench_cql")
+    String getKeyspace();
 
-	@DefaultValue("na")
-	String getClusterName();
+    @DefaultValue("na")
+    String getClusterName();
 }

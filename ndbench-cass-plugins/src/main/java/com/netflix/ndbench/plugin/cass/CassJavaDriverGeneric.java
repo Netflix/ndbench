@@ -77,7 +77,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
             bStmt.setString("value", this.dataGenerator.getRandomValue());
             batch.add(bStmt);
         }
-	batch.setConsistencyLevel(this.WriteConsistencyLevel);
+    batch.setConsistencyLevel(this.WriteConsistencyLevel);
         session.execute(batch);
         batch.clear();
         return ResultOK;
