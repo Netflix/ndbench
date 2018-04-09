@@ -509,8 +509,9 @@ public class NdBenchDriver {
             ndBenchMonitor.setWriteRPS(writeRps);
             ndBenchMonitor.setReadRPS(readRps);
 
-            Logger.info("Read RPS: " + readRps + ", Write RPS: " + writeRps +
-                    ", total RPS: " + (readRps + writeRps) + ", Success Ratio: " + sRatio + "%");
+            Logger.info("Read avg: "  + (double) ndBenchMonitor.getReadLatAvg() / 1000.0  + "ms, Read RPS: "  + readRps
+                    + ", Write avg: " + (double) ndBenchMonitor.getWriteLatAvg() / 1000.0 + "ms, Write RPS: " + writeRps
+                    + ", total RPS: " + (readRps + writeRps) + ", Success Ratio: " + sRatio + "%");
             long expectedReadRate = (long) this.readLimiter.get().getRate();
             long expectedwriteRate = (long) this.writeLimiter.get().getRate();
             String bottleneckMsg = "If this occurs consistently the benchmark client could be the bottleneck.";
