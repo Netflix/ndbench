@@ -47,30 +47,44 @@ public class ReadOperation implements NdBenchDriver.NdBenchOperation {
                            AtomicReference<RateLimiter> ignoredForNow,
                            boolean isAutoTuneEnabled) {
         try {
-            Long startTime = System.nanoTime();
-            List<String> value = new ArrayList<>(keys.size());
+
             if (keys.size() > 1) {
-                // bulk
-                value.addAll(client.readBulk(keys));
+                //Bulk requests
+                List<String> values = new ArrayList<>(keys.size());
+
+                Long startTime = System.nanoTime();
+                values.addAll(client.readBulk(keys));
+                monitor.recordReadLatency((System.nanoTime() - startTime) / 1000);
+
+                for (String value : values) {
+                    processCacheStats(value, monitor);
+                }
             } else {
-                // single
-                value.add(client.readSingle(keys.get(0)));
+                //Single requests
+
+                Long startTime = System.nanoTime();
+                String value = client.readSingle(keys.get(0));
+                monitor.recordReadLatency((System.nanoTime() - startTime) / 1000);
+
+                processCacheStats(value, monitor);
             }
-            monitor.recordReadLatency((System.nanoTime() - startTime)/1000);
-            if (value != null) {
-                monitor.incCacheHit();
-            } else {
-                Logger.debug("Miss for key: {}", keys);
-                monitor.incCacheMiss();
-            }
+
             monitor.incReadSuccess();
             return true;
+
         } catch (Exception e) {
             monitor.incReadFailure();
             Logger.error("Failed to process NdBench read operation", e);
             return false;
-        } finally {
+        }
+    }
 
+    private void processCacheStats(String value, NdBenchMonitor monitor)
+    {
+        if (value != null) {
+            monitor.incCacheHit();
+        } else {
+            monitor.incCacheMiss();
         }
     }
 
