@@ -47,12 +47,27 @@ public interface DynamoDBConfigs {
      * Used for provisioned throughput
      */
     @PropertyName(name = "rcu")
-    @DefaultValue("2")
+    @DefaultValue("5")
     String getReadCapacityUnits();
 
     @PropertyName(name = "wcu")
-    @DefaultValue("2")
+    @DefaultValue("5")
     String getWriteCapacityUnits();
+
+    /*
+     * Application Autoscaling for DynamoDB
+     */
+    @PropertyName(name = "autoscaling")
+    @DefaultValue("true")
+    Boolean getAutoscaling();
+
+    @PropertyName(name = "targetReadUtilization")
+    @DefaultValue("70")
+    String getTargetReadUtilization();
+
+    @PropertyName(name = "targetWriteUtilization")
+    @DefaultValue("70")
+    String getTargetWriteUtilization();
 
     /*
      * Consistency: When you request a strongly consistent read, DynamoDB returns a

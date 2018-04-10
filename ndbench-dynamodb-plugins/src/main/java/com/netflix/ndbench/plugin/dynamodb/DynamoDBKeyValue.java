@@ -22,15 +22,20 @@ import java.util.function.Function;
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.retry.RetryPolicy;
+
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.CreateDynamoDBTable;
 import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.DeleteDynamoDBTable;
+import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.DescribeLimits;
 import com.netflix.ndbench.plugin.dynamodb.operations.dataplane.DynamoDBReadBulk;
 import com.netflix.ndbench.plugin.dynamodb.operations.dataplane.DynamoDBReadSingle;
 import com.netflix.ndbench.plugin.dynamodb.operations.dataplane.DynamoDBWriteBulk;
 import com.netflix.ndbench.plugin.dynamodb.operations.dataplane.DynamoDBWriteSingle;
+
+import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +70,8 @@ public class DynamoDBKeyValue implements NdBenchClient {
     private AWSCredentialsProvider awsCredentialsProvider;
     @Inject
     private DynamoDBConfigs config;
+    @Inject
+    private DynamoDBAutoscalingConfigurer dynamoDBAutoscalingConfigurer;
 
     // dynamically initialized
     private AmazonDynamoDB dynamoDB;
@@ -74,6 +81,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
     private Function<List<String>, List<String>> bulkWrite;
     private CreateDynamoDBTable createTable;
     private DeleteDynamoDBTable deleteTable;
+    private DescribeLimits describeLimits;
 
     @Override
     public void init(DataGenerator dataGenerator) {
@@ -107,10 +115,14 @@ public class DynamoDBKeyValue implements NdBenchClient {
         //instantiate operations
         String tableName = config.getTableName();
         String partitionKeyName = config.getAttributeName();
+        Preconditions.checkState(StringUtils.isNotEmpty(tableName));
+        Preconditions.checkState(StringUtils.isNotEmpty(partitionKeyName));
+        long rcu = Long.parseLong(config.getReadCapacityUnits());
+        long wcu = Long.parseLong(config.getWriteCapacityUnits());
 
         //control plane
-        this.createTable = new CreateDynamoDBTable(dynamoDB, tableName, partitionKeyName,
-                Long.parseLong(config.getReadCapacityUnits()), Long.parseLong(config.getWriteCapacityUnits()));
+        this.describeLimits = new DescribeLimits(dynamoDB, tableName, partitionKeyName);
+        this.createTable = new CreateDynamoDBTable(dynamoDB, tableName, partitionKeyName, rcu, wcu);
         this.deleteTable = new DeleteDynamoDBTable(dynamoDB, tableName, partitionKeyName);
 
         //data plane
@@ -124,6 +136,11 @@ public class DynamoDBKeyValue implements NdBenchClient {
             logger.info("Creating table programmatically");
             TableDescription td = createTable.get();
             logger.info("Table Description: " + td.toString());
+            final DescribeLimitsResult limits = describeLimits.get();
+            final Integer targetWriteUtilization = Integer.parseInt(config.getTargetWriteUtilization());
+            final Integer targetReadUtilization = Integer.parseInt(config.getTargetReadUtilization());
+            dynamoDBAutoscalingConfigurer.setupAutoscaling(rcu, wcu, config.getTableName(), limits,
+                    targetWriteUtilization, targetReadUtilization);
         }
 
         logger.info("DynamoDB Plugin initialized");
