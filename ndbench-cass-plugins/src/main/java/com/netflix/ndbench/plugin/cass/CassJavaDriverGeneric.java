@@ -24,7 +24,6 @@ import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

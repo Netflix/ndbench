@@ -57,7 +57,7 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
 
     private DataGenerator dataGenerator;
 
-    private AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<DynoJedisClient>(null);
+    private AtomicReference<DynoJedisClient> jedisClient = new AtomicReference<>(null);
 
     @Override
     public String readSingle(String key) throws Exception {
@@ -166,17 +166,12 @@ public class DynoJedisExtFunc extends NdBenchBaseClient {
 
         logger.info("\nDynomite Cluster: " + ClusterName);
 
-        HostSupplier hSupplier = new HostSupplier() {
+        HostSupplier hSupplier = () -> {
 
-            @Override
-            public List<Host> getHosts() {
+            List<Host> hosts = new ArrayList<Host>();
+            hosts.add(new Host("localhost", 8102, "local-dc",Host.Status.Up));
 
-                List<Host> hosts = new ArrayList<Host>();
-                hosts.add(new Host("localhost", 8102, "local-dc",Host.Status.Up));
-
-                return hosts;
-            }
-
+            return hosts;
         };
 
         DynoJedisClient jClient = new DynoJedisClient.Builder().withApplicationName(ClusterName)

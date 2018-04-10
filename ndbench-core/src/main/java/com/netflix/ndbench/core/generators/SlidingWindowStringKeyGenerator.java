@@ -40,7 +40,7 @@ public class SlidingWindowStringKeyGenerator implements KeyGenerator<String> {
     private long startTime;
     private long endTime;
 
-    private final List<String> keys = new ArrayList<String>();
+    private final List<String> keys = new ArrayList<>();
 
     public SlidingWindowStringKeyGenerator(int windowSize, long testDurationInSeconds, boolean preLoadKeys, int numKeys)
     {

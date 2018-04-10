@@ -3,8 +3,6 @@ package com.netflix.ndbench.plugin.es;
 import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.governator.guice.test.ModulesForTesting;
 import com.netflix.governator.guice.test.junit4.GovernatorJunit4ClassRunner;
-import com.netflix.ndbench.core.config.IConfiguration;
-import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

@@ -39,7 +39,7 @@ public class SlidingWindowFlipStringKeyGenerator implements KeyGenerator<String>
 
     private long startTime;
 
-    private final List<String> keys = new ArrayList<String>();
+    private final List<String> keys = new ArrayList<>();
 
     public SlidingWindowFlipStringKeyGenerator(int windowSize, long windowDurationInMs, boolean preLoadKeys, int numKeys)
     {

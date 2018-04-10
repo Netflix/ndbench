@@ -27,7 +27,6 @@ import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
-import org.apache.http.client.config.RequestConfig;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;

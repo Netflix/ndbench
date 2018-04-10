@@ -33,7 +33,7 @@ public class ZipfianStringKeyGenerator implements KeyGenerator<String> {
 
     private final Random kRandom = new Random();
 
-    private final List<String> keys = new ArrayList<String>();
+    private final List<String> keys = new ArrayList<>();
 
     private final int numKeys;
     private final boolean preLoadKeys;

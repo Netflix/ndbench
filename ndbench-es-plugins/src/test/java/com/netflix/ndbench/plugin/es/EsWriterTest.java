@@ -50,7 +50,7 @@ public class EsWriterTest {
         int oneMinuteInMillis = 60 * 1000;
         int simulatedNumberOfHours = 10;
         long millisecsSinceEpochStart = 0;
-        ArrayList<String> indexNames = new ArrayList<String>();
+        ArrayList<String> indexNames = new ArrayList<>();
 
         int loopTimes = 60 /*minutes per hour */ * simulatedNumberOfHours;
         for (int i = 0; i < loopTimes; i++) {
