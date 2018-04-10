@@ -64,10 +64,10 @@ import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 @NdBenchClientPlugin("DynamoDBKeyValue")
 public class DynamoDBKeyValue implements NdBenchClient {
     private final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
-    private static AmazonDynamoDB client;
-    private static AmazonDynamoDB daxClient;
-    private static AWSCredentialsProvider awsCredentialsProvider;
-    private static Table table;
+    private AmazonDynamoDB client;
+    private AmazonDynamoDB daxClient;
+    private AWSCredentialsProvider awsCredentialsProvider;
+    private Table table;
 
     private DynamoDBConfigs config;
     private DataGenerator dataGenerator;
