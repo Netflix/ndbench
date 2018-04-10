@@ -19,46 +19,32 @@ package com.netflix.ndbench.core.generators;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
  * @author vchella
  */
-public class SlidingWindowFlipStringKeyGenerator implements KeyGenerator<String> {
+public class SlidingWindowFlipStringKeyGenerator extends StringKeyGenerator {
 
     private static Logger logger = LoggerFactory.getLogger(SlidingWindowFlipStringKeyGenerator.class);
 
     private final int windowSize;
     private final long windowDurationInMs;
-    private final int numKeys;
-    private final boolean preLoadKeys;
 
     private final Random kRandom = new Random();
 
     private long startTime;
 
-    private final List<String> keys = new ArrayList<String>();
-
     public SlidingWindowFlipStringKeyGenerator(int windowSize, long windowDurationInMs, boolean preLoadKeys, int numKeys)
     {
+        super(numKeys, preLoadKeys);
         this.windowSize = windowSize;
         this.windowDurationInMs = windowDurationInMs;
-        this.numKeys = numKeys;
-        this.preLoadKeys = preLoadKeys;
     }
 
     @Override
     public void init() {
-        if (this.isPreLoadKeys()) {
-            for (int i = 0; i < getNumKeys(); i++) {
-                if (i % 10000 == 0)
-                    logger.info("Still initializing sample data for Keys. So far: "+ i+" /"+numKeys);
-
-                keys.add("T" + i);
-            }
-        }
+        super.init();
         startTime = System.currentTimeMillis();
     }
 
@@ -81,16 +67,6 @@ public class SlidingWindowFlipStringKeyGenerator implements KeyGenerator<String>
     @Override
     public boolean hasNextKey() {
         return true;
-    }
-
-    @Override
-    public boolean isPreLoadKeys() {
-        return this.preLoadKeys;
-    }
-
-    @Override
-    public int getNumKeys() {
-        return this.numKeys;
     }
 
     private int randomnum(int minNum, int maxNum) {
