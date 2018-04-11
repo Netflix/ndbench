@@ -63,6 +63,7 @@ import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 @Singleton
 @NdBenchClientPlugin("DynamoDBKeyValue")
 public class DynamoDBKeyValue implements NdBenchClient {
+    private static final String ATTRIBUTE_NAME = "value";
     private final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
     private AmazonDynamoDB client;
     private AmazonDynamoDB daxClient;
@@ -71,6 +72,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
 
     private DynamoDBConfigs config;
     private DataGenerator dataGenerator;
+    private String partitionKeyName;
 
     /**
      * Credentials will be loaded based on the environment. In AWS, the credentials
@@ -79,19 +81,18 @@ public class DynamoDBKeyValue implements NdBenchClient {
     @Inject
     public DynamoDBKeyValue(AWSCredentialsProvider credential, DynamoDBConfigs config) {
         this.config = config;
-            String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
-            logger.error("Discovery Environment Variable: " + discoveryEnv);
+        String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
+        logger.error("Discovery Environment Variable: " + discoveryEnv);
         if (discoveryEnv == null || discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {
             awsCredentialsProvider = credential;
         } else {
             awsCredentialsProvider = new ProfileCredentialsProvider();
             try {
-
-            awsCredentialsProvider.getCredentials();
+                awsCredentialsProvider.getCredentials();
             } catch (AmazonClientException ace) {
-            throw new AmazonClientException("Cannot load the credentials from the credential profiles file. "
-                + "Please make sure that your credentials file is at the correct "
-                + "location (/home/<username>/.aws/credentials), and is in validformat.", ace);
+                throw new AmazonClientException("Cannot load the credentials from the credential profiles file. "
+                    + "Please make sure that your credentials file is at the correct "
+                    + "location (/home/<username>/.aws/credentials), and is in validformat.", ace);
             }
         }
     }
@@ -101,17 +102,17 @@ public class DynamoDBKeyValue implements NdBenchClient {
         this.dataGenerator = dataGenerator;
 
         logger.info("Initing DynamoDBKeyValue plugin");
-            AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
-            builder.withClientConfiguration(new ClientConfiguration()
-                    .withMaxConnections(config.getMaxConnections())
-                    .withGzip(config.isCompressing()));
-            builder.withCredentials(awsCredentialsProvider);
-            if (!Strings.isNullOrEmpty(this.config.getEndpoint())) {
-                Preconditions.checkState(!Strings.isNullOrEmpty(config.getRegion()),
-                        "If you set the endpoint you must set the region");
-                builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config.getEndpoint(), config.getRegion()));
-            }
-            client = builder.build();
+        AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
+        builder.withClientConfiguration(new ClientConfiguration()
+                .withMaxConnections(config.getMaxConnections())
+                .withGzip(config.isCompressing()));
+        builder.withCredentials(awsCredentialsProvider);
+        if (!Strings.isNullOrEmpty(this.config.getEndpoint())) {
+            Preconditions.checkState(!Strings.isNullOrEmpty(config.getRegion()),
+                    "If you set the endpoint you must set the region");
+            builder.withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(config.getEndpoint(), config.getRegion()));
+        }
+        client = builder.build();
 
         if (this.config.programmableTables()) {
             logger.info("Creating table programmatically");
@@ -134,6 +135,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
             dynamoDB = new DynamoDB(client);
         }
         table = dynamoDB.getTable(this.config.getTableName());
+        partitionKeyName = config.getAttributeName();
 
         logger.info("DynamoDB Plugin initialized");
     }
@@ -147,7 +149,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
     @Override
     public String readSingle(String key) throws Exception {
         final GetItemSpec spec = new GetItemSpec()
-                .withPrimaryKey("id", key)
+                .withPrimaryKey(partitionKeyName, key)
                 .withConsistentRead(config.consistentRead());
         final Item item;
         try {
@@ -172,8 +174,8 @@ public class DynamoDBKeyValue implements NdBenchClient {
     public String writeSingle(String key) throws Exception {
         try {
             final Item item = new Item()
-                    .withPrimaryKey("id", key)
-                    .withString("value", this.dataGenerator.getRandomValue());
+                    .withPrimaryKey(partitionKeyName, key)
+                    .withString(ATTRIBUTE_NAME, this.dataGenerator.getRandomValue());
             // Write the item to the table
             final PutItemOutcome outcome = table.putItem(item);
             return outcome == null ? null : outcome.toString();
@@ -254,12 +256,12 @@ public class DynamoDBKeyValue implements NdBenchClient {
         Long writeCapacityUnits = Long.parseLong(this.config.getWriteCapacityUnits());
 
         // key schema
-        ArrayList<KeySchemaElement> keySchema = new ArrayList<KeySchemaElement>();
+        ArrayList<KeySchemaElement> keySchema = new ArrayList<>();
         keySchema.add(new KeySchemaElement().withAttributeName(config.getAttributeName()).withKeyType(KeyType.HASH));
 
         // Attribute definitions
         ArrayList<AttributeDefinition> attributeDefinitions = new ArrayList<AttributeDefinition>();
-        attributeDefinitions.add(new AttributeDefinition().withAttributeName(config.getAttributeName())
+        attributeDefinitions.add(new AttributeDefinition().withAttributeName(partitionKeyName)
             .withAttributeType(ScalarAttributeType.S));
         /*
          * constructing the table request: Schema + Attributed definitions + Provisioned
