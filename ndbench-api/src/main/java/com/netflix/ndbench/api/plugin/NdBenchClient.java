@@ -24,25 +24,25 @@ import java.util.List;
  */
  public interface NdBenchClient extends NdBenchAbstractClient<String> {
 
-	/**
-	 * Initialize the client
-	 * @throws Exception
-	 */
-	 void init(DataGenerator dataGenerator) throws Exception;
-	
-	/**
-	 * Perform a single read operation
-	 * @return
-	 * @throws Exception
-	 */
-	 String readSingle(final String key) throws Exception;
+    /**
+     * Initialize the client
+     * @throws Exception
+     */
+     void init(DataGenerator dataGenerator) throws Exception;
 
-	/**
-	 * Perform a single write operation
-	 * @return
-	 * @throws Exception
-	 */
-	 String writeSingle(final String key) throws Exception;
+    /**
+     * Perform a single read operation
+     * @return
+     * @throws Exception
+     */
+     String readSingle(final String key) throws Exception;
+
+    /**
+     * Perform a single write operation
+     * @return
+     * @throws Exception
+     */
+     String writeSingle(final String key) throws Exception;
 
     /**
      * Perform a bulk read operation
@@ -54,15 +54,15 @@ import java.util.List;
     }
 
     /**
-	 * Perform a bulk write operation
-	 * @return
-	 * @throws Exception
-	 */
+     * Perform a bulk write operation
+     * @return
+     * @throws Exception
+     */
     default List<String> writeBulk(final List<String> keys) throws Exception {
         throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
-	/**
+    /**
      * shutdown the client
      */
      void shutdown() throws Exception;

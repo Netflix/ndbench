@@ -2,16 +2,20 @@ apply plugin: 'war'
 apply plugin: "org.akhikhl.gretty"
 
 dependencies {
-    compile project(':ndbench-core')
     compile project(':ndbench-api')
+    compile project(':ndbench-core')
     compile (project(':ndbench-cass-plugins')) {
         exclude group: 'ch.qos.logback'
     }
+    
+    compile project(':ndbench-dynamodb-plugins')  
     compile project(':ndbench-dyno-plugins')
-    compile project(':ndbench-sample-plugins')
     compile project(':ndbench-es-plugins')
+    compile project(':ndbench-evcache-plugins') 
     compile project(':ndbench-geode-plugins')
-    compile project(':ndbench-janusgraph-plugins')
+    compile project(':ndbench-janusgraph-plugins')       
+    compile project(':ndbench-sample-plugins')
+    
     compile 'com.google.inject.extensions:guice-servlet:4.0'
     compile 'com.google.inject:guice:4.0'
     compile group: 'com.owlike', name: 'genson', version: '1.4'

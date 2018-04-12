@@ -3,6 +3,8 @@ package com.netflix.ndbench.geode.plugin;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.netflix.ndbench.plugin.geode.ClientAuthInitialize;
+
 import java.util.Properties;
 
 

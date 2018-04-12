@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Netflix, Inc.
+ *  Copyright 2016 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,14 +14,28 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.api.plugin.common;
+package com.netflix.ndbench.core.generators;
 
-import java.util.List;
+import java.util.Random;
+
 
 /**
  * @author vchella
  */
-public interface InstanceDiscovery {
+public class RandomStringKeyGenerator extends StringKeyGenerator {
+    private final Random kRandom = new Random();
 
-    List<String> getEndpoints(String clusterName) throws Exception;
+    public RandomStringKeyGenerator(boolean preLoadKeys, int numKeys) {
+        super(numKeys, preLoadKeys);
+    }
+
+    @Override
+    public String getNextKey() {
+        int randomKeyIndex = kRandom.nextInt(getNumKeys());
+        if (isPreLoadKeys()) {
+            return keys.get(randomKeyIndex);
+        } else {
+            return "T" + randomKeyIndex;
+        }
+    }
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2018 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,60 +21,45 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
+public abstract class StringKeyGenerator implements KeyGenerator<String> {
+    private static Logger logger = LoggerFactory.getLogger(StringKeyGenerator.class);
 
-/**
- * @author vchella
- */
-public class RandomStringKeyGenrator implements KeyGenerator<String> {
-    private static Logger logger = LoggerFactory.getLogger(RandomStringKeyGenrator.class);
+    protected final List<String> keys;
+    protected final int numKeys;
+    private final boolean preloadKeys;
 
-    private final Random kRandom = new Random();
-
-    private final List<String> keys = new ArrayList<String>();
-
-    private final int numKeys;
-    private final boolean preLoadKeys;
-
-    public RandomStringKeyGenrator(boolean preLoadKeys, int numKeys)
-    {
-        this.preLoadKeys = preLoadKeys;
+    protected StringKeyGenerator(int numKeys, boolean preloadKeys) {
         this.numKeys = numKeys;
+        this.preloadKeys = preloadKeys;
+        this.keys = preloadKeys ? new ArrayList<>(numKeys) : new ArrayList<>();
     }
+
     @Override
     public void init() {
         if (this.isPreLoadKeys()) {
+            logger.info("Preloading " + numKeys + " keys");
             for (int i = 0; i < getNumKeys(); i++) {
                 if (i % 10000 == 0)
                     logger.info("Still initializing sample data for Keys. So far: "+ i+" /"+numKeys);
                 keys.add("T" + i);
             }
+            logger.info("Preloaded " + numKeys + " keys");
         }
     }
 
     @Override
-    public String getNextKey() {
-        int randomKeyIndex = kRandom.nextInt(getNumKeys());
-        if (isPreLoadKeys()) {
-            return keys.get(randomKeyIndex);
-        } else {
-            return "T" + randomKeyIndex;
-        }
+    public boolean isPreLoadKeys() {
+        return preloadKeys;
+    }
+
+    @Override
+    public int getNumKeys() {
+        return numKeys;
     }
 
     @Override
     public boolean hasNextKey() {
         return true;
-    }
-
-    @Override
-    public boolean isPreLoadKeys() {
-        return preLoadKeys;
-    }
-
-    @Override
-    public int getNumKeys() {
-        return this.numKeys;
     }
 }

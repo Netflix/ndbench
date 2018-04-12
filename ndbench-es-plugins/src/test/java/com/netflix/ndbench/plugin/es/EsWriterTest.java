@@ -1,13 +1,15 @@
 package com.netflix.ndbench.plugin.es;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Date;
 
 
 public class EsWriterTest {
-
+    private static final Logger Logger = LoggerFactory.getLogger(EsWriterTest.class);
 
     @Test
     public void verifyConstructIndexName() throws Exception {
@@ -55,7 +57,7 @@ public class EsWriterTest {
             String indexName = EsWriter.constructIndexName("foo", 60 * 24, new Date(millisecsSinceEpochStart));
             millisecsSinceEpochStart = millisecsSinceEpochStart + oneMinuteInMillis;
             indexNames.add(indexName);
-            System.out.println("indexName:" + indexName);
+            Logger.info("indexName:" + indexName);
         }
 
         assert indexNames.get(59).equals("foo-1970-01-01.0059");

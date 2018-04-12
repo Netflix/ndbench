@@ -1,4 +1,4 @@
-package com.netflix.ndbench.geode.plugin;
+package com.netflix.ndbench.plugin.geode;
 
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 

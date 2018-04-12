@@ -14,21 +14,24 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.evcache.configs;
+package com.netflix.ndbench.plugin.janusgraph.configs.cql;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "evcache")
-public interface EVCacheConfigs {
+/**
+ * Specific configs for JanusGraph's CQL backend
+ * 
+ * @author pencal
+ */
 
-    @DefaultValue("EVCACHE")
-    String getName();
+@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + ".janusgraph.storage.cql")
+public interface ICQLConfig {
 
-    @DefaultValue("prefix")
-    String getPrefix();
+    @DefaultValue("ndbench_cql")
+    String getKeyspace();
 
-    @DefaultValue("900")
-    int getTTL();
+    @DefaultValue("na")
+    String getClusterName();
 }

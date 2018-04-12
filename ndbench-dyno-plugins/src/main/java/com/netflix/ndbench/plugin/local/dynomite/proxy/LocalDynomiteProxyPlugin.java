@@ -53,7 +53,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
 
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
-    	int dynomitePort = 8102;
+        int dynomitePort = 8102;
         this.dataGenerator = dataGenerator;
         if (jedisClient.get() != null) {
             return;
@@ -85,7 +85,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
                 .withHostSupplier(hSupplier)
                 .withCPConfig(new ConnectionPoolConfigurationImpl("myCP")
                 .withTokenSupplier(new LocalHttpEndpointBasedTokenMapSupplier())
-                .setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware))                		
+                .setLoadBalancingStrategy(LoadBalancingStrategy.TokenAware))
                 .build();
 
         jedisClient.set(jClient);
