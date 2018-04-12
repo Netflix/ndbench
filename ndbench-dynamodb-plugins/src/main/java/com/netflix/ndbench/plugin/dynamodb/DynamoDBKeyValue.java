@@ -24,6 +24,8 @@ import java.util.stream.Collectors;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.client.builder.AwsClientBuilder;
+import com.amazonaws.retry.PredefinedRetryPolicies;
+import com.amazonaws.retry.RetryPolicy;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -67,6 +69,10 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 
+import static com.amazonaws.retry.PredefinedRetryPolicies.DEFAULT_RETRY_CONDITION;
+import static com.amazonaws.retry.PredefinedRetryPolicies.DYNAMODB_DEFAULT_BACKOFF_STRATEGY;
+import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
+
 /**
  * This NDBench plugin provides a single key value for AWS DynamoDB.
  * 
@@ -77,6 +83,7 @@ import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 @NdBenchClientPlugin("DynamoDBKeyValue")
 public class DynamoDBKeyValue implements NdBenchClient {
     private static final String ATTRIBUTE_NAME = "value";
+    public static final boolean DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG = true;
     private final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
     private AmazonDynamoDB client;
     private AmazonDynamoDB daxClient;
@@ -118,6 +125,11 @@ public class DynamoDBKeyValue implements NdBenchClient {
         AmazonDynamoDBClientBuilder builder = AmazonDynamoDBClientBuilder.standard();
         builder.withClientConfiguration(new ClientConfiguration()
                 .withMaxConnections(config.getMaxConnections())
+                .withRequestTimeout(config.getMaxRequestTimeout()) //milliseconds
+                .withRetryPolicy(config.getMaxRetries() <= 0 ? NO_RETRY_POLICY : new RetryPolicy(DEFAULT_RETRY_CONDITION,
+                        DYNAMODB_DEFAULT_BACKOFF_STRATEGY,
+                        config.getMaxRetries(),
+                        DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG))
                 .withGzip(config.isCompressing()));
         builder.withCredentials(awsCredentialsProvider);
         if (!Strings.isNullOrEmpty(this.config.getEndpoint())) {

@@ -125,6 +125,19 @@ public interface DynamoDBConfigs {
     @DefaultValue("50")
     Integer getMaxConnections();
 
+    /*
+     * Max client timeout (milliseconds): maximum amount of time HTTP client will wait for a response from DynamoDB.
+     * The default -1 means that there is no request timeout by default.
+     */
+    @DefaultValue("-1")
+    Integer getMaxRequestTimeout();
+
+    /*
+     * Max SDK retries: maximum number of times the SDK client will retry a request after a retriable exception.
+     */
+    @DefaultValue("10")
+    Integer getMaxRetries();
+
     @PropertyName(name = "AWSAccessKey")
     String accessKey();
 
