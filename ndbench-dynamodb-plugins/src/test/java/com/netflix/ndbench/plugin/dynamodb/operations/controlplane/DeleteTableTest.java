@@ -16,81 +16,42 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
-import com.amazonaws.services.dynamodbv2.model.DeleteTableResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableResult;
-import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.amazonaws.services.dynamodbv2.model.TableStatus;
-import com.amazonaws.services.dynamodbv2.waiters.AmazonDynamoDBWaiters;
-import com.amazonaws.waiters.Waiter;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.DeleteDynamoDBTable;
 import org.junit.Test;
-import org.mockito.Mockito;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableResponse;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class DeleteTableTest {
-    private AmazonDynamoDB dynamoDB = mock(AmazonDynamoDB.class);
-    private AmazonDynamoDBWaiters waiters = mock(AmazonDynamoDBWaiters.class);
-    private Waiter<DescribeTableRequest> tableNotExists = mock(Waiter.class);
-
+    private DynamoDBClient dynamoDB = mock(DynamoDBClient.class);
     @Test
     public void delete_whenTableAlreadyExists_deletesTable() {
         DeleteDynamoDBTable deleteDynamoDBTable = new DeleteDynamoDBTable(dynamoDB, "asdf", "asdf");
         //setup
-        when(dynamoDB.deleteTable("asdf")).thenReturn(new DeleteTableResult());
-        when(dynamoDB.waiters()).thenReturn(waiters);
-        when(waiters.tableNotExists()).thenReturn(tableNotExists);
-        doNothing().when(tableNotExists).run(any());
-        when(dynamoDB.describeTable("asdf")).thenThrow(new ResourceNotFoundException(""));
+        when(dynamoDB.deleteTable(DeleteTableRequest.builder().tableName("asdf").build())).thenReturn(DeleteTableResponse.builder().build());
+        when(dynamoDB.describeTable(DescribeTableRequest.builder().tableName("asdf").build())).thenThrow(ResourceNotFoundException.builder().build());
 
         //test
         deleteDynamoDBTable.delete();
 
         //verify
-        verify(dynamoDB).deleteTable("asdf");
-        verify(tableNotExists).run(any());
-    }
-
-    @Test
-    public void delete_whenTableNotExistsWaiterThrows_deletesTableAndThrows() {
-        DeleteDynamoDBTable deleteDynamoDBTable = new DeleteDynamoDBTable(dynamoDB, "asdf", "asdf");
-        //setup
-        when(dynamoDB.deleteTable("asdf")).thenReturn(new DeleteTableResult());
-        when(dynamoDB.waiters()).thenReturn(waiters);
-        when(waiters.tableNotExists()).thenReturn(tableNotExists);
-        doThrow(new IllegalArgumentException()).when(tableNotExists).run(any());
-        when(dynamoDB.describeTable("asdf")).thenThrow(new ResourceNotFoundException(""));
-
-        //test
-        try {
-            deleteDynamoDBTable.delete();
-            fail();
-        } catch(IllegalStateException e) {
-            //verify exception
-            assertTrue(e.getCause() instanceof IllegalArgumentException);
-        }
-        verify(dynamoDB).deleteTable("asdf");
-        verify(tableNotExists).run(any());
+        verify(dynamoDB).deleteTable(DeleteTableRequest.builder().tableName("asdf").build());
     }
 
     @Test
     public void delete_whenTableDoesNotExist_doesNothing() {
         DeleteDynamoDBTable deleteDynamoDBTable = new DeleteDynamoDBTable(dynamoDB, "asdf", "asdf");
         //setup
-        when(dynamoDB.deleteTable("asdf")).thenThrow(new ResourceNotFoundException(""));
+        when(dynamoDB.deleteTable(DeleteTableRequest.builder().tableName("asdf").build())).thenThrow(ResourceNotFoundException.builder().build());
 
         //test
         deleteDynamoDBTable.delete();
 
         //verify
-        verify(dynamoDB).deleteTable("asdf");
+        verify(dynamoDB).deleteTable(DeleteTableRequest.builder().tableName("asdf").build());
     }
 }

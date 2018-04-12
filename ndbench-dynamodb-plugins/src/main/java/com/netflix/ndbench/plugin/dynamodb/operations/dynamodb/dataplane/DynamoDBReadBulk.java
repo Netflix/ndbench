@@ -16,17 +16,17 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.BatchGetItemRequest;
-import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult;
-import com.amazonaws.services.dynamodbv2.model.KeysAndAttributes;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.BatchGetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.BatchGetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.KeysAndAttributes;
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 
 import java.util.HashSet;
 import java.util.List;
@@ -38,11 +38,9 @@ import java.util.stream.Collectors;
  * @author Alexander Patrikalakis
  * @author ipapapa
  */
-public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation
-        implements CapacityConsumingFunction<BatchGetItemResult, List<String>, List<String>> {
-    public DynamoDBReadBulk(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
-                            String partitionKeyName, boolean consistentRead,
-                            ReturnConsumedCapacity returnConsumedCapacity) {
+public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation implements Function<List<String>, List<String>> {
+    public DynamoDBReadBulk(DataGenerator dataGenerator, DynamoDBClient dynamoDB, String tableName,
+                            String partitionKeyName, boolean consistentRead, ReturnConsumedCapacity returnConsumedCapacity) {
         super(dataGenerator, dynamoDB, tableName, partitionKeyName, consistentRead, returnConsumedCapacity);
     }
 
@@ -52,44 +50,40 @@ public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation
         final KeysAndAttributes keysAndAttributes = generateReadRequests(keys);
         try {
             readUntilDone(keysAndAttributes);
-            return keysAndAttributes.getKeys().stream()
+            return keysAndAttributes.keys().stream()
                     .map(Map::toString)
                     .collect(Collectors.toList());
-        } catch (AmazonServiceException ase) {
-            throw amazonServiceException(ase);
-        } catch (AmazonClientException ace) {
-            throw amazonClientException(ace);
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 
     private KeysAndAttributes generateReadRequests(List<String> keys) {
-        return new KeysAndAttributes()
-                .withKeys(keys.stream()
-                        .map(key -> ImmutableMap.of("id", new AttributeValue(key)))
-                        .collect(Collectors.toList()))
-                .withConsistentRead(consistentRead);
+        return KeysAndAttributes.builder().keys(keys.stream()
+                    .map(key -> ImmutableMap.of("id", AttributeValue.builder().s(key).build()))
+                    .collect(Collectors.toList()))
+                .consistentRead(consistentRead).build();
     }
 
     private void readUntilDone(KeysAndAttributes keysAndAttributes) {
         KeysAndAttributes remainingKeys = keysAndAttributes;
-        BatchGetItemResult result;
+        BatchGetItemResponse response;
         do {
-            remainingKeys.withConsistentRead(consistentRead);
-            result = runBatchGetRequest(remainingKeys);
-            remainingKeys = result.getUnprocessedKeys().get(tableName);
-        } while (remainingKeys != null && remainingKeys.getKeys() != null && !remainingKeys.getKeys().isEmpty());
+            response = runBatchGetRequest(remainingKeys.toBuilder().consistentRead(consistentRead).build());
+            remainingKeys = response.unprocessedKeys().get(tableName);
+        } while (remainingKeys != null && remainingKeys.keys() != null && !remainingKeys.keys().isEmpty());
     }
 
-    private BatchGetItemResult runBatchGetRequest(KeysAndAttributes keysAndAttributes) {
-        //TODO self throttle and estimate size of requests
-        return measureConsumedCapacity(dynamoDB.batchGetItem(new BatchGetItemRequest()
-                .withRequestItems(ImmutableMap.of(tableName, keysAndAttributes))
-                .withReturnConsumedCapacity(returnConsumedCapacity)));
-    }
-
-    @Override
-    public BatchGetItemResult measureConsumedCapacity(BatchGetItemResult result) {
-        consumed.addAndGet(getConsumedCapacityForTable(result.getConsumedCapacity()));
+    public BatchGetItemResponse measureConsumedCapacity(BatchGetItemResponse result) {
+        consumed.addAndGet(getConsumedCapacityForTable(result.consumedCapacity()));
         return result;
+    }
+
+    private BatchGetItemResponse runBatchGetRequest(KeysAndAttributes keysAndAttributes) {
+        // TODO self throttle and estimate size of requests
+        return measureConsumedCapacity(dynamoDB.batchGetItem(BatchGetItemRequest.builder()
+                .requestItems(ImmutableMap.of(tableName, keysAndAttributes)).build()));
     }
 }

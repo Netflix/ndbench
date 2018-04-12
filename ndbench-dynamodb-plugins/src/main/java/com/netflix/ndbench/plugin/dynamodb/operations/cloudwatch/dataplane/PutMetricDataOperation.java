@@ -16,31 +16,31 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.dataplane;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.AbstractCloudWatchOperation;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataRequest;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataResponse;
 
 import java.util.function.Function;
 
 /**
  * @author Alexander Patrikalakis
  */
-public class PutMetricDataOperation extends AbstractCloudWatchOperation implements Function<PutMetricDataRequest, PutMetricDataResult> {
-    public PutMetricDataOperation(AmazonCloudWatch cloudWatch) {
+public class PutMetricDataOperation extends AbstractCloudWatchOperation implements Function<PutMetricDataRequest, PutMetricDataResponse> {
+    public PutMetricDataOperation(CloudWatchClient cloudWatch) {
         super(cloudWatch);
     }
 
     @Override
-    public PutMetricDataResult apply(PutMetricDataRequest putMetricDataRequest) {
+    public PutMetricDataResponse apply(PutMetricDataRequest putMetricDataRequest) {
         try {
             return cloudWatch.putMetricData(putMetricDataRequest);
-        } catch (AmazonServiceException ase) {
-            throw amazonServiceException(ase);
-        } catch (AmazonClientException ace) {
-            throw amazonClientException(ace);
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 }

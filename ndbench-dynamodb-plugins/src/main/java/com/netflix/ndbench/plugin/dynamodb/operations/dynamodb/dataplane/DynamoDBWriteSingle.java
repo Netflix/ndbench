@@ -16,14 +16,16 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
-import com.amazonaws.services.dynamodbv2.model.PutItemResult;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
+
+import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.PutItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 
 import java.util.Optional;
 import java.util.function.Function;
@@ -33,32 +35,30 @@ import java.util.function.Function;
  * @author ipapapa
  */
 public class DynamoDBWriteSingle extends AbstractDynamoDBDataPlaneOperation implements Function<String, String> {
-    public DynamoDBWriteSingle(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
+    public DynamoDBWriteSingle(DataGenerator dataGenerator, DynamoDBClient dynamoDB, String tableName,
                                String partitionKeyName, ReturnConsumedCapacity returnConsumedCapacity) {
         super(dynamoDB, tableName, partitionKeyName, dataGenerator, returnConsumedCapacity);
     }
 
     @Override
     public String apply(String key) {
-        PutItemRequest request = new PutItemRequest()
-                .withReturnConsumedCapacity(returnConsumedCapacity)
-                .addItemEntry(partitionKeyName, new AttributeValue().withS(key))
-                .addItemEntry(ATTRIBUTE_NAME, new AttributeValue().withS(dataGenerator.getRandomValue()));
         try {
             // Write the item to the table
-            return Optional.ofNullable(dynamoDB.putItem(request))
+            return Optional.ofNullable(dynamoDB.putItem(PutItemRequest.builder()
+                    .item(ImmutableMap.of(partitionKeyName, AttributeValue.builder().s(key).build(),
+                                          ATTRIBUTE_NAME, AttributeValue.builder().s(dataGenerator.getRandomValue()).build())).build()))
                     .map(this::measureConsumedCapacity)
-                    .map(PutItemResult::toString)
+                    .map(PutItemResponse::toString)
                     .orElse(null);
-        } catch (AmazonServiceException ase) {
-            throw amazonServiceException(ase);
-        } catch (AmazonClientException ace) {
-            throw amazonClientException(ace);
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 
-    private PutItemResult measureConsumedCapacity(PutItemResult result) {
-        consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+    private PutItemResponse measureConsumedCapacity(PutItemResponse result) {
+        consumed.addAndGet(result.consumedCapacity().capacityUnits());
         return result;
     }
 }

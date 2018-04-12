@@ -30,10 +30,10 @@ jacocoTestCoverageVerification {
 
 dependencies {
     compile project(':ndbench-api')
-    compile "com.amazonaws:aws-java-sdk-dynamodb:latest.release"
-    compile "com.amazonaws:aws-java-sdk-applicationautoscaling:latest.release"
-    compile "com.amazonaws:aws-java-sdk-sts:latest.release"
-    compile "com.amazonaws:aws-java-sdk-cloudwatch:latest.release"
+    compile "software.amazon.awssdk:dynamodb:latest.release"
+    compile "software.amazon.awssdk:applicationautoscaling:latest.release"
+    compile "software.amazon.awssdk:sts:latest.release"
+    compile "software.amazon.awssdk:cloudwatch:latest.release"
     testCompile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
     testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
 

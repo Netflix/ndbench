@@ -25,54 +25,52 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.retry.RetryPolicy;
-
-import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.google.common.base.Preconditions;
 
+import com.google.common.base.Strings;
 import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfiguration;
 import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.DescribeLimits;
-
-import com.amazonaws.services.cloudwatch.model.Dimension;
-import com.amazonaws.regions.Regions;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
-import com.amazonaws.services.cloudwatch.model.ComparisonOperator;
-import com.amazonaws.services.cloudwatch.model.MetricDatum;
-import com.amazonaws.services.cloudwatch.model.PutMetricAlarmRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
-import com.amazonaws.services.cloudwatch.model.StandardUnit;
-import com.amazonaws.services.cloudwatch.model.Statistic;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.controlplane.PutMetricAlarmOperation;
 import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.dataplane.PutMetricDataOperation;
-import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.DescribeLimits;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.CreateDynamoDBTable;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.DeleteDynamoDBTable;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadBulk;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadSingle;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteBulk;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteSingle;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.amazon.dax.client.dynamodbv2.AmazonDaxClientBuilder;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import java.net.URI;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 
-import static com.amazonaws.retry.PredefinedRetryPolicies.DEFAULT_RETRY_CONDITION;
-import static com.amazonaws.retry.PredefinedRetryPolicies.DYNAMODB_DEFAULT_BACKOFF_STRATEGY;
-import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
+import software.amazon.awssdk.core.auth.AwsCredentialsProvider;
+import software.amazon.awssdk.core.client.builder.ClientHttpConfiguration;
+import software.amazon.awssdk.core.config.AdvancedClientOption;
+import software.amazon.awssdk.core.config.ClientOverrideConfiguration;
+import software.amazon.awssdk.core.regions.Region;
+import software.amazon.awssdk.http.apache.ApacheSdkHttpClientFactory;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClientBuilder;
+import software.amazon.awssdk.services.cloudwatch.model.ComparisonOperator;
+import software.amazon.awssdk.services.cloudwatch.model.Dimension;
+import software.amazon.awssdk.services.cloudwatch.model.MetricDatum;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricAlarmRequest;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricDataRequest;
+import software.amazon.awssdk.services.cloudwatch.model.StandardUnit;
+import software.amazon.awssdk.services.cloudwatch.model.Statistic;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClientBuilder;
+import software.amazon.awssdk.services.dynamodb.model.DescribeLimitsResponse;
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
+import software.amazon.awssdk.services.dynamodb.model.TableDescription;
 
 /**
  * This NDBench plugin provides a single key value for AWS DynamoDB.
@@ -84,21 +82,22 @@ import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
 @NdBenchClientPlugin("DynamoDBKeyValue")
 public class DynamoDBKeyValue implements NdBenchClient {
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
+
     private static final boolean DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG = true;
     private static final String ND_BENCH_DYNAMO_DB_CONSUMED_RCU = "ConsumedRcuHighRes";
     private static final String ND_BENCH_DYNAMO_DB_CONSUMED_WCU = "ConsumedWcuHighRes";
     private static final String CUSTOM_TABLE_METRICS_NAMESPACE = "ndbench/DynamoDB";
 
     @Inject
-    private AWSCredentialsProvider awsCredentialsProvider;
+    private AwsCredentialsProvider awsCredentialsProvider;
     @Inject
     private DynamoDBConfiguration config;
     @Inject
     private DynamoDBAutoscalingConfigurer dynamoDBAutoscalingConfigurer;
 
     // dynamically initialized
-    private AmazonDynamoDB dynamoDB;
-    private AmazonCloudWatch cloudWatch;
+    private DynamoDBClient dynamoDB;
+    private CloudWatchClient cloudWatch;
     private DynamoDBReadSingle singleRead;
     private DynamoDBReadBulk bulkRead;
     private DynamoDBWriteSingle singleWrite;
@@ -116,7 +115,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
     private Dimension tableDimension;
 
     @Override
-    public void init(DataGenerator dataGenerator) {
+    public void init(DataGenerator dataGenerator) throws Exception {
         this.tableName = config.getTableName();
         this.publishingInterval = config.getHighResolutionMetricsPublishingInterval();
         final ReturnConsumedCapacity returnConsumedCapacity;
@@ -125,36 +124,27 @@ public class DynamoDBKeyValue implements NdBenchClient {
         } else {
             returnConsumedCapacity = ReturnConsumedCapacity.NONE;
         }
-        tableDimension = new Dimension().withName("TableName").withValue(tableName);
+        tableDimension = Dimension.builder().name("TableName").value(tableName).build();
         logger.info("Initializing AWS SDK clients");
 
-        // build dynamodb client
-        AmazonDynamoDBClientBuilder dynamoDbBuilder = AmazonDynamoDBClientBuilder.standard();
-        dynamoDbBuilder.withClientConfiguration(new ClientConfiguration()
-                .withMaxConnections(config.getMaxConnections())
-                .withRequestTimeout(config.getMaxRequestTimeout()) //milliseconds
-                .withRetryPolicy(config.getMaxRetries() <= 0 ? NO_RETRY_POLICY : new RetryPolicy(DEFAULT_RETRY_CONDITION,
-                        DYNAMODB_DEFAULT_BACKOFF_STRATEGY,
-                        config.getMaxRetries(),
-                        DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG))
-                .withGzip(config.isCompressing()));
-        dynamoDbBuilder.withCredentials(awsCredentialsProvider);
-        if (StringUtils.isNotEmpty(this.config.getEndpoint())) {
-            Preconditions.checkState(StringUtils.isNotEmpty(config.getRegion()),
-                    "If you set the endpoint you must set the region");
-            dynamoDbBuilder.withEndpointConfiguration(
-                    new AwsClientBuilder.EndpointConfiguration(config.getEndpoint(), config.getRegion()));
-        }
+        logger.info("Initing DynamoDBKeyValue plugin");
+        DynamoDBClientBuilder builder = DynamoDBClient.builder()
+                .credentialsProvider(awsCredentialsProvider);
+        //TODO figure out how to set request timeout and retry policy in AWS SDK 2.0
+        builder.httpConfiguration(
+                ClientHttpConfiguration.builder()
+                        .httpClient(ApacheSdkHttpClientFactory.builder()
+                                .maxConnections(config.getMaxConnections())
+                                .build().createHttpClient())
+                        .build());
 
-        if (this.config.isDax()) {
-            Preconditions.checkState(!config.programmableTables()); //cluster and table must be created beforehand
-            logger.info("Using DAX");
-            AmazonDaxClientBuilder amazonDaxClientBuilder = AmazonDaxClientBuilder.standard();
-            amazonDaxClientBuilder.withEndpointConfiguration(this.config.getDaxEndpoint());
-            dynamoDB = amazonDaxClientBuilder.build();
-        } else {
-            dynamoDB = dynamoDbBuilder.build();
+        if (!Strings.isNullOrEmpty(this.config.getEndpoint())) {
+            Preconditions.checkState(!Strings.isNullOrEmpty(config.getRegion()),
+                    "If you set the endpoint you must set the region");
+            builder.endpointOverride(new URI(config.getEndpoint()));
+            builder.overrideConfiguration(ClientOverrideConfiguration.builder().advancedOption(AdvancedClientOption.AWS_REGION, Region.of(config.getRegion())).build());
         }
+        dynamoDB = builder.build();
 
         //instantiate operations
         String tableName = config.getTableName();
@@ -184,7 +174,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
             logger.info("Creating table programmatically");
             TableDescription td = createTable.get();
             logger.info("Table Description: " + td.toString());
-            final DescribeLimitsResult limits = describeLimits.get();
+            final DescribeLimitsResponse limits = describeLimits.get();
             final Integer targetWriteUtilization = Integer.parseInt(config.getTargetWriteUtilization());
             final Integer targetReadUtilization = Integer.parseInt(config.getTargetReadUtilization());
             dynamoDBAutoscalingConfigurer.setupAutoscaling(rcu, wcu, config.getTableName(), limits,
@@ -192,10 +182,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
         }
 
         // build cloudwatch client
-        AmazonCloudWatchClientBuilder cloudWatchClientBuilder = AmazonCloudWatchClientBuilder.standard();
-        cloudWatchClientBuilder.withCredentials(awsCredentialsProvider);
+        CloudWatchClientBuilder cloudWatchClientBuilder = CloudWatchClient.builder().credentialsProvider(awsCredentialsProvider);
         if (StringUtils.isNotEmpty(this.config.getRegion())) {
-            cloudWatchClientBuilder.withRegion(Regions.fromName(config.getRegion()));
+            cloudWatchClientBuilder.region(Region.of(config.getRegion()));
         }
         cloudWatch = cloudWatchClientBuilder.build();
         putMetricAlarm = new PutMetricAlarmOperation(cloudWatch);
@@ -233,18 +222,18 @@ public class DynamoDBKeyValue implements NdBenchClient {
      * @param threshold threshold at which to alarm on after 5 breaches of the threshold
      */
     private void createHighResolutionAlarm(String alarmName, String metricName, double threshold) {
-        putMetricAlarm.apply(new PutMetricAlarmRequest()
-                .withNamespace(CUSTOM_TABLE_METRICS_NAMESPACE)
-                .withDimensions(tableDimension)
-                .withMetricName(metricName)
-                .withAlarmName(alarmName)
-                .withStatistic(Statistic.Sum)
-                .withUnit(StandardUnit.Count)
-                .withComparisonOperator(ComparisonOperator.GreaterThanThreshold)
-                .withDatapointsToAlarm(5).withEvaluationPeriods(5) //alarm when 5 out of 5 consecutive measurements are high
-                .withActionsEnabled(false) //TODO add actions in a later PR
-                .withPeriod(10) //high resolution alarm
-                .withThreshold(10 * threshold));
+        putMetricAlarm.apply(PutMetricAlarmRequest.builder()
+                .namespace(CUSTOM_TABLE_METRICS_NAMESPACE)
+                .dimensions(tableDimension)
+                .metricName(metricName)
+                .alarmName(alarmName)
+                .statistic(Statistic.SUM)
+                .unit(StandardUnit.COUNT)
+                .comparisonOperator(ComparisonOperator.GREATER_THAN_THRESHOLD)
+                .evaluationPeriods(5) //alarm when 5 out of 5 consecutive measurements are high
+                .actionsEnabled(false) //TODO add actions in a later PR
+                .period(10) //high resolution alarm
+                .threshold(10 * threshold).build());
     }
 
         @Override
@@ -273,14 +262,14 @@ public class DynamoDBKeyValue implements NdBenchClient {
         if (this.config.programmableTables()) {
             deleteTable.delete();
         }
-        dynamoDB.shutdown();
+        dynamoDB.close();
         logger.info("DynamoDB shutdown");
 
         if (cloudwatchReporterExecutor.get() != null) {
             cloudwatchReporterExecutor.get().shutdownNow();
             cloudwatchReporterExecutor.set(null);
         }
-        cloudWatch.shutdown();
+        cloudWatch.close();
         logger.info("CloudWatch shutdown");
     }
 
@@ -309,10 +298,11 @@ public class DynamoDBKeyValue implements NdBenchClient {
             timer = Executors.newFixedThreadPool(1);
             timer.submit((Callable<Void>) () -> {
                 while (!Thread.currentThread().isInterrupted()) {
-                    final Date now = Date.from(Instant.now());
-                    putMetricData.apply(new PutMetricDataRequest()
-                            .withNamespace(CUSTOM_TABLE_METRICS_NAMESPACE)
-                            .withMetricData(createConsumedRcuDatum(now), createConsumedWcuDatum(now)));
+                    final Instant now = Instant.now();
+                    putMetricData.apply(PutMetricDataRequest.builder()
+                            .namespace(CUSTOM_TABLE_METRICS_NAMESPACE)
+                            .metricData(createConsumedRcuDatum(now), createConsumedWcuDatum(now))
+                            .build());
                     Thread.sleep(publishingInterval);
                 }
                 return null;
@@ -321,25 +311,26 @@ public class DynamoDBKeyValue implements NdBenchClient {
         cloudwatchReporterExecutor.set(timer);
     }
 
-    private MetricDatum createConsumedRcuDatum(Date now) {
+    private MetricDatum createConsumedRcuDatum(Instant now) {
         return createCapacityUnitMetricDatumAndResetCounter(now,
                 singleRead.getAndResetConsumed() + bulkRead.getAndResetConsumed(),
                 ND_BENCH_DYNAMO_DB_CONSUMED_RCU);
     }
 
-    private MetricDatum createConsumedWcuDatum(Date now) {
+    private MetricDatum createConsumedWcuDatum(Instant now) {
         return createCapacityUnitMetricDatumAndResetCounter(now,
                 singleWrite.getAndResetConsumed() + bulkWrite.getAndResetConsumed(),
                 ND_BENCH_DYNAMO_DB_CONSUMED_WCU);
     }
 
-    private MetricDatum createCapacityUnitMetricDatumAndResetCounter(Date now, double count, String name) {
-        return new MetricDatum()
-            .withDimensions(tableDimension)
-            .withMetricName(name)
-            .withStorageResolution(1)
-            .withUnit(StandardUnit.Count)
-            .withTimestamp(now)
-            .withValue(count);
+    private MetricDatum createCapacityUnitMetricDatumAndResetCounter(Instant now, double count, String name) {
+        return MetricDatum.builder()
+            .dimensions(tableDimension)
+            .metricName(name)
+            .storageResolution(1)
+            .unit(StandardUnit.COUNT)
+            .timestamp(now)
+            .value(count)
+            .build();
     }
 }

@@ -16,13 +16,14 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
 
 /**
  * @author ipapapa
@@ -31,25 +32,20 @@ import org.slf4j.LoggerFactory;
 public class DeleteDynamoDBTable extends AbstractDynamoDBOperation {
     private static final Logger logger = LoggerFactory.getLogger(DeleteDynamoDBTable.class);
 
-    private final Table table;
-
-    public DeleteDynamoDBTable(AmazonDynamoDB dynamoDB, String tableName, String partitionKeyName) {
+    public DeleteDynamoDBTable(DynamoDBClient dynamoDB, String tableName, String partitionKeyName) {
         super(dynamoDB, tableName, partitionKeyName);
-        this.table = new Table(dynamoDB, tableName);
     }
 
     public void delete() {
         try {
             logger.info("Issuing DeleteTable request for " + tableName);
-            table.delete();
-
-            logger.info("Waiting for " + tableName + " to be deleted...this may take a while...");
-
-            table.waitForDelete();
+            dynamoDB.deleteTable(DeleteTableRequest.builder().tableName(tableName).build());
         } catch (ResourceNotFoundException e) {
-            logger.info("Table was already deleted");
-        } catch (Exception e) {
-            throw new IllegalStateException("DeleteTable request failed for " + tableName, e);
+            logger.warn("Table is already deleted", e);
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 }

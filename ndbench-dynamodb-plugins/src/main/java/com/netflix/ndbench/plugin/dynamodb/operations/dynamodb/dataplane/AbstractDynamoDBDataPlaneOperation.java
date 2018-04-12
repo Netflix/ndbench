@@ -16,14 +16,14 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
 
 import java.util.List;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.ConsumedCapacity;
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 
 /**
  * @author Alexander Patrikalakis
@@ -33,9 +33,8 @@ public class AbstractDynamoDBDataPlaneOperation extends AbstractDynamoDBOperatio
     protected final AtomicDouble consumed = new AtomicDouble(0.0);
     protected final ReturnConsumedCapacity returnConsumedCapacity;
 
-    protected AbstractDynamoDBDataPlaneOperation(AmazonDynamoDB dynamoDB, String tableName, String partitionKeyName,
-                                                 DataGenerator dataGenerator,
-                                                 ReturnConsumedCapacity returnConsumedCapacity) {
+    protected AbstractDynamoDBDataPlaneOperation(DynamoDBClient dynamoDB, String tableName, String partitionKeyName,
+                                                 DataGenerator dataGenerator, ReturnConsumedCapacity returnConsumedCapacity) {
         super(dynamoDB, tableName, partitionKeyName);
         this.dataGenerator = dataGenerator;
         this.returnConsumedCapacity = returnConsumedCapacity;
@@ -43,8 +42,8 @@ public class AbstractDynamoDBDataPlaneOperation extends AbstractDynamoDBOperatio
 
     protected double getConsumedCapacityForTable(List<ConsumedCapacity> consumedCapacities) {
         return consumedCapacities.stream()
-                .filter(c -> tableName.equals(c.getTableName()))
-                .map(ConsumedCapacity::getCapacityUnits)
+                .filter(c -> tableName.equals(c.tableName()))
+                .map(ConsumedCapacity::capacityUnits)
                 .findFirst()
                 .orElse(0.0);
     }

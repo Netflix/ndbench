@@ -16,9 +16,9 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.netflix.ndbench.api.plugin.DataGenerator;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 
 /**
  * @author Alexander Patrikalakis
@@ -26,7 +26,7 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 public abstract class AbstractDynamoDBReadOperation extends AbstractDynamoDBDataPlaneOperation {
     protected final boolean consistentRead;
 
-    protected AbstractDynamoDBReadOperation(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
+    protected AbstractDynamoDBReadOperation(DataGenerator dataGenerator, DynamoDBClient dynamoDB, String tableName,
                                             String partitionKeyName, boolean consistentRead,
                                             ReturnConsumedCapacity returnConsumedCapacity) {
         super(dynamoDB, tableName, partitionKeyName, dataGenerator, returnConsumedCapacity);

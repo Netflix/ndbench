@@ -16,23 +16,22 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.DescribeLimitsRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.DescribeLimitsResponse;
 
 import java.util.function.Supplier;
 
 /**
  * @author Alexander Patrikalakis
  */
-public class DescribeLimits extends AbstractDynamoDBOperation implements Supplier<DescribeLimitsResult> {
-    public DescribeLimits(AmazonDynamoDB dynamoDB, String tableName, String partitionKeyName) {
+public class DescribeLimits extends AbstractDynamoDBOperation implements Supplier<DescribeLimitsResponse> {
+    public DescribeLimits(DynamoDBClient dynamoDB, String tableName, String partitionKeyName) {
         super(dynamoDB, tableName, partitionKeyName);
     }
 
     @Override
-    public DescribeLimitsResult get() {
-        return dynamoDB.describeLimits(new DescribeLimitsRequest());
+    public DescribeLimitsResponse get() {
+        return dynamoDB.describeLimits();
     }
 }

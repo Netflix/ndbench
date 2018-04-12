@@ -16,15 +16,15 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
-import com.amazonaws.services.dynamodbv2.model.GetItemResult;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.ReturnConsumedCapacity;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import java.util.function.Function;
  * @author ipapapa
  */
 public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements Function<String, String> {
-    public DynamoDBReadSingle(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
+    public DynamoDBReadSingle(DataGenerator dataGenerator, DynamoDBClient dynamoDB, String tableName,
                               String partitionKeyName, boolean consistentRead,
                               ReturnConsumedCapacity returnConsumedCapacity) {
         super(dataGenerator, dynamoDB, tableName, partitionKeyName, consistentRead, returnConsumedCapacity);
@@ -43,25 +43,26 @@ public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements
 
     @Override
     public String apply(String key) {
-        final GetItemRequest request = new GetItemRequest()
-                .withKey(ImmutableMap.of(partitionKeyName, new AttributeValue(key)))
-                .withReturnConsumedCapacity(returnConsumedCapacity)
-                .withConsistentRead(consistentRead);
+        final GetItemRequest request = GetItemRequest.builder()
+                .key(ImmutableMap.of(partitionKeyName, AttributeValue.builder().s(key).build()))
+                .returnConsumedCapacity(returnConsumedCapacity)
+                .consistentRead(consistentRead)
+                .build();
         try {
             return Optional.ofNullable(dynamoDB.getItem(request))
                     .map(this::measureConsumedCapacity)
-                    .map(GetItemResult::getItem)
+                    .map(GetItemResponse::item)
                     .map(Map::toString)
                     .orElse(null);
-        } catch (AmazonServiceException ase) {
-            throw amazonServiceException(ase);
-        } catch (AmazonClientException ace) {
-            throw amazonClientException(ace);
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 
-    private GetItemResult measureConsumedCapacity(GetItemResult result) {
-        consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+    private GetItemResponse measureConsumedCapacity(GetItemResponse result) {
+        consumed.addAndGet(result.consumedCapacity().capacityUnits());
         return result;
     }
 }

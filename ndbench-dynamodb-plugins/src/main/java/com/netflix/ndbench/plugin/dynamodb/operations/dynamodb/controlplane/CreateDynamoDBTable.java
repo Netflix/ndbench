@@ -16,20 +16,25 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-import com.amazonaws.services.dynamodbv2.model.KeyType;
-import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
-import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.google.common.base.Preconditions;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement;
+import software.amazon.awssdk.services.dynamodb.model.KeyType;
+import software.amazon.awssdk.services.dynamodb.model.ProvisionedThroughput;
+import software.amazon.awssdk.services.dynamodb.model.ResourceInUseException;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType;
+import software.amazon.awssdk.services.dynamodb.model.TableDescription;
+import software.amazon.awssdk.services.dynamodb.model.TableStatus;
 
 import java.util.ArrayList;
 import java.util.function.Supplier;
@@ -42,7 +47,7 @@ public class CreateDynamoDBTable extends AbstractDynamoDBOperation implements Su
     private static final Logger logger = LoggerFactory.getLogger(CreateDynamoDBTable.class);
     private final long readCapacityUnits;
     private final long writeCapacityUnits;
-    public CreateDynamoDBTable(AmazonDynamoDB dynamoDB, String tableName, String partitionKeyName,
+    public CreateDynamoDBTable(DynamoDBClient dynamoDB, String tableName, String partitionKeyName,
                                long readCapacityUnits, long writeCapacityUnits) {
         super(dynamoDB, tableName, partitionKeyName);
         Preconditions.checkArgument(readCapacityUnits > 0);
@@ -58,40 +63,43 @@ public class CreateDynamoDBTable extends AbstractDynamoDBOperation implements Su
          * Several properties such as provisioned throughput and atribute names are
          * defined in the configuration interface.
          */
-
-        logger.debug("Creating table if it does not exist yet");
+        try {
+            DescribeTableResponse describeTableResponse = dynamoDB.describeTable(DescribeTableRequest.builder().tableName(tableName).build());
+            logger.info("Not creating table because it exists already");
+            return describeTableResponse.table();
+        } catch(ResourceNotFoundException e) {
+            logger.info("Creating Table: " + tableName);
+        }
 
         // key schema
         ArrayList<KeySchemaElement> keySchema = new ArrayList<>();
-        keySchema.add(new KeySchemaElement().withAttributeName(partitionKeyName).withKeyType(KeyType.HASH));
+        keySchema.add(KeySchemaElement.builder().attributeName(partitionKeyName).keyType(KeyType.HASH).build());
 
         // Attribute definitions
         ArrayList<AttributeDefinition> attributeDefinitions = new ArrayList<>();
-        attributeDefinitions.add(new AttributeDefinition().withAttributeName(partitionKeyName)
-                .withAttributeType(ScalarAttributeType.S));
+        attributeDefinitions.add(AttributeDefinition.builder().attributeName(partitionKeyName)
+                .attributeType(ScalarAttributeType.S).build());
         /*
          * constructing the table request: Schema + Attributed definitions + Provisioned
          * throughput
          */
-        CreateTableRequest request = new CreateTableRequest().withTableName(tableName)
-                .withKeySchema(keySchema).withAttributeDefinitions(attributeDefinitions)
-                .withProvisionedThroughput(new ProvisionedThroughput().withReadCapacityUnits(readCapacityUnits)
-                        .withWriteCapacityUnits(writeCapacityUnits));
-
-        logger.info("Creating Table: " + tableName);
+        CreateTableRequest request = CreateTableRequest.builder().tableName(tableName)
+                .keySchema(keySchema).attributeDefinitions(attributeDefinitions)
+                .provisionedThroughput(ProvisionedThroughput.builder().readCapacityUnits(readCapacityUnits)
+                        .writeCapacityUnits(writeCapacityUnits).build()).build();
 
         // Creating table
         try {
-            return dynamoDB.describeTable(tableName).getTable();
-        } catch (ResourceNotFoundException e) {
-            TableDescription tableDescription = dynamoDB.createTable(request).getTableDescription();
-            logger.debug("Waiting until the table is in ACTIVE state");
-            try {
-                TableUtils.waitUntilActive(dynamoDB, tableName);
-            } catch (InterruptedException e1) {
-                throw new IllegalStateException("Table interrupted exception", e);
-            }
-            return tableDescription;
+            dynamoDB.createTable(request);
+            return dynamoDB.describeTable(DescribeTableRequest.builder().tableName(tableName).build()).table();
+        } catch(ResourceInUseException e) {
+            logger.info("Table already exists.");
+            return dynamoDB.describeTable(DescribeTableRequest.builder().tableName(tableName).build()).table();
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 }
+

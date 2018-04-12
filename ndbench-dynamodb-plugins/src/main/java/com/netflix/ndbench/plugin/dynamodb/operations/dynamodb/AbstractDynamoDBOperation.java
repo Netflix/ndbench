@@ -16,10 +16,10 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.google.common.base.Preconditions;
 import com.netflix.ndbench.plugin.dynamodb.operations.AbstractAwsOperation;
 import org.apache.commons.lang3.StringUtils;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
 
 /**
  * @author Alexander Patrikalakis
@@ -28,11 +28,11 @@ import org.apache.commons.lang3.StringUtils;
 public abstract class AbstractDynamoDBOperation extends AbstractAwsOperation {
     protected static final String ATTRIBUTE_NAME = "value";
 
-    protected final AmazonDynamoDB dynamoDB;
+    protected final DynamoDBClient dynamoDB;
     protected final String tableName;
     protected final String partitionKeyName;
 
-    protected AbstractDynamoDBOperation(AmazonDynamoDB dynamoDB,
+    protected AbstractDynamoDBOperation(DynamoDBClient dynamoDB,
                                         String tableName,
                                         String partitionKeyName) {
         Preconditions.checkNotNull(dynamoDB, "DynamoDB client must not be null");

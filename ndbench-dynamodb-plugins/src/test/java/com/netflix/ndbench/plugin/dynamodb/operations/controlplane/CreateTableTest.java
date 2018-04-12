@@ -16,25 +16,23 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.CreateTableResult;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
-import com.amazonaws.services.dynamodbv2.model.DescribeTableResult;
-import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-import com.amazonaws.services.dynamodbv2.model.TableDescription;
-import com.amazonaws.services.dynamodbv2.model.TableStatus;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.CreateDynamoDBTable;
 import org.junit.Test;
 import org.mockito.Mockito;
+import software.amazon.awssdk.services.dynamodb.DynamoDBClient;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.CreateTableResponse;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableRequest;
+import software.amazon.awssdk.services.dynamodb.model.DescribeTableResponse;
+import software.amazon.awssdk.services.dynamodb.model.ResourceNotFoundException;
+import software.amazon.awssdk.services.dynamodb.model.TableDescription;
+import software.amazon.awssdk.services.dynamodb.model.TableStatus;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CreateTableTest {
-    private AmazonDynamoDB dynamoDB = mock(AmazonDynamoDB.class);
+    private DynamoDBClient dynamoDB = mock(DynamoDBClient.class);
 
     @Test(expected = NullPointerException.class)
     public void constructor_whenDynamoDbIsNull_throwsNullPointerException() {
@@ -75,13 +73,14 @@ public class CreateTableTest {
     public void get_whenTableAlreadyExists_doesNotCreateTable() {
         CreateDynamoDBTable createDynamoDBTable = new CreateDynamoDBTable(dynamoDB, "asdf", "asdf", 1, 1);
         //setup
-        when(dynamoDB.describeTable("asdf")).thenReturn(new DescribeTableResult().withTable(new TableDescription()));
+        when(dynamoDB.describeTable(DescribeTableRequest.builder().tableName("asdf").build()))
+                .thenReturn(DescribeTableResponse.builder().table(TableDescription.builder().tableName("asdf").build()).build());
 
         //test
         createDynamoDBTable.get();
 
         //verify
-        verify(dynamoDB).describeTable("asdf");
+        verify(dynamoDB).describeTable(DescribeTableRequest.builder().tableName("asdf").build());
         verify(dynamoDB, Mockito.never()).createTable(any(CreateTableRequest.class));
     }
 
@@ -89,17 +88,17 @@ public class CreateTableTest {
     public void get_whenTableDoesNotExist_createsTable() {
         CreateDynamoDBTable createDynamoDBTable = new CreateDynamoDBTable(dynamoDB, "asdf", "asdf", 1, 1);
         //setup
-        when(dynamoDB.describeTable("asdf")).thenThrow(new ResourceNotFoundException("asdf"));
         when(dynamoDB.createTable(any(CreateTableRequest.class)))
-                .thenReturn(new CreateTableResult().withTableDescription(new TableDescription()));
-        when(dynamoDB.describeTable(new DescribeTableRequest().withTableName("asdf")))
-                .thenReturn(new DescribeTableResult().withTable(new TableDescription().withTableStatus(TableStatus.ACTIVE)));
+                .thenReturn(CreateTableResponse.builder().tableDescription(TableDescription.builder().build()).build());
+        doThrow(ResourceNotFoundException.builder().build())
+                .doReturn(DescribeTableResponse.builder().table(TableDescription.builder().tableStatus(TableStatus.ACTIVE).build()).build())
+                .when(dynamoDB).describeTable(DescribeTableRequest.builder().tableName("asdf").build());
 
         //test
         createDynamoDBTable.get();
 
         //verify
-        verify(dynamoDB).describeTable("asdf");
+        verify(dynamoDB, times(2)).describeTable(DescribeTableRequest.builder().tableName("asdf").build());
         verify(dynamoDB).createTable(any(CreateTableRequest.class));
     }
 }

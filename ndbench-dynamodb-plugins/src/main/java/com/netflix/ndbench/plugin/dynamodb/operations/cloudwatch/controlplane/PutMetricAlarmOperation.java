@@ -16,33 +16,31 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.controlplane;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.amazonaws.services.cloudwatch.model.PutMetricAlarmRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricAlarmResult;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.AbstractCloudWatchOperation;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricAlarmRequest;
+import software.amazon.awssdk.services.cloudwatch.model.PutMetricAlarmResponse;
 
 import java.util.function.Function;
 
 /**
  * @author Alexander Patrikalakis
  */
-public class PutMetricAlarmOperation extends AbstractCloudWatchOperation implements Function<PutMetricAlarmRequest, PutMetricAlarmResult> {
-    public PutMetricAlarmOperation(AmazonCloudWatch cloudWatch) {
+public class PutMetricAlarmOperation extends AbstractCloudWatchOperation implements Function<PutMetricAlarmRequest, PutMetricAlarmResponse> {
+    public PutMetricAlarmOperation(CloudWatchClient cloudWatch) {
         super(cloudWatch);
     }
 
     @Override
-    public PutMetricAlarmResult apply(PutMetricAlarmRequest putMetricAlarmRequest) {
+    public PutMetricAlarmResponse apply(PutMetricAlarmRequest putMetricAlarmRequest) {
         try {
             return cloudWatch.putMetricAlarm(putMetricAlarmRequest);
-        } catch (AmazonServiceException ase) {
-            throw amazonServiceException(ase);
-        } catch (AmazonClientException ace) {
-            throw amazonClientException(ace);
+        } catch (SdkServiceException ase) {
+            throw sdkServiceException(ase);
+        } catch (SdkClientException ace) {
+            throw sdkClientException(ace);
         }
     }
 }

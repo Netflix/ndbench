@@ -16,12 +16,12 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.configs;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
-import com.netflix.ndbench.plugin.dynamodb.NdbenchAWSCredentialProvider;
+import com.netflix.ndbench.plugin.dynamodb.NdbenchAwsCredentialProvider;
+import software.amazon.awssdk.core.auth.AwsCredentialsProvider;
 
 /**
  * 
@@ -33,7 +33,7 @@ public class DynamoDBModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(AWSCredentialsProvider.class).to(NdbenchAWSCredentialProvider.class);
+         bind(AwsCredentialsProvider.class).to(NdbenchAwsCredentialProvider.class);
     }
 
     @Provides

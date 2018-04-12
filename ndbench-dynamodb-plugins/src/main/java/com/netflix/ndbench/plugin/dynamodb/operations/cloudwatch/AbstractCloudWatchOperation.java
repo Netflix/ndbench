@@ -16,17 +16,17 @@
  */
 package com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch;
 
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.netflix.ndbench.plugin.dynamodb.operations.AbstractAwsOperation;
+import software.amazon.awssdk.services.cloudwatch.CloudWatchClient;
 
 /**
  * @author Alexander Patrikalakis
  */
 public abstract class AbstractCloudWatchOperation extends AbstractAwsOperation {
 
-    protected final AmazonCloudWatch cloudWatch;
+    protected final CloudWatchClient cloudWatch;
 
-    protected AbstractCloudWatchOperation(AmazonCloudWatch cloudWatch) {
+    protected AbstractCloudWatchOperation(CloudWatchClient cloudWatch) {
         this.cloudWatch = cloudWatch;
     }
 }
