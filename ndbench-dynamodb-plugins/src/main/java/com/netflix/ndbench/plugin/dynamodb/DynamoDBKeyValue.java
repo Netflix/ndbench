@@ -17,7 +17,10 @@
 package com.netflix.ndbench.plugin.dynamodb;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.client.builder.AwsClientBuilder;
@@ -39,14 +42,23 @@ import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.BatchGetItemRequest;
+import com.amazonaws.services.dynamodbv2.model.BatchGetItemResult;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
+import com.amazonaws.services.dynamodbv2.model.BatchWriteItemResult;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
+import com.amazonaws.services.dynamodbv2.model.KeysAndAttributes;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.PutRequest;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
+import com.amazonaws.services.dynamodbv2.model.WriteRequest;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
+import com.google.common.collect.ImmutableMap;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
@@ -59,6 +71,7 @@ import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
  * This NDBench plugin provides a single key value for AWS DynamoDB.
  * 
  * @author ipapapa
+ * @author Alexander Patrikalakis
  */
 @Singleton
 @NdBenchClientPlugin("DynamoDBKeyValue")
@@ -69,10 +82,10 @@ public class DynamoDBKeyValue implements NdBenchClient {
     private AmazonDynamoDB daxClient;
     private AWSCredentialsProvider awsCredentialsProvider;
     private Table table;
+    private String partitionKeyName;
 
     private DynamoDBConfigs config;
     private DataGenerator dataGenerator;
-    private String partitionKeyName;
 
     /**
      * Credentials will be loaded based on the environment. In AWS, the credentials
@@ -190,12 +203,85 @@ public class DynamoDBKeyValue implements NdBenchClient {
 
     @Override
     public List<String> readBulk(List<String> keys) throws Exception {
-        return null;
+        Preconditions.checkArgument(new HashSet<>(keys).size() == keys.size());
+        final KeysAndAttributes keysAndAttributes = generateReadRequests(keys);
+        try {
+            readUntilDone(keysAndAttributes);
+            return keysAndAttributes.getKeys().stream()
+                    .map(Map::toString)
+                    .collect(Collectors.toList());
+        } catch (AmazonServiceException ase) {
+            amazonServiceException(ase);
+            throw ase;
+        } catch (AmazonClientException ace) {
+            amazonClientException(ace);
+            throw ace;
+        }
     }
 
     @Override
-    public List<String> writeBulk(List<String> keys) throws Exception {
-        return null;
+    public List<String> writeBulk(List<String> keys) {
+        Preconditions.checkArgument(new HashSet<>(keys).size() == keys.size());
+        final List<WriteRequest> writeRequests = generateWriteRequests(keys);
+        try {
+            writeUntilDone(writeRequests);
+            return writeRequests.stream()
+                    .map(WriteRequest::getPutRequest)
+                    .map(PutRequest::toString)
+                    .collect(Collectors.toList());
+        } catch (AmazonServiceException ase) {
+            amazonServiceException(ase);
+            throw ase;
+        } catch (AmazonClientException ace) {
+            amazonClientException(ace);
+            throw ace;
+        }
+    }
+
+    private List<WriteRequest> generateWriteRequests(List<String> keys) {
+        return keys.stream()
+                .map(key -> ImmutableMap.of(partitionKeyName, new AttributeValue(key),
+                        ATTRIBUTE_NAME, new AttributeValue(this.dataGenerator.getRandomValue())))
+                .map(item -> new PutRequest().withItem(item))
+                .map(put -> new WriteRequest().withPutRequest(put))
+                .collect(Collectors.toList());
+    }
+
+    private void writeUntilDone(List<WriteRequest> requests) {
+        List<WriteRequest> remainingRequests = requests;
+        BatchWriteItemResult result;
+        do {
+            result = runBatchWriteRequest(remainingRequests);
+            remainingRequests = result.getUnprocessedItems().get(table.getTableName());
+        } while (remainingRequests!= null && remainingRequests.isEmpty());
+    }
+
+    private BatchWriteItemResult runBatchWriteRequest(List<WriteRequest> writeRequests) {
+        //todo self throttle
+        return client.batchWriteItem(new BatchWriteItemRequest().withRequestItems(
+                ImmutableMap.of(table.getTableName(), writeRequests)));
+    }
+
+    private KeysAndAttributes generateReadRequests(List<String> keys) {
+        return new KeysAndAttributes().withKeys(keys.stream()
+                .map(key -> ImmutableMap.of("id", new AttributeValue(key)))
+                .collect(Collectors.toList()));
+    }
+
+    private void readUntilDone(KeysAndAttributes keysAndAttributes) {
+        KeysAndAttributes remainingKeys = keysAndAttributes;
+        BatchGetItemResult result;
+        do {
+            result = runBatchGetRequest(remainingKeys);
+            remainingKeys = result.getUnprocessedKeys().get(table.getTableName());
+        } while (remainingKeys != null && remainingKeys.getKeys() != null && !remainingKeys.getKeys().isEmpty());
+    }
+
+    private BatchGetItemResult runBatchGetRequest(KeysAndAttributes keysAndAttributes) {
+        //estimate size of requests
+        //todo self throttle
+        return client.batchGetItem(new BatchGetItemRequest().withRequestItems(
+                ImmutableMap.of(table.getTableName(), keysAndAttributes)));
     }
 
     @Override
