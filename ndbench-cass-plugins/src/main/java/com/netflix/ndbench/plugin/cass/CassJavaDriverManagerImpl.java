@@ -32,11 +32,12 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
                 .withPoolingOptions(poolingOpts)
                 .withPort(port)
                 .withLoadBalancingPolicy( new TokenAwarePolicy( new RoundRobinPolicy() ) );
-
         if ((username != null) && (password != null)) {
             clusterBuilder = clusterBuilder.withCredentials(username, password);
         }
-        return clusterBuilder.build();
+
+        cluster = clusterBuilder.build();
+        return cluster;
     }
 
     @Override
