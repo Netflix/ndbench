@@ -19,6 +19,10 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
     Session session;
 
     @Override
+    public Cluster registerCluster(String clName, String contactPoint, int connections, int port) {
+        return registerCluster(clName,contactPoint,connections,port,null,null);
+    }
+        @Override
     public Cluster registerCluster(String clName, String contactPoint, int connections, int port, String username, String password) {
     
         PoolingOptions poolingOpts = new PoolingOptions()
