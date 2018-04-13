@@ -1,4 +1,4 @@
-NDBench DynamDB Plugins Configuration
+NDBench DynamoDB Plugin Configuration
 ===================
 
 NdBench configuration is backed by **Netflix OSS** - **Archaius-2** implementation
@@ -15,9 +15,9 @@ Every config has to be prefixed with configuration prefix mentioned above
 
 ### Table Creation
 
-There are two ways to create DynamoDB Tables with NDBench. The first is by creating the DynamoDB Tables from the AWS Console.
+There are two ways to create DynamoDB tables with NDBench. The first is by creating the DynamoDB tables from the AWS Console.
 The second is to allow NDBench to create the tables programmatically. This is configured by the following configuration
-`ndbench.config.dynamodb.isProgramTables` (defaults to `false`). False means that tables will be configured by the AWS console.
+`ndbench.config.dynamodb.isProgramTables` (defaults to `false`). False means that tables will be configured by the AWS Console.
 
 #### AWS Console Configuration
 
