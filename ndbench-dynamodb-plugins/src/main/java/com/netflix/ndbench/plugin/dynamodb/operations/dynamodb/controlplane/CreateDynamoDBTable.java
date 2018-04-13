@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -27,7 +27,7 @@ import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
 import com.google.common.base.Preconditions;
-import com.netflix.ndbench.plugin.dynamodb.operations.AbstractDynamoDBOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

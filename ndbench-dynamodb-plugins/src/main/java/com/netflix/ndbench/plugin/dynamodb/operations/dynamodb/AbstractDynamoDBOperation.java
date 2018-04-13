@@ -14,24 +14,19 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations;
+package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.google.common.base.Preconditions;
-import com.netflix.ndbench.plugin.dynamodb.DynamoDBKeyValue;
+import com.netflix.ndbench.plugin.dynamodb.operations.AbstractAwsOperation;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Alexander Patrikalakis
  * @author ipapapa
  */
-public abstract class AbstractDynamoDBOperation {
+public abstract class AbstractDynamoDBOperation extends AbstractAwsOperation {
     protected static final String ATTRIBUTE_NAME = "value";
-    private static final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
 
     protected final AmazonDynamoDB dynamoDB;
     protected final String tableName;
@@ -46,24 +41,5 @@ public abstract class AbstractDynamoDBOperation {
         this.dynamoDB = dynamoDB;
         this.tableName = tableName;
         this.partitionKeyName = partitionKeyName;
-    }
-
-    protected AmazonServiceException amazonServiceException(AmazonServiceException ase) {
-        logger.error("Caught an AmazonServiceException, which means your request made it "
-                + "to AWS, but was rejected with an error response for some reason.");
-        logger.error("Error Message:    " + ase.getMessage());
-        logger.error("HTTP Status Code: " + ase.getStatusCode());
-        logger.error("AWS Error Code:   " + ase.getErrorCode());
-        logger.error("Error Type:       " + ase.getErrorType());
-        logger.error("Request ID:       " + ase.getRequestId());
-        return ase;
-    }
-
-    protected AmazonClientException amazonClientException(AmazonClientException ace) {
-        logger.error("Caught an AmazonClientException, which means the client encountered "
-                + "a serious internal problem while trying to communicate with AWS, "
-                + "such as not being able to access the network.");
-        logger.error("Error Message: " + ace.getMessage());
-        return ace;
     }
 }

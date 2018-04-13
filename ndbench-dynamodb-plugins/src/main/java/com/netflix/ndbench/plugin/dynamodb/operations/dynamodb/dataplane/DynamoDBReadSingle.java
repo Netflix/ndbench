@@ -14,13 +14,15 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dataplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
+import com.amazonaws.services.dynamodbv2.model.GetItemResult;
+import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.google.common.collect.ImmutableMap;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 
@@ -34,17 +36,21 @@ import java.util.function.Function;
  */
 public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements Function<String, String> {
     public DynamoDBReadSingle(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
-                              String partitionKeyName, boolean consistentRead) {
-        super(dataGenerator, dynamoDB, tableName, partitionKeyName, consistentRead);
+                              String partitionKeyName, boolean consistentRead,
+                              ReturnConsumedCapacity returnConsumedCapacity) {
+        super(dataGenerator, dynamoDB, tableName, partitionKeyName, consistentRead, returnConsumedCapacity);
     }
 
     @Override
     public String apply(String key) {
         final GetItemRequest request = new GetItemRequest()
                 .withKey(ImmutableMap.of(partitionKeyName, new AttributeValue(key)))
+                .withReturnConsumedCapacity(returnConsumedCapacity)
                 .withConsistentRead(consistentRead);
         try {
-            return Optional.ofNullable(dynamoDB.getItem(request).getItem())
+            return Optional.ofNullable(dynamoDB.getItem(request))
+                    .map(this::measureConsumedCapacity)
+                    .map(GetItemResult::getItem)
                     .map(Map::toString)
                     .orElse(null);
         } catch (AmazonServiceException ase) {
@@ -52,5 +58,10 @@ public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements
         } catch (AmazonClientException ace) {
             throw amazonClientException(ace);
         }
+    }
+
+    private GetItemResult measureConsumedCapacity(GetItemResult result) {
+        consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+        return result;
     }
 }

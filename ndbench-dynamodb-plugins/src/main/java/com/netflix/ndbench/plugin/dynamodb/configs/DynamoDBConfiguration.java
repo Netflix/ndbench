@@ -79,6 +79,29 @@ public interface DynamoDBConfiguration {
     Boolean consistentRead();
 
     /*
+     * DynamoDB publishes one minute metrics for Consumed Capacity. To supplement this metric,
+     * ndbench can publish 1-second high resolution metrics of consumed capacity to CloudWatch.
+     */
+    @PropertyName(name = "publishHighResolutionConsumptionMetrics")
+    @DefaultValue("false")
+    Boolean publishHighResolutionConsumptionMetrics();
+
+    /*
+     * The interval, in milliseconds at which ndbench publishes high resolution consumption metrics to CloudWatch.
+     */
+    @PropertyName(name = "highResolutionMetricsPublishingInterval")
+    @DefaultValue("1000")
+    Long getHighResolutionMetricsPublishingInterval();
+
+    /*
+     * DynamoDB publishes one minute metrics for Consumed Capacity. To supplement this metric,
+     * ndbench can publish 1-second high resolution metrics of consumed capacity to CloudWatch.
+     */
+    @PropertyName(name = "alarmOnHighResolutionConsumptionMetrics")
+    @DefaultValue("false")
+    Boolean alarmOnHighResolutionConsumptionMetrics();
+
+    /*
      * This configuration allows to create a table programmatically (through NDBench).
      * In the init phase, we create a table.
      * In the shutdown phase, we delete the table.
@@ -122,14 +145,12 @@ public interface DynamoDBConfiguration {
     /*
      * Region: Allowing customers to override the region enables baselining cross-region use cases
      */
-    @DefaultValue("us-east-1")
     String getRegion();
 
     /*
      * Region: Allowing customers to override the endpoint enables baselining cross-region use cases
      * and testing with DynamoDB local
      */
-    @DefaultValue("https://dynamodb.us-east-1.amazonaws.com")
     String getEndpoint();
 
     /*

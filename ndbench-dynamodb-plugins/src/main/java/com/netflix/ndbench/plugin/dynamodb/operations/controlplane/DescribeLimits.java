@@ -19,7 +19,7 @@ package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.DescribeLimitsRequest;
 import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
-import com.netflix.ndbench.plugin.dynamodb.operations.AbstractDynamoDBOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
 
 import java.util.function.Supplier;
 

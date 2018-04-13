@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dataplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -23,6 +23,7 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.BatchWriteItemRequest;
 import com.amazonaws.services.dynamodbv2.model.BatchWriteItemResult;
 import com.amazonaws.services.dynamodbv2.model.PutRequest;
+import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.WriteRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -30,17 +31,17 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
  * @author Alexander Patrikalakis
  * @author ipapapa
  */
-public class DynamoDBWriteBulk extends AbstractDynamoDBDataPlaneOperation implements Function<List<String>, List<String>> {
+public class DynamoDBWriteBulk extends AbstractDynamoDBDataPlaneOperation
+        implements CapacityConsumingFunction<BatchWriteItemResult, List<String>, List<String>> {
     public DynamoDBWriteBulk(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
-                             String partitionKeyName) {
-        super(dynamoDB, tableName, partitionKeyName, dataGenerator);
+                             String partitionKeyName, ReturnConsumedCapacity returnConsumedCapacity) {
+        super(dynamoDB, tableName, partitionKeyName, dataGenerator, returnConsumedCapacity);
     }
 
     @Override
@@ -80,7 +81,14 @@ public class DynamoDBWriteBulk extends AbstractDynamoDBDataPlaneOperation implem
 
     private BatchWriteItemResult runBatchWriteRequest(List<WriteRequest> writeRequests) {
         //todo self throttle
-        return dynamoDB.batchWriteItem(new BatchWriteItemRequest()
-                .withRequestItems(ImmutableMap.of(tableName, writeRequests)));
+        return measureConsumedCapacity(dynamoDB.batchWriteItem(new BatchWriteItemRequest()
+                .withRequestItems(ImmutableMap.of(tableName, writeRequests))
+                .withReturnConsumedCapacity(returnConsumedCapacity)));
+    }
+
+    @Override
+    public BatchWriteItemResult measureConsumedCapacity(BatchWriteItemResult result) {
+        consumed.addAndGet(getConsumedCapacityForTable(result.getConsumedCapacity()));
+        return result;
     }
 }

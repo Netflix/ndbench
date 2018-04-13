@@ -43,8 +43,8 @@ public class DynamoDBConfigurationTest {
         assertFalse(configuration.isDax());
         assertNull(configuration.getDaxEndpoint());
         assertFalse(configuration.isCompressing());
-        assertEquals("us-east-1", configuration.getRegion());
-        assertEquals("https://dynamodb.us-east-1.amazonaws.com", configuration.getEndpoint());
+        assertNull(configuration.getRegion());
+        assertNull(configuration.getEndpoint());
         assertEquals(Integer.valueOf(50), configuration.getMaxConnections());
         assertEquals(Integer.valueOf(-1), configuration.getMaxRequestTimeout());
         assertEquals(Integer.valueOf(10), configuration.getMaxRetries());
