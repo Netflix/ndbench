@@ -53,7 +53,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 public class NdBenchDriver {
-    private static final Logger Logger = LoggerFactory.getLogger(NdBenchDriver.class);
+    private static final Logger logger = LoggerFactory.getLogger(NdBenchDriver.class);
     public static final int TIMEOUT = 5;
 
     private final AtomicInteger readWorkers = new AtomicInteger(0);
@@ -105,7 +105,7 @@ public class NdBenchDriver {
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override
             public void run() {
-                Logger.info("*** shutting down NdBench server since JVM is shutting down");
+                logger.info("*** shutting down NdBench server since JVM is shutting down");
                 NdBenchDriver.this.stop();
                 try {
                     NdBenchDriver.this.shutdownClient();
@@ -119,14 +119,14 @@ public class NdBenchDriver {
 
 
     public void start(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
-        Logger.info("Starting Load Test Driver...");
+        logger.info("Starting Load Test Driver...");
         startWrites(loadPattern, windowSize, windowDurationInSec, bulkSize);
         startReads(loadPattern, windowSize, windowDurationInSec, bulkSize);
     }
 
     public void startReads(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         if (readsStarted.get()) {
-            Logger.info("Reads already started ... ignoring");
+            logger.info("Reads already started ... ignoring");
             return;
         }
         startReadsInternal(loadPattern, windowSize, windowDurationInSec, bulkSize);
@@ -134,7 +134,7 @@ public class NdBenchDriver {
 
 
     private void startReadsInternal(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
-        Logger.info("Starting NdBenchDriver reads...");
+        logger.info("Starting NdBenchDriver reads...");
         NdBenchOperation operation;
 
         operation = new ReadOperation(clientRef.get());
@@ -161,7 +161,7 @@ public class NdBenchDriver {
 
     public void startWrites(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         if (writesStarted.get()) {
-            Logger.info("Writes already started ... ignoring");
+            logger.info("Writes already started ... ignoring");
             return;
         }
 
@@ -169,7 +169,7 @@ public class NdBenchDriver {
     }
 
     private void startWritesInternal(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
-        Logger.info("Starting NdBenchDriver writes...");
+        logger.info("Starting NdBenchDriver writes...");
         NdBenchOperation operation;
 
         operation = new WriteOperation(clientRef.get());
@@ -218,7 +218,7 @@ public class NdBenchDriver {
                                 int bulkSize) {
 
         if (!operationEnabled) {
-            Logger.info("Operation : {} not enabled, ignoring", operation.getClass().getSimpleName());
+            logger.info("Operation : {} not enabled, ignoring", operation.getClass().getSimpleName());
             return;
         }
         keyGenerator.init();
@@ -229,7 +229,7 @@ public class NdBenchDriver {
             throw new RuntimeException("Unknown threadpool when performing tpRef CAS operation");
         }
 
-        Logger.info("\n\nWorker threads: " + numWorkersConfig + ", Num Keys: " + config.getNumKeys() + "\n\n");
+        logger.info("\n\nWorker threads: " + numWorkersConfig + ", Num Keys: " + config.getNumKeys() + "\n\n");
 
         for (int i = 0; i < numWorkersConfig; i++) {
 
@@ -261,7 +261,7 @@ public class NdBenchDriver {
                     } // eo if read or write
 
                     if (noMoreKey) {
-                        Logger.info("No more keys to process, hence stopping this thread.");
+                        logger.info("No more keys to process, hence stopping this thread.");
                         if (operation.isReadType()) {
                             stopReads();
                         } else if (operation.isWriteType()) {
@@ -271,7 +271,7 @@ public class NdBenchDriver {
                         break;
                     } // eo if noMoreKey
                 } // eo while thread not interrupted
-                Logger.info("NdBenchWorker shutting down");
+                logger.info("NdBenchWorker shutting down");
                 return null;
             });
             numWorkers.incrementAndGet();
@@ -307,34 +307,34 @@ public class NdBenchDriver {
 
         ExecutorService tp = tpRef.get();
         if (tp == null) {
-            Logger.warn("Broken reference to threadPool -- unable to stop!");
+            logger.warn("Broken reference to threadPool -- unable to stop!");
             return;
         }
 
         tp.shutdownNow();
         tpRef.set(null);
 
-        Logger.info("Attempting to shutdown threadpool");
+        logger.info("Attempting to shutdown threadpool");
         while (!tp.isTerminated()) {
             try {
-                Logger.info("Waiting for worker pool to stop, sleeping for 5 to 10 seconds");
+                logger.info("Waiting for worker pool to stop, sleeping for 5 to 10 seconds");
 
                 // Wait a while for existing tasks to terminate
                 if (!tp.awaitTermination(TIMEOUT, TimeUnit.SECONDS)) {
                     tp.shutdownNow(); // Cancel currently executing tasks
                     // Wait a while for tasks to respond to being cancelled
                     if (!tp.awaitTermination(TIMEOUT, TimeUnit.SECONDS))
-                        Logger.error("Error while shutting down executor service : ");
+                        logger.error("Error while shutting down executor service : ");
                 }
-                Logger.info("Threadpool has terminated!");
+                logger.info("Threadpool has terminated!");
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();//preserve the message
                 tp.shutdownNow();
-                Logger.info("Failed to terminate Threadpool! Ignoring.");
+                logger.info("Failed to terminate Threadpool! Ignoring.");
                 break;
             }
         }
-        Logger.info("Threadpool has terminated!");
+        logger.info("Threadpool has terminated!");
     }
 
     public interface NdBenchOperation {
@@ -394,7 +394,7 @@ public class NdBenchDriver {
     private void checkAndInitRateLimit(AtomicReference<RateLimiter> rateLimiter, int property, String prop) {
         RateLimiter oldLimiter = rateLimiter.get();
         if (oldLimiter == null) {
-            Logger.info("Setting rate Limit for: " + prop + " to: " + property);
+            logger.info("Setting rate Limit for: " + prop + " to: " + property);
             rateLimiter.set(RateLimiter.create(property));
             return;
         }
@@ -402,9 +402,9 @@ public class NdBenchDriver {
         int oldLimit = Double.valueOf(oldLimiter.getRate()).intValue();
         int newLimit = property;
 
-        Logger.info("oldlimit={} / newLimit={}", oldLimit, newLimit);
+        logger.info("oldlimit={} / newLimit={}", oldLimit, newLimit);
         if (oldLimit != newLimit) {
-            Logger.info("Updating rate Limit for: " + prop + " to: " + newLimit);
+            logger.info("Updating rate Limit for: " + prop + " to: " + newLimit);
             rateLimiter.set(RateLimiter.create(newLimit));
         }
     }
@@ -441,7 +441,7 @@ public class NdBenchDriver {
         try {
             return clientRef.get().readSingle(key);
         } catch (Exception e) {
-            Logger.error("FAILED readSingle ", e);
+            logger.error("FAILED readSingle ", e);
             throw e;
         }
     }
@@ -509,7 +509,7 @@ public class NdBenchDriver {
             ndBenchMonitor.setWriteRPS(writeRps);
             ndBenchMonitor.setReadRPS(readRps);
 
-            Logger.info("Read avg: "  + (double) ndBenchMonitor.getReadLatAvg() / 1000.0  + "ms, Read RPS: "  + readRps
+            logger.info("Read avg: "  + (double) ndBenchMonitor.getReadLatAvg() / 1000.0  + "ms, Read RPS: "  + readRps
                     + ", Write avg: " + (double) ndBenchMonitor.getWriteLatAvg() / 1000.0 + "ms, Write RPS: " + writeRps
                     + ", total RPS: " + (readRps + writeRps) + ", Success Ratio: " + sRatio + "%");
             long expectedReadRate = (long) this.readLimiter.get().getRate();
@@ -517,11 +517,11 @@ public class NdBenchDriver {
             String bottleneckMsg = "If this occurs consistently the benchmark client could be the bottleneck.";
 
             if (this.config.isReadEnabled() && readsStarted.get() && readRps < expectedReadRate) {
-                Logger.warn("Observed Read RPS ({}) less than expected read rate + ({}).\n{}",
+                logger.warn("Observed Read RPS ({}) less than expected read rate + ({}).\n{}",
                         readRps, expectedReadRate, bottleneckMsg);
             }
             if (this.config.isWriteEnabled() && writesStarted.get() && writeRps < expectedwriteRate) {
-                Logger.warn("Observed Write RPS ({}) less than expected write rate + ({}).\n{}",
+                logger.warn("Observed Write RPS ({}) less than expected write rate + ({}).\n{}",
                         writeRps, expectedwriteRate, bottleneckMsg);
             }
         }

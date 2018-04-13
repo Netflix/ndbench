@@ -24,6 +24,7 @@ import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Set;
@@ -40,7 +41,7 @@ import java.util.Set;
  * auto-installed by this class.
  */
 public class NdBenchClientModule extends AbstractModule {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchClientModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(NdBenchClientModule.class);
 
     private MapBinder<String, NdBenchAbstractClient<?>> maps;
 
@@ -49,9 +50,9 @@ public class NdBenchClientModule extends AbstractModule {
         try {
             NdBenchClientPlugin annot = ndBenchClientImpl.getAnnotation(NdBenchClientPlugin.class);
             name = annot.value();
-            Logger.info("Installing NdBenchClientPlugin: " + ndBenchClientImpl.getName() + " with Annotation: " + name);
+            logger.info("Installing NdBenchClientPlugin: " + ndBenchClientImpl.getName() + " with Annotation: " + name);
         } catch (Exception e) {
-            Logger.warn("No Annotation found for class :" + name + ", so loading default class name");
+            logger.warn("No Annotation found for class :" + name + ", so loading default class name");
         }
         return name;
     }
@@ -94,7 +95,7 @@ public class NdBenchClientModule extends AbstractModule {
 
 
     private AbstractModule instantiateGuiceModule(Class moduleClass) {
-        Logger.info("adding ndbench client plugin guice module: {}", moduleClass.getCanonicalName());
+        logger.info("adding ndbench client plugin guice module: {}", moduleClass.getCanonicalName());
         Object object;
         try {
             object = moduleClass.newInstance();

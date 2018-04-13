@@ -39,7 +39,7 @@ import java.util.List;
 @Singleton
 @NdBenchClientPlugin("ElassandraCassJavaDriverPlugin")
 public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
-    private static final Logger Logger = LoggerFactory.getLogger(ElassandraCassJavaDriverPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(ElassandraCassJavaDriverPlugin.class);
 
     private Cluster cluster;
     private Session session;
@@ -65,7 +65,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
-        Logger.info("Cassandra  Cluster: " + ClusterName);
+        logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
         cluster = Cluster.builder()
                 .withClusterName(ClusterName)
@@ -79,7 +79,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
         writePstmt = session.prepare("INSERT INTO "+ TableName +" (\"_id\", name) VALUES (?, ?)");
         readPstmt = session.prepare("SELECT * From "+ TableName +" Where \"_id\" = ?");
 
-        Logger.info("Initialized ElassandraCassJavaDriverPlugin");
+        logger.info("Initialized ElassandraCassJavaDriverPlugin");
     }
 
     /**
@@ -151,7 +151,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      */
     @Override
     public void shutdown() throws Exception {
-        Logger.info("Shutting down ElassandraCassJavaDriverPlugin");
+        logger.info("Shutting down ElassandraCassJavaDriverPlugin");
         cluster.close();
     }
 

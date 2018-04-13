@@ -12,8 +12,7 @@ import java.util.List;
 
 
 public class AutotuneTest extends AbstractPluginTest {
-    private static final Logger Logger = LoggerFactory.getLogger(AutotuneTest.class);
-
+    private static final Logger logger = LoggerFactory.getLogger(AutotuneTest.class);
 	
     @Test
     public void testRateStopsIncreasingAfterAcceptableWriteFailureThresholdReached() throws Exception {
@@ -26,25 +25,25 @@ public class AutotuneTest extends AbstractPluginTest {
 
         List<Double> result1 =
                 stepThroughRateIncreases(noWritesYet, noWritesYet, noWritesYet);
-        Logger.info("result1:" + result1);
+        logger.info("result1:" + result1);
         assert (result1.equals(ImmutableList.of(1.0, 2.0, 3.0, 11.0)));
 
 
         List<Double> result2 =
                 stepThroughRateIncreases(noWritesYet, failuresAlmostAtThreshold, failuresAlmostAtThreshold);
-        Logger.info("result2:" + result2);
+        logger.info("result2:" + result2);
         assert (result2.equals(ImmutableList.of(1.0, 2.0, 3.0, 11.0)));
 
 
         List<Double> result3 =
                 stepThroughRateIncreases(noWritesYet, failuresExactlyAtThreshold, failuresExactlyAtThreshold);
-        Logger.info("result3:" + result3);
+        logger.info("result3:" + result3);
         assert (result3.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one..
 
 
         List<Double> result4 =
                 stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresSlightlyOverThreshold);
-        Logger.info("result4:" + result4);
+        logger.info("result4:" + result4);
         assert (result4.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one..
 
 
@@ -54,7 +53,7 @@ public class AutotuneTest extends AbstractPluginTest {
         // max rate.)
         List<Double> result5 =
                 stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresAlmostAtThreshold);
-        Logger.info("result5:" + result5);
+        logger.info("result5:" + result5);
         assert (result5.equals(ImmutableList.of(1.0, 0.0, 1.0, 11.0)));  // expect passed in current rate (0) after 2nd one..
     }
 

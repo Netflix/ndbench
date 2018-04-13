@@ -12,6 +12,7 @@ import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -19,7 +20,7 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(CJavaDriverBasePlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(CJavaDriverBasePlugin.class);
 
     protected static final String ResultOK = "Ok";
     protected static final String ResutlFailed = "Failed";
@@ -89,7 +90,7 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
 
     private void initDriver() throws Exception {
 
-        Logger.info("Cassandra  Cluster: " + ClusterName);
+        logger.info("Cassandra  Cluster: " + ClusterName);
 
         this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint,connections,port);
         this.session = cassJavaDriverManager.getSession(cluster);

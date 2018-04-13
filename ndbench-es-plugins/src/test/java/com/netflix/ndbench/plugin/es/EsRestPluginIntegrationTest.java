@@ -4,17 +4,12 @@ import com.netflix.governator.guice.test.ModulesForTesting;
 import com.netflix.governator.guice.test.junit4.GovernatorJunit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({})
 public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
 
     static final String ELASTICSEARCH = "elasticsearch";
-
-
-    private static final Logger logger = LoggerFactory.getLogger(EsRestPluginIntegrationTest.class);
     private static final String ES_HOST_PORT = "http://localhost:9200";
 
 

@@ -8,8 +8,6 @@ import com.palantir.docker.compose.connection.waiting.HealthChecks;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.ClassRule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -25,7 +23,6 @@ import java.io.IOException;
  */
 public class AbstractPluginIntegrationTest extends AbstractPluginTest {
     static final String ELASTICSEARCH = "elasticsearch";
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPluginIntegrationTest.class);
 
     /**
      * Temporarily shut off mechanism to  detect if docker and docker-compose are not available or not. If these

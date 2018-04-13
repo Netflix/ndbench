@@ -9,7 +9,7 @@ import java.util.Date;
 
 
 public class EsWriterTest {
-    private static final Logger Logger = LoggerFactory.getLogger(EsWriterTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(EsWriterTest.class);
 
     @Test
     public void verifyConstructIndexName() throws Exception {
@@ -57,7 +57,7 @@ public class EsWriterTest {
             String indexName = EsWriter.constructIndexName("foo", 60 * 24, new Date(millisecsSinceEpochStart));
             millisecsSinceEpochStart = millisecsSinceEpochStart + oneMinuteInMillis;
             indexNames.add(indexName);
-            Logger.info("indexName:" + indexName);
+            logger.info("indexName:" + indexName);
         }
 
         assert indexNames.get(59).equals("foo-1970-01-01.0059");
