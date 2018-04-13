@@ -23,6 +23,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.config.TunableConfig;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.*;
@@ -38,7 +39,7 @@ import static com.netflix.ndbench.core.util.RestUtil.*;
  */
 @Path("/ndbench/config")
 public class NDBenchConfigResource {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NDBenchConfigResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(NDBenchConfigResource.class);
 
     private final IConfiguration config;
     private final NdBenchDriver ndBenchDriver;
@@ -60,11 +61,11 @@ public class NDBenchConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getConfigOptions() throws Exception {
 
-        Logger.info("Getting Configuration list");
+        logger.info("Getting Configuration list");
         try {
             return sendJson(config);
         } catch (Exception e) {
-            Logger.error("Error getting Configuration", e);
+            logger.error("Error getting Configuration", e);
             return  sendErrorResponse("get config/list failed!");
         }
     }
@@ -75,7 +76,7 @@ public class NDBenchConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response setConfigOptions(Map<String,String> propsToSet) throws Exception {
 
-        Logger.info("Setting Configuration list");
+        logger.info("Setting Configuration list");
         try {
             for (Map.Entry<String,String> entry: propsToSet.entrySet())
             {
@@ -87,7 +88,7 @@ public class NDBenchConfigResource {
             }
             return sendSuccessResponse("Properties have been applied");
         } catch (Exception e) {
-            Logger.error("Error setting Configuration", e);
+            logger.error("Error setting Configuration", e);
             return  sendErrorResponse("get config/set failed!");
         }
     }
@@ -104,13 +105,13 @@ public class NDBenchConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getTunableOptions() throws Exception {
 
-        Logger.info("Getting Tunable Configuration list");
+        logger.info("Getting Tunable Configuration list");
         try {
 
             TunableConfig tunableConfig = new TunableConfig(config);
             return sendJson(tunableConfig);
         } catch (Exception e) {
-            Logger.error("Error getting Configuration", e);
+            logger.error("Error getting Configuration", e);
             return  sendErrorResponse("get config/list failed!");
         }
     }
@@ -121,7 +122,7 @@ public class NDBenchConfigResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response setTunableOptions(Map<String,String> propsToSet) throws Exception {
 
-        Logger.info("Setting Tunable Configuration list");
+        logger.info("Setting Tunable Configuration list");
         try {
             for (Map.Entry<String,String> entry: propsToSet.entrySet())
             {
@@ -142,7 +143,7 @@ public class NDBenchConfigResource {
             }
             return sendSuccessResponse("Tunable Properties have been applied");
         } catch (Exception e) {
-            Logger.error("Error setting Tunable Configuration", e);
+            logger.error("Error setting Tunable Configuration", e);
             return  sendErrorResponse("get config/tunable/set failed!");
         }
     }

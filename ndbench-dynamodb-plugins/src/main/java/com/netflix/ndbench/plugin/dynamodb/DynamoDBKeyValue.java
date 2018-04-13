@@ -81,9 +81,10 @@ import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
 @Singleton
 @NdBenchClientPlugin("DynamoDBKeyValue")
 public class DynamoDBKeyValue implements NdBenchClient {
+    private static final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
     private static final String ATTRIBUTE_NAME = "value";
-    public static final boolean DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG = true;
-    private final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
+    private static final boolean DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG = true;
+
     private AmazonDynamoDB client;
     private AmazonDynamoDB daxClient;
     private AWSCredentialsProvider awsCredentialsProvider;

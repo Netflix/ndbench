@@ -50,7 +50,7 @@ import static com.netflix.ndbench.api.plugin.common.NdBenchConstants.PROP_NAMESP
 @Singleton
 @NdBenchClientPlugin("CassAstyanaxPlugin")
 public class CassAstyanaxPlugin implements NdBenchClient{
-    private static final Logger Logger = LoggerFactory.getLogger(CassAstyanaxPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(CassAstyanaxPlugin.class);
     private final PropertyFactory propertyFactory;
 
     private AstyanaxContext<Keyspace> context;
@@ -101,7 +101,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
         //ColumnFamily Definition
         CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
 
-        Logger.info("Cassandra  Cluster: " + ClusterName);
+        logger.info("Cassandra  Cluster: " + ClusterName);
         this.dataGenerator = dataGenerator;
 
          context = new AstyanaxContext.Builder()
@@ -121,7 +121,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
         context.start();
         keyspace = context.getClient();
 
-        Logger.info("Initialized CassAstyanaxPlugin");
+        logger.info("Initialized CassAstyanaxPlugin");
     }
 
     /**
@@ -177,7 +177,7 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      */
     @Override
     public void shutdown() throws Exception {
-        Logger.info("Shutting down CassAstyanaxPlugin");
+        logger.info("Shutting down CassAstyanaxPlugin");
         context.shutdown();
 
     }

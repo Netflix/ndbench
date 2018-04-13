@@ -40,7 +40,7 @@ import java.util.Properties;
 @NdBenchClientPlugin("GeodeCloudPlugin")
 public class GeodeCloudPlugin implements NdBenchClient{
 
-  private final static Logger logger = LoggerFactory.getLogger(GeodeCloudPlugin.class);
+  private static final Logger logger = LoggerFactory.getLogger(GeodeCloudPlugin.class);
   private final PropertyFactory propertyFactory;
 
   private static final String ResultOK = "Ok";

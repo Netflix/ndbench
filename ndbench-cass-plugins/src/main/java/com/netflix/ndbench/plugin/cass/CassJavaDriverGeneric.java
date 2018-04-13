@@ -22,6 +22,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
 
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(CassJavaDriverGeneric.class);
+    private static final Logger logger = LoggerFactory.getLogger(CassJavaDriverGeneric.class);
 
 
     @Inject

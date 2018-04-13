@@ -34,7 +34,7 @@ import java.util.Map;
 @Singleton
 @NdBenchClientPlugin("InMemoryTest")
 public class InMemoryTestPlugin implements NdBenchClient{
-    private static final Logger Logger = LoggerFactory.getLogger(InMemoryTestPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(InMemoryTestPlugin.class);
 
     private final Map<String, String> data = Maps.newConcurrentMap();
 
@@ -52,7 +52,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
     this.dataGenerator = dataGenerator;
-        Logger.info("Initialized InMemoryTestPlugin");
+        logger.info("Initialized InMemoryTestPlugin");
     }
 
     /**
@@ -116,7 +116,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
      */
     @Override
     public void shutdown() throws Exception {
-        Logger.info("Shutting down InMemoryTestPlugin");
+        logger.info("Shutting down InMemoryTestPlugin");
 
     }
 

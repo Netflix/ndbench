@@ -21,6 +21,7 @@ import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.util.EstimatedHistogram;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
@@ -35,7 +36,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Singleton
 public class FakeMonitor implements NdBenchMonitor {
 
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(FakeMonitor.class);
+    private static final Logger logger = LoggerFactory.getLogger(FakeMonitor.class);
 
     private final AtomicReference<ScheduledExecutorService> timerRef = new AtomicReference<>(null);
 
@@ -70,7 +71,7 @@ public class FakeMonitor implements NdBenchMonitor {
         ScheduledExecutorService timer = timerRef.get();
         if (timer == null) {
             timer = Executors.newScheduledThreadPool(1);
-            Logger.info(String.format("Initializing NdBenchMonitor with timing counter reset frequency %d seconds",
+            logger.info(String.format("Initializing NdBenchMonitor with timing counter reset frequency %d seconds",
                     config.getStatsResetFreqSeconds()));
             timer.scheduleAtFixedRate(new Runnable() {
                 @Override

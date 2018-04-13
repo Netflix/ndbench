@@ -22,6 +22,7 @@ import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @NdBenchClientPlugin("DynoHashPipeline")
 public class DynoJedisHashPipeline implements NdBenchClient {
 
-    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DynoJedisHashPipeline.class);
+    private static final Logger logger = LoggerFactory.getLogger(DynoJedisHashPipeline.class);
 
     private static final String HM_KEY_PREFIX = "HM__";
 

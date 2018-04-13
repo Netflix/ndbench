@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Singleton
 public class DataBackfill {
 
-    private static final Logger Logger = LoggerFactory.getLogger(DataBackfill.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataBackfill.class);
 
     private final IConfiguration config;
     private final AtomicBoolean stop = new AtomicBoolean(false);
@@ -67,9 +67,9 @@ public class DataBackfill {
 
         backfillAsync(client, backfillOperation);
 
-        Logger.info("Backfiller waiting to finish");
+        logger.info("Backfiller waiting to finish");
         futureRef.get();
-        Logger.info("Backfiller latch done! in " + (System.currentTimeMillis() - start) + " ms");
+        logger.info("Backfiller latch done! in " + (System.currentTimeMillis() - start) + " ms");
     }
 
     public void backfillAsync(final NdBenchAbstractClient<?> client) {
@@ -83,9 +83,9 @@ public class DataBackfill {
         final int backFillStartKey = config.getBackfillStartKey();
         final int numKeysPerThread = (config.getNumKeys() - backFillStartKey) / numThreads;
 
-        Logger.info("NUM THREADS: " + numThreads);
-        Logger.info("NUM KEYS: " + config.getNumKeys());
-        Logger.info("NUM KEYS PER TH: " + numKeysPerThread);
+        logger.info("NUM THREADS: " + numThreads);
+        logger.info("NUM KEYS: " + config.getNumKeys());
+        logger.info("NUM KEYS PER TH: " + numKeysPerThread);
 
         initThreadPool(numThreads);
 
@@ -105,17 +105,17 @@ public class DataBackfill {
                         try {
                             String key = "T" + k;
                             String result = backfillOperation.process(client, key);
-                            Logger.info("Backfill Key:" + key + " | Result: " + result);
+                            logger.info("Backfill Key:" + key + " | Result: " + result);
 
                             k++;
                             count.incrementAndGet();
                         } catch (Exception e) {
-                            Logger.error("Retrying after failure", e);
+                            logger.error("Retrying after failure", e);
                         }
                     }
 
                     latch.countDown();
-                    Logger.info("Stopping datafill writer");
+                    logger.info("Stopping datafill writer");
                     return null;
                 }
             });
@@ -128,7 +128,7 @@ public class DataBackfill {
                 final AtomicBoolean stopCounting = new AtomicBoolean(false);
 
                 while (!Thread.currentThread().isInterrupted() && !stopCounting.get()) {
-                    Logger.info("Backfill so far: " + count.get() + ", miss count: " + missCount.get());
+                    logger.info("Backfill so far: " + count.get() + ", miss count: " + missCount.get());
                     try {
                         boolean done = latch.await(5000, TimeUnit.MILLISECONDS);
                         if (done) {
@@ -139,7 +139,7 @@ public class DataBackfill {
                         stopCounting.set(true);
                     }
                 }
-                Logger.info("Stopping datafill status poller");
+                logger.info("Stopping datafill status poller");
                 return null;
             }
         });

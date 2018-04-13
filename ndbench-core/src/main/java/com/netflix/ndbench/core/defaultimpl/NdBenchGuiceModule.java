@@ -27,20 +27,21 @@ import com.netflix.ndbench.core.config.NdbenchConfigListener;
 import com.netflix.ndbench.core.discovery.*;
 import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.core.monitoring.FakeMonitor;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author vchella
  */
 public class NdBenchGuiceModule extends AbstractModule {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NdBenchGuiceModule.class);
+    private static final Logger logger = LoggerFactory.getLogger(NdBenchGuiceModule.class);
 
 
     @Override
     protected void configure() {
         bind(NdBenchMonitor.class).to(FakeMonitor.class);
         String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
-        Logger.info("DISCOVERY_ENV is set to: " + discoveryEnv);
+        logger.info("DISCOVERY_ENV is set to: " + discoveryEnv);
         if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_CF)) {
             bind(IClusterDiscovery.class).to(CfClusterDiscovery.class);
         } else if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {

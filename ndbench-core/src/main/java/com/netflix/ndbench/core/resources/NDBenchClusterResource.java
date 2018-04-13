@@ -18,6 +18,7 @@ package com.netflix.ndbench.core.resources;
 
 import com.google.inject.Inject;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,7 @@ import static com.netflix.ndbench.core.util.RestUtil.sendJson;
  */
 @Path("/ndbench/cluster")
 public class NDBenchClusterResource {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(NDBenchClusterResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(NDBenchClusterResource.class);
 
     private final IClusterDiscovery clusterManager;
 
@@ -53,11 +54,11 @@ public class NDBenchClusterResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getApps() throws Exception {
 
-        Logger.info("Getting cluster list");
+        logger.info("Getting cluster list");
         try {
             return sendJson(clusterManager.getApps());
         } catch (Exception e) {
-            Logger.error("Error getting Apps list from ClusterManager", e);
+            logger.error("Error getting Apps list from ClusterManager", e);
             return  sendErrorResponse("get cluster/list failed!");
         }
     }
@@ -67,11 +68,11 @@ public class NDBenchClusterResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response getApps(@PathParam("appname") String appname) throws Exception {
 
-        Logger.info("Getting nodes list for app: "+appname+", default Port used: "+ request.getServerPort());
+        logger.info("Getting nodes list for app: "+appname+", default Port used: "+ request.getServerPort());
         try {
             return sendJson(clusterManager.getEndpoints(appname, request.getServerPort()));
         } catch (Exception e) {
-            Logger.error("Error getting Host list from ClusterManager for app: "+appname, e);
+            logger.error("Error getting Host list from ClusterManager for app: "+appname, e);
             return  sendErrorResponse("get cluster host list failed!");
         }
     }

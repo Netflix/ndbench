@@ -2,8 +2,6 @@ package com.netflix.ndbench.plugin.geode;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.archaius.api.PropertyFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -24,7 +22,6 @@ import java.util.regex.Pattern;
  */
 @Singleton
 public class EnvParser {
-  private final static Logger logger = LoggerFactory.getLogger(EnvParser.class);
   private final String PROPERTIES_VCAP_SERVICES = "VCAP_SERVICES";
   private final String SERVICE_NAME = "p-cloudcache";
   private PropertyFactory propertyFactory;

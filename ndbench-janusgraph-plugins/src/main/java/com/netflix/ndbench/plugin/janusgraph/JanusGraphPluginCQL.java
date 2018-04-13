@@ -46,7 +46,7 @@ import java.util.List;
 @Singleton
 @NdBenchClientPlugin("janusgraph-cql")
 public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBenchClient {
-    private static final Logger Logger = LoggerFactory.getLogger(JanusGraphPluginCQL.class);
+    private static final Logger logger = LoggerFactory.getLogger(JanusGraphPluginCQL.class);
     private static String BACKEND = "cql";
 
     private final JanusGraphFactory.Builder graphBuilder;
@@ -69,7 +69,7 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
         this.traversalSource = graph.traversal();
         this.dataGenerator = dataGenerator;
         createSchema(graph);
-        Logger.info("Initing JanusGraph Plugin CQL");
+        logger.info("Initing JanusGraph Plugin CQL");
     }
 
     @Override
@@ -164,7 +164,7 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
     @Override
     public void shutdown() throws Exception {
         graph.close();
-        Logger.info("JanusGraph DB shutdown");
+        logger.info("JanusGraph DB shutdown");
     }
 
     @Override
