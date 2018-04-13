@@ -19,10 +19,14 @@ Every config has to be prefixed with configuration prefix mentioned above
 | :------- | :---- | :--- |
 |cass.cluster| localhost | Destination C* Cluster Name |
 |cass.host| 127.0.0.1 | IP of one of the C* nodes
-|cass.keyspace| dev1 | Destination Keyspace Name|
-|cass.cfname| emp | Destination CF Name|
-|cass.readConsistencyLevel| LOCAL_ONE | Read CL|
-|cass.writeConsistencyLevel| LOCAL_ONE | Write CL|
+|cass.host.port| 9042 | PORT of one of the C* nodes
+|cass.username| null | Username of the C* nodes
+|cass.password| null | Password of the C* nodes
+|cass.keyspace| 	dev1 | Destination Keyspace Name|
+|cass.cfname| 	emp | Destination CF Name|
+|cass.readConsistencyLevel| 	LOCAL_ONE | Read CL|
+|cass.writeConsistencyLevel| 	LOCAL_ONE | Write CL|
+
 
 #### Cassandra *CassJavaDriverGeneric* Plugin configurations
 | Config Name     | Default value | Description   |

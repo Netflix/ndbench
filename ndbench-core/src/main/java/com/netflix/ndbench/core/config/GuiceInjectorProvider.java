@@ -22,15 +22,12 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Module;
 import com.netflix.archaius.guice.ArchaiusModule;
-import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchClientModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
-import org.reflections.Reflections;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 
 public class GuiceInjectorProvider {
     private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(GuiceInjectorProvider.class);

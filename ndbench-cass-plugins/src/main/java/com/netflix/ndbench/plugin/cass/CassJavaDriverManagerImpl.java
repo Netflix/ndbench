@@ -19,19 +19,24 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
     Session session;
 
     @Override
-    public Cluster registerCluster(String clName, String contactPoint, int connections, int port) {
+    public Cluster registerCluster(String clName, String contactPoint, int connections, int port, String username, String password) {
     
         PoolingOptions poolingOpts = new PoolingOptions()
                                      .setConnectionsPerHost(HostDistance.LOCAL, connections, connections)
                                      .setMaxRequestsPerConnection(HostDistance.LOCAL, 32768);
-    
-        cluster = Cluster.builder()
+
+
+        Cluster.Builder clusterBuilder = Cluster.builder()
                 .withClusterName(clName)
                 .addContactPoint(contactPoint)
                 .withPoolingOptions(poolingOpts)
                 .withPort(port)
-                .withLoadBalancingPolicy( new TokenAwarePolicy( new RoundRobinPolicy() ) )
-                .build();
+                .withLoadBalancingPolicy( new TokenAwarePolicy( new RoundRobinPolicy() ) );
+        if ((username != null) && (password != null)) {
+            clusterBuilder = clusterBuilder.withCredentials(username, password);
+        }
+
+        cluster = clusterBuilder.build();
         return cluster;
     }
 

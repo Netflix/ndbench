@@ -15,7 +15,7 @@
 * Redis
 * Elasticsearch
 * Elassandra
-* AWS DynamoDB
+* Amazon DynamoDB
 * Apache Geode
 * Apache JanusGraph
 * Netflix Dynomite (Redis API)
