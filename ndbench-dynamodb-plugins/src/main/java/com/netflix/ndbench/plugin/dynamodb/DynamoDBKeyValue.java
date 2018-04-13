@@ -20,12 +20,16 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.retry.PredefinedRetryPolicies;
 import com.amazonaws.retry.RetryPolicy;
+import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
+import com.amazonaws.services.dynamodbv2.model.GetItemResult;
+import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import org.slf4j.Logger;
@@ -38,11 +42,6 @@ import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.dynamodbv2.document.DynamoDB;
-import com.amazonaws.services.dynamodbv2.document.Item;
-import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
-import com.amazonaws.services.dynamodbv2.document.Table;
-import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.BatchGetItemRequest;
@@ -88,11 +87,11 @@ public class DynamoDBKeyValue implements NdBenchClient {
     private AmazonDynamoDB client;
     private AmazonDynamoDB daxClient;
     private AWSCredentialsProvider awsCredentialsProvider;
-    private Table table;
     private String partitionKeyName;
 
     private DynamoDBConfigs config;
     private DataGenerator dataGenerator;
+    private String tableName;
 
     /**
      * Credentials will be loaded based on the environment. In AWS, the credentials
@@ -118,7 +117,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
     }
 
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
+    public void init(DataGenerator dataGenerator) {
         this.dataGenerator = dataGenerator;
 
         logger.info("Initing DynamoDBKeyValue plugin");
@@ -149,17 +148,13 @@ public class DynamoDBKeyValue implements NdBenchClient {
         TableDescription tableDescription = client.describeTable(describeTableRequest).getTable();
         logger.info("Table Description: " + tableDescription);
 
-        DynamoDB dynamoDB = null;
         if (this.config.isDax()) {
             logger.info("Using DAX");
             AmazonDaxClientBuilder amazonDaxClientBuilder = AmazonDaxClientBuilder.standard();
             amazonDaxClientBuilder.withEndpointConfiguration(this.config.getDaxEndpoint());
-            daxClient = amazonDaxClientBuilder.build();
-            dynamoDB = new DynamoDB(daxClient);
-        } else {
-            dynamoDB = new DynamoDB(client);
+            client = amazonDaxClientBuilder.build();
         }
-        table = dynamoDB.getTable(this.config.getTableName());
+        tableName = config.getTableName();
         partitionKeyName = config.getAttributeName();
 
         logger.info("DynamoDB Plugin initialized");
@@ -169,17 +164,19 @@ public class DynamoDBKeyValue implements NdBenchClient {
      * 
      * @param key
      * @return the item
-     * @throws Exception
      */
     @Override
-    public String readSingle(String key) throws Exception {
-        final GetItemSpec spec = new GetItemSpec()
-                .withPrimaryKey(partitionKeyName, key)
+    public String readSingle(String key) {
+        final GetItemRequest request = new GetItemRequest()
+                .withKey(ImmutableMap.of(partitionKeyName, new AttributeValue(key)))
                 .withConsistentRead(config.consistentRead());
-        final Item item;
+        final GetItemResult result;
         try {
-            item = table.getItem(spec); //will return null if the item does not exist.
-            return item == null ? null : item.toString();
+            result = client.getItem(request); //will return null if the item does not exist.
+            return Optional.ofNullable(result)
+                    .map(GetItemResult::getItem)
+                    .map(Map::toString)
+                    .orElse(null);
         } catch (AmazonServiceException ase) {
             amazonServiceException(ase);
             throw ase;
@@ -193,17 +190,15 @@ public class DynamoDBKeyValue implements NdBenchClient {
      * 
      * @param key
      * @return A string representation of the output of a PutItemOutcome operation.
-     * @throws Exception
      */
     @Override
-    public String writeSingle(String key) throws Exception {
+    public String writeSingle(String key) {
         try {
-            final Item item = new Item()
-                    .withPrimaryKey(partitionKeyName, key)
-                    .withString(ATTRIBUTE_NAME, this.dataGenerator.getRandomValue());
+            final PutItemRequest request = new PutItemRequest()
+                    .addItemEntry(partitionKeyName, new AttributeValue(key))
+                    .addItemEntry(ATTRIBUTE_NAME, new AttributeValue(this.dataGenerator.getRandomValue()));
             // Write the item to the table
-            final PutItemOutcome outcome = table.putItem(item);
-            return outcome == null ? null : outcome.toString();
+            return client.putItem(request).toString();
         } catch (AmazonServiceException ase) {
             amazonServiceException(ase);
             throw ase;
@@ -264,14 +259,14 @@ public class DynamoDBKeyValue implements NdBenchClient {
         BatchWriteItemResult result;
         do {
             result = runBatchWriteRequest(remainingRequests);
-            remainingRequests = result.getUnprocessedItems().get(table.getTableName());
+            remainingRequests = result.getUnprocessedItems().get(tableName);
         } while (remainingRequests!= null && remainingRequests.isEmpty());
     }
 
     private BatchWriteItemResult runBatchWriteRequest(List<WriteRequest> writeRequests) {
         //todo self throttle
         return client.batchWriteItem(new BatchWriteItemRequest().withRequestItems(
-                ImmutableMap.of(table.getTableName(), writeRequests)));
+                ImmutableMap.of(tableName, writeRequests)));
     }
 
     private KeysAndAttributes generateReadRequests(List<String> keys) {
@@ -285,7 +280,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
         BatchGetItemResult result;
         do {
             result = runBatchGetRequest(remainingKeys);
-            remainingKeys = result.getUnprocessedKeys().get(table.getTableName());
+            remainingKeys = result.getUnprocessedKeys().get(tableName);
         } while (remainingKeys != null && remainingKeys.getKeys() != null && !remainingKeys.getKeys().isEmpty());
     }
 
@@ -293,7 +288,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
         //estimate size of requests
         //todo self throttle
         return client.batchGetItem(new BatchGetItemRequest().withRequestItems(
-                ImmutableMap.of(table.getTableName(), keysAndAttributes)));
+                ImmutableMap.of(tableName, keysAndAttributes)));
     }
 
     @Override
@@ -388,8 +383,10 @@ public class DynamoDBKeyValue implements NdBenchClient {
     }
 
     private void deleteTable() {
+        Table table = new Table(client, tableName);
         try {
             logger.info("Issuing DeleteTable request for " + config.getTableName());
+
             table.delete();
 
             logger.info("Waiting for " + config.getTableName() + " to be deleted...this may take a while...");
