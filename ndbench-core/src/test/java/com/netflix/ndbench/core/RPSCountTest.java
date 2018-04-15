@@ -88,7 +88,7 @@ public class RPSCountTest extends TestBase {
 
     private void verifyLoggerActivity(String fragmentOfExpectedLoggedMsg,
                                       boolean shouldBeLogged,
-                                      NdBenchDriver.RPSCount counter) {
+                                      RPSCount counter) {
         logCapturer.clearLog();
         counter.updateRPS();
 
@@ -105,14 +105,14 @@ public class RPSCountTest extends TestBase {
         logCapturer.assertThat(assertion);
     }
 
-    private NdBenchDriver.RPSCount getRPSCount(boolean readsStarted,
-                                               boolean writesStarted,
-                                               double readRate,
-                                               double writeRate,
-                                               long readSuccess,
-                                               long readFailure,
-                                               long writeSuccess,
-                                               long writeFailure) {
+    private RPSCount getRPSCount(boolean readsStarted,
+                                 boolean writesStarted,
+                                 double readRate,
+                                 double writeRate,
+                                 long readSuccess,
+                                 long readFailure,
+                                 long writeSuccess,
+                                 long writeFailure) {
 
         IConfiguration config = mock(IConfiguration.class);
         when(config.getStatsUpdateFreqSeconds()).thenReturn(10);
@@ -126,8 +126,8 @@ public class RPSCountTest extends TestBase {
         when(monitor.getWriteSuccess()).thenReturn(writeSuccess);
         when(monitor.getWriteFailure()).thenReturn(writeFailure);
 
-        NdBenchDriver.RPSCount counter =
-                new NdBenchDriver.RPSCount(
+        RPSCount counter =
+                new RPSCount(
                         new AtomicBoolean(readsStarted),
                         new AtomicBoolean(writesStarted),
                         new AtomicReference(RateLimiter.create(readRate)),
