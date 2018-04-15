@@ -280,6 +280,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
         KeysAndAttributes remainingKeys = keysAndAttributes;
         BatchGetItemResult result;
         do {
+            keysAndAttributes.withConsistentRead(config.consistentRead());
             result = runBatchGetRequest(remainingKeys);
             remainingKeys = result.getUnprocessedKeys().get(tableName);
         } while (remainingKeys != null && remainingKeys.getKeys() != null && !remainingKeys.getKeys().isEmpty());
