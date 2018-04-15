@@ -72,11 +72,13 @@ public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
             stats.incWriteSuccess();
             return true;
         } catch (Exception e) {
-            stats.incWriteFailure();
-            logger.error("Failed to process NdBench write operation", e);
+            if (driver.getIsWriteRunning()) {
+                stats.incWriteFailure();
+                logger.error("Failed to process NdBench write operation", e);
+            } else {
+                logger.warn("Caught exception while stopping writes: " + e.getMessage());
+            }
             return false;
-        } finally {
-
         }
     }
 
