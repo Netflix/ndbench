@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
 import com.amazonaws.ClientConfiguration;
@@ -29,6 +30,7 @@ import com.amazonaws.retry.RetryPolicy;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
+import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughputExceededException;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
@@ -179,11 +181,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
                     .map(Map::toString)
                     .orElse(null);
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 
@@ -201,11 +201,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
             // Write the item to the table
             return client.putItem(request).toString();
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 
@@ -219,11 +217,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
                     .map(Map::toString)
                     .collect(Collectors.toList());
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 
@@ -238,11 +234,9 @@ public class DynamoDBKeyValue implements NdBenchClient {
                     .map(PutRequest::toString)
                     .collect(Collectors.toList());
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 
@@ -311,31 +305,40 @@ public class DynamoDBKeyValue implements NdBenchClient {
      * @see com.netflix.ndbench.api.plugin.NdBenchClient#getConnectionInfo()
      */
     @Override
-    public String getConnectionInfo() throws Exception {
+    public String getConnectionInfo() {
         return String.format("Table Name - %s : Attribute Name - %s : Consistent Read - %b", this.config.getTableName(),
             this.config.getAttributeName(), this.config.consistentRead());
     }
 
     @Override
-    public String runWorkFlow() throws Exception {
+    public String runWorkFlow() {
         return null;
     }
 
-    private void amazonServiceException(AmazonServiceException ase) {
-        logger.error("Caught an AmazonServiceException, which means your request made it "
-            + "to AWS, but was rejected with an error response for some reason.");
-        logger.error("Error Message:    " + ase.getMessage());
-        logger.error("HTTP Status Code: " + ase.getStatusCode());
-        logger.error("AWS Error Code:   " + ase.getErrorCode());
-        logger.error("Error Type:       " + ase.getErrorType());
-        logger.error("Request ID:       " + ase.getRequestId());
+    private AmazonServiceException amazonServiceException(AmazonServiceException ase) {
+        if ("ProvisionedThroughputExceededException".equals(ase.getErrorCode())) {
+            logger.error("Caught an ProvisionedThroughputExceededException, which means your request made it "
+                    + "to AWS, but was throttled because of consuming more capacity then provisioned.");
+            //trim stack to reduce console output
+            return new ProvisionedThroughputExceededException(ase.getMessage());
+        } else {
+            logger.error("Caught an AmazonServiceException, which means your request made it "
+                    + "to AWS, but was rejected with an error response for some reason.");
+            logger.error("Error Message:    " + ase.getMessage());
+            logger.error("HTTP Status Code: " + ase.getStatusCode());
+            logger.error("AWS Error Code:   " + ase.getErrorCode());
+            logger.error("Error Type:       " + ase.getErrorType());
+            logger.error("Request ID:       " + ase.getRequestId());
+            return ase;
+        }
     }
 
-    private void amazonClientException(AmazonClientException ace) {
+    private AmazonClientException amazonClientException(AmazonClientException ace) {
         logger.error("Caught an AmazonClientException, which means the client encountered "
             + "a serious internal problem while trying to communicate with AWS, "
             + "such as not being able to access the network.");
         logger.error("Error Message: " + ace.getMessage());
+        return ace;
     }
 
     private void initializeTable() {

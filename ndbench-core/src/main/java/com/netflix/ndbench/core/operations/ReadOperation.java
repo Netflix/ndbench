@@ -73,8 +73,12 @@ public class ReadOperation implements NdBenchDriver.NdBenchOperation {
             return true;
 
         } catch (Exception e) {
-            monitor.incReadFailure();
-            logger.error("Failed to process NdBench read operation", e);
+            if (driver.getIsReadRunning()) {
+                monitor.incReadFailure();
+                logger.error("Failed to process NdBench read operation", e);
+            } else {
+                logger.warn("Caught exception while stopping reads: " + e.getMessage());
+            }
             return false;
         }
     }
