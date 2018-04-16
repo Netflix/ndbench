@@ -10,7 +10,7 @@ import javax.inject.Inject;
 
 
 /**
- * Verifies that system properties may be used to set values returned by dynamic  proxies generated from
+ * Verifies that system properties may be used to set values returned by dynamic proxies generated from
  * {@link IEsConfig},using the namespace prefix "ndbench.config.es".
  *
  */

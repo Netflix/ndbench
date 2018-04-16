@@ -21,7 +21,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
 
 import com.amazonaws.ClientConfiguration;
@@ -41,7 +40,6 @@ import com.amazon.dax.client.dynamodbv2.AmazonDaxClientBuilder;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
@@ -67,7 +65,6 @@ import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 
 import static com.amazonaws.retry.PredefinedRetryPolicies.DEFAULT_RETRY_CONDITION;
@@ -87,37 +84,16 @@ public class DynamoDBKeyValue implements NdBenchClient {
     private static final String ATTRIBUTE_NAME = "value";
     private static final boolean DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG = true;
 
-    private AmazonDynamoDB client;
-    private AmazonDynamoDB daxClient;
+    @Inject
     private AWSCredentialsProvider awsCredentialsProvider;
-    private String partitionKeyName;
 
+    @Inject
     private DynamoDBConfigs config;
+
+    private AmazonDynamoDB client;
+    private String partitionKeyName;
     private DataGenerator dataGenerator;
     private String tableName;
-
-    /**
-     * Credentials will be loaded based on the environment. In AWS, the credentials
-     * are based on the instance. In a local deployment they will have to provided.
-     */
-    @Inject
-    public DynamoDBKeyValue(AWSCredentialsProvider credential, DynamoDBConfigs config) {
-        this.config = config;
-        String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
-        logger.error("Discovery Environment Variable: " + discoveryEnv);
-        if (discoveryEnv == null || discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_AWS)) {
-            awsCredentialsProvider = credential;
-        } else {
-            awsCredentialsProvider = new ProfileCredentialsProvider();
-            try {
-                awsCredentialsProvider.getCredentials();
-            } catch (AmazonClientException ace) {
-                throw new AmazonClientException("Cannot load the credentials from the credential profiles file. "
-                    + "Please make sure that your credentials file is at the correct "
-                    + "location (/home/<username>/.aws/credentials), and is in validformat.", ace);
-            }
-        }
-    }
 
     @Override
     public void init(DataGenerator dataGenerator) {
@@ -288,14 +264,11 @@ public class DynamoDBKeyValue implements NdBenchClient {
     }
 
     @Override
-    public void shutdown() throws Exception {
+    public void shutdown() {
         if (this.config.programmableTables()) {
             deleteTable();
         }
         client.shutdown();
-        if (daxClient != null) {
-            daxClient.shutdown();
-        }
         logger.info("DynamoDB shutdown");
     }
 

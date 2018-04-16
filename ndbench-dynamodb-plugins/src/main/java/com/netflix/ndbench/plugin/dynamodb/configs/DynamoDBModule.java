@@ -21,6 +21,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
+import com.netflix.ndbench.plugin.dynamodb.NdbenchAWSCredentialProvider;
 
 /**
  * 
@@ -32,8 +33,7 @@ public class DynamoDBModule extends AbstractModule {
 
     @Override
     protected void configure() {
-	bind(AWSCredentialsProvider.class).to(NdbenchAWSCredentialProvider.class);
-
+        bind(AWSCredentialsProvider.class).to(NdbenchAWSCredentialProvider.class);
     }
 
     @Provides
