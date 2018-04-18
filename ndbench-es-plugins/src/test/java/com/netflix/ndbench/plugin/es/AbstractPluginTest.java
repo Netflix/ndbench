@@ -3,8 +3,6 @@ package com.netflix.ndbench.plugin.es;
 import com.google.common.collect.ImmutableList;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.List;
  * being run so that requests can be routed through an HTTP traffic proxy -- which is useful for debugging.
  */
 public class AbstractPluginTest {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractPluginTest.class);
 
     static class MockServiceDiscoverer implements IClusterDiscovery {
         int port;

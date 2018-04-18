@@ -76,6 +76,6 @@ import java.util.List;
      * Run workflow for functional testing
      * @throws Exception
      */
-     String runWorkFlow() throws Exception;
+    String runWorkFlow() throws Exception;
 
 }

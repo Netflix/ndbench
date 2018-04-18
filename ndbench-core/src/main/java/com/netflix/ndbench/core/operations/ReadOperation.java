@@ -32,7 +32,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author vchella
  */
 public class ReadOperation implements NdBenchDriver.NdBenchOperation {
-    private static final Logger Logger = LoggerFactory.getLogger(ReadOperation.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReadOperation.class);
 
     private final NdBenchAbstractClient<?> client;
 
@@ -73,8 +73,12 @@ public class ReadOperation implements NdBenchDriver.NdBenchOperation {
             return true;
 
         } catch (Exception e) {
-            monitor.incReadFailure();
-            Logger.error("Failed to process NdBench read operation", e);
+            if (driver.getIsReadRunning()) {
+                monitor.incReadFailure();
+                logger.error("Failed to process NdBench read operation", e);
+            } else {
+                logger.warn("Caught exception while stopping reads: " + e.getMessage());
+            }
             return false;
         }
     }

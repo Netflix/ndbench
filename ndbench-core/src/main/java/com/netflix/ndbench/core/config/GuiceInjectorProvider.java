@@ -24,14 +24,11 @@ import com.google.inject.Module;
 import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchClientModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
 
 public class GuiceInjectorProvider {
-    private static final org.slf4j.Logger Logger = LoggerFactory.getLogger(GuiceInjectorProvider.class);
-
     private List<Module> getModuleList(AbstractModule... modules) {
         List<Module> moduleList = Lists.newArrayList();
 

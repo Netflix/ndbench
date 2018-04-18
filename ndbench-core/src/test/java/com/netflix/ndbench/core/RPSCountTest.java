@@ -4,7 +4,6 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
 import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.junit.Rule;
 import org.junit.Test;
 import org.libex.test.TestBase;
@@ -18,8 +17,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public class RPSCountTest extends TestBase {
-
-    private static final Logger LOG = Logger.getLogger(RPSCountTest.class);
 
     @Rule
     public Log4jCapturer logCapturer = Log4jCapturer.builder().build();
@@ -91,7 +88,7 @@ public class RPSCountTest extends TestBase {
 
     private void verifyLoggerActivity(String fragmentOfExpectedLoggedMsg,
                                       boolean shouldBeLogged,
-                                      NdBenchDriver.RPSCount counter) {
+                                      RPSCount counter) {
         logCapturer.clearLog();
         counter.updateRPS();
 
@@ -108,14 +105,14 @@ public class RPSCountTest extends TestBase {
         logCapturer.assertThat(assertion);
     }
 
-    private NdBenchDriver.RPSCount getRPSCount(boolean readsStarted,
-                                               boolean writesStarted,
-                                               double readRate,
-                                               double writeRate,
-                                               long readSuccess,
-                                               long readFailure,
-                                               long writeSuccess,
-                                               long writeFailure) {
+    private RPSCount getRPSCount(boolean readsStarted,
+                                 boolean writesStarted,
+                                 double readRate,
+                                 double writeRate,
+                                 long readSuccess,
+                                 long readFailure,
+                                 long writeSuccess,
+                                 long writeFailure) {
 
         IConfiguration config = mock(IConfiguration.class);
         when(config.getStatsUpdateFreqSeconds()).thenReturn(10);
@@ -129,8 +126,8 @@ public class RPSCountTest extends TestBase {
         when(monitor.getWriteSuccess()).thenReturn(writeSuccess);
         when(monitor.getWriteFailure()).thenReturn(writeFailure);
 
-        NdBenchDriver.RPSCount counter =
-                new NdBenchDriver.RPSCount(
+        RPSCount counter =
+                new RPSCount(
                         new AtomicBoolean(readsStarted),
                         new AtomicBoolean(writesStarted),
                         new AtomicReference(RateLimiter.create(readRate)),

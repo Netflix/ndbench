@@ -36,7 +36,7 @@ import java.util.List;
 @Singleton
 @NdBenchClientPlugin("EVCacheTest")
 public class EVCacheTestPlugin implements NdBenchClient {
-    private static final Logger log = LoggerFactory.getLogger(EVCacheTestPlugin.class);
+    private static final Logger logger = LoggerFactory.getLogger(EVCacheTestPlugin.class);
 
     private DataGenerator dataGenerator;
     private static final String ResultOK = "Ok";
@@ -62,10 +62,10 @@ public class EVCacheTestPlugin implements NdBenchClient {
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
-        log.info("Initialized EVCacheTestPlugin");
+        logger.info("Initialized EVCacheTestPlugin");
         this.evcache = builder.setAppName(configs.getName()).setCachePrefix(configs.getPrefix())
                 .setDefaultTTL(configs.getTTL()).build();
-        log.info("Initialized EVCacheTestPlugin");
+        logger.info("Initialized EVCacheTestPlugin");
     }
 
     /**
@@ -113,7 +113,7 @@ public class EVCacheTestPlugin implements NdBenchClient {
      */
     @Override
     public void shutdown() throws Exception {
-        log.info("Shutting down EVCacheClientPoolManager");
+        logger.info("Shutting down EVCacheClientPoolManager");
         this.manager.shutdown();
     }
 

@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author vchella, pencal
  */
 public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
-    private static final Logger Logger = LoggerFactory.getLogger(WriteOperation.class);
+    private static final Logger logger = LoggerFactory.getLogger(WriteOperation.class);
 
     private final NdBenchAbstractClient<W> client;
 
@@ -72,11 +72,13 @@ public class WriteOperation<W> implements NdBenchDriver.NdBenchOperation {
             stats.incWriteSuccess();
             return true;
         } catch (Exception e) {
-            stats.incWriteFailure();
-            Logger.error("Failed to process NdBench write operation", e);
+            if (driver.getIsWriteRunning()) {
+                stats.incWriteFailure();
+                logger.error("Failed to process NdBench write operation", e);
+            } else {
+                logger.warn("Caught exception while stopping writes: " + e.getMessage());
+            }
             return false;
-        } finally {
-
         }
     }
 

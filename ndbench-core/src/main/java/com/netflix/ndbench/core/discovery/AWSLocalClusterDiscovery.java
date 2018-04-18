@@ -15,9 +15,6 @@
  */
 package com.netflix.ndbench.core.discovery;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,17 +27,14 @@ import java.util.List;
  *
  */
 public class AWSLocalClusterDiscovery implements IClusterDiscovery {
-    private static final Logger logger = LoggerFactory.getLogger(LocalClusterDiscovery.class.getName());
-
     @Override
     public List<String> getApps() {
         return Arrays.asList(AWSUtil.getLocalhostName());
     }
 
-
     @Override
     public List<String> getEndpoints(String appName, int defaultPort) {
-        return Arrays.asList(AWSUtil.getLocalhostName()+":"+defaultPort);
+        return Arrays.asList(AWSUtil.getLocalhostName() + ":" + defaultPort);
     }
 
 }
