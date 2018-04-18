@@ -25,5 +25,4 @@ public interface KeyGenerator<T> {
     T getNextKey();
     boolean hasNextKey();
     boolean isPreLoadKeys();
-    int getNumKeys();
 }
