@@ -51,6 +51,6 @@ public abstract class TestBase {
     protected void expectException(final Class<? extends Throwable> type, @Nullable final String substring,
             final Class<? extends Throwable> cause) {
         expectException(type, substring);
-        expectedException.expectCause((Matcher) instanceOf(cause));
+        expectedException.expectCause(instanceOf(cause));
     }
 }

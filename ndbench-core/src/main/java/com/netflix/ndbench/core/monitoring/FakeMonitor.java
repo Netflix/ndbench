@@ -73,12 +73,9 @@ public class FakeMonitor implements NdBenchMonitor {
             timer = Executors.newScheduledThreadPool(1);
             logger.info(String.format("Initializing NdBenchMonitor with timing counter reset frequency %d seconds",
                     config.getStatsResetFreqSeconds()));
-            timer.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    readHistogram.getBuckets(true);
-                    writeHistogram.getBuckets(true);
-                }
+            timer.scheduleAtFixedRate(() -> {
+                readHistogram.getBuckets(true);
+                writeHistogram.getBuckets(true);
             }, 1, config.getStatsResetFreqSeconds(), TimeUnit.SECONDS);
         }
     }
@@ -259,6 +256,6 @@ public class FakeMonitor implements NdBenchMonitor {
             return 0;
         }
 
-        return (float) ((float) (hits * 100L) / (float) (hits + miss));
+        return (float) (hits * 100L) / (float) (hits + miss);
     }
 }
