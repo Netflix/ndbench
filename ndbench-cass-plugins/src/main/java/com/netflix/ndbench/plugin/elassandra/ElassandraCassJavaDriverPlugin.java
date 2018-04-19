@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2016 Netflix, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,12 @@
 package com.netflix.ndbench.plugin.elassandra;
 
 import com.datastax.driver.core.*;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.plugin.configs.ElassandraConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,23 +42,25 @@ import java.util.List;
 @NdBenchClientPlugin("ElassandraCassJavaDriverPlugin")
 public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
     private static final Logger logger = LoggerFactory.getLogger(ElassandraCassJavaDriverPlugin.class);
-
-    private Cluster cluster;
-    private Session session;
-
-    private DataGenerator dataGenerator;
-
-    private String ClusterName = "Localhost", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
-    //private String ClusterName = "Test Cluster", ClusterContactPoint ="172.28.198.16", KeyspaceName ="customer", TableName ="external";
-        
-    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
-
-    private PreparedStatement readPstmt;
-    private PreparedStatement writePstmt;
-
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;
 
+    @Inject
+    private ElassandraConfiguration configs;
+
+    //settings
+    private volatile DataGenerator dataGenerator;
+    private volatile String ClusterName;
+    private volatile String ClusterContactPoint;
+    private volatile String KeyspaceName;
+    private volatile String TableName;
+    private volatile ConsistencyLevel WriteConsistencyLevel;
+    private volatile ConsistencyLevel ReadConsistencyLevel;
+
+    private volatile Cluster cluster;
+    private volatile Session session;
+    private volatile PreparedStatement readPstmt;
+    private volatile PreparedStatement writePstmt;
 
     /**
      * Initialize the client
@@ -64,9 +68,18 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
-        logger.info("Cassandra  Cluster: " + ClusterName);
+    public void init(DataGenerator dataGenerator) {
         this.dataGenerator = dataGenerator;
+
+        this.ClusterName = configs.getCluster();
+        logger.info("Cassandra  Cluster: " + ClusterName);
+
+        this.ClusterContactPoint = configs.getHost();
+        this.KeyspaceName = configs.getKeyspace();
+        this.TableName = configs.getCfname();
+        this.WriteConsistencyLevel = ConsistencyLevel.valueOf(configs.getWriteConsistencyLevel());
+        this.ReadConsistencyLevel = ConsistencyLevel.valueOf(configs.getReadConsistencyLevel());
+
         cluster = Cluster.builder()
                 .withClusterName(ClusterName)
                 .addContactPoint(ClusterContactPoint)
@@ -126,24 +139,6 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
 
         session.execute(bStmt);
         return ResultOK;
-    }
-
-    /**
-     * Perform a bulk read operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> readBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
-    }
-
-    /**
-     * Perform a bulk write operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> writeBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     /**

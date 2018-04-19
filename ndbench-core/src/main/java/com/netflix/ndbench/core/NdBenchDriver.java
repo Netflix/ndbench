@@ -238,26 +238,23 @@ public class NdBenchDriver {
                 while (!Thread.currentThread().isInterrupted()) {
                     boolean noMoreKey = false;
 
-                    if ((operation.isReadType() && readsStarted.get()) ||
-                            (operation.isWriteType() && writesStarted.get())) {
-                        if (rateLimiter.get().tryAcquire()) {
+                    if (((operation.isReadType() && readsStarted.get()) ||
+                            (operation.isWriteType() && writesStarted.get())) && rateLimiter.get().tryAcquire()) {
+                        final Set<String> keys = new HashSet<>(bulkSize * 2);
+                        while (keys.size() < bulkSize) {
+                            keys.add(keyGenerator.getNextKey());
+                            if (!keyGenerator.hasNextKey()) {
+                                noMoreKey = true;
+                                break;
+                            }
+                        } // eo keygens
 
-                            final Set<String> keys = new HashSet<>(bulkSize * 2);
-                            while (keys.size() < bulkSize) {
-                                keys.add(keyGenerator.getNextKey());
-                                if (!keyGenerator.hasNextKey()) {
-                                    noMoreKey = true;
-                                    break;
-                                }
-                            } // eo keygens
-
-                            operation.process(
-                                    NdBenchDriver.this,
-                                    ndBenchMonitor,
-                                    new ArrayList<>(keys),
-                                    rateLimiter,
-                                    isAutoTuneEnabled);
-                        } // eo rateLimiter tryGet
+                        operation.process(
+                                NdBenchDriver.this,
+                                ndBenchMonitor,
+                                new ArrayList<>(keys),
+                                rateLimiter,
+                                isAutoTuneEnabled);
                     } // eo if read or write
 
                     if (noMoreKey) {

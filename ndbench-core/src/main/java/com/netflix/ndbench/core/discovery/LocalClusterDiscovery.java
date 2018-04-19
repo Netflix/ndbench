@@ -16,7 +16,7 @@
  */
 package com.netflix.ndbench.core.discovery;
 
-
+import java.net.Inet4Address;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class LocalClusterDiscovery implements IClusterDiscovery {
     }
 
     private String getLocalhostName() {
-        return "127.0.0.1";
+        return Inet4Address.getLoopbackAddress().getHostAddress();
     }
 
     @Override

@@ -34,8 +34,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.net.Inet4Address;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /***
  * JanusGraph benchmarking plugin to measure throughput of write and read by
@@ -58,7 +60,8 @@ public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBench
 
     @Inject
     public JanusGraphPluginCQL(IJanusGraphConfig config, JanusGraphBuilderCQLProvider builderProvider) {
-        super(BACKEND, config.getStorageHostname(), config.getStoragePort());
+        super(BACKEND, Optional.ofNullable(config.getStorageHostname()).orElse(Inet4Address.getLoopbackAddress().getHostAddress()),
+                config.getStoragePort());
         this.graphBuilder = builderProvider.getGraphBuilder();
         this.useJanusgraphTransaction = config.useJanusgraphTransaction();
     }

@@ -18,7 +18,6 @@ package com.netflix.ndbench.plugin.cass;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.astyanax.AstyanaxContext;
 import com.netflix.astyanax.ColumnListMutation;
 import com.netflix.astyanax.Keyspace;
@@ -36,45 +35,35 @@ import com.netflix.astyanax.thrift.ThriftFamilyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.plugin.configs.CassandraAstynaxConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
-
-import static com.netflix.ndbench.api.plugin.common.NdBenchConstants.PROP_NAMESPACE;
-
 
 /**
  * @author vchella
  */
 @Singleton
 @NdBenchClientPlugin("CassAstyanaxPlugin")
-public class CassAstyanaxPlugin implements NdBenchClient{
+public class CassAstyanaxPlugin implements NdBenchClient {
     private static final Logger logger = LoggerFactory.getLogger(CassAstyanaxPlugin.class);
-    private final PropertyFactory propertyFactory;
+    private static final String ResultOK = "Ok";
+    private static final String CacheMiss = null;
 
-    private AstyanaxContext<Keyspace> context;
-    private Keyspace keyspace;
-
-    private DataGenerator dataGenerator;
-
-    private String ClusterName, ClusterContactPoint ,
-            KeyspaceName, ColumnFamilyName;
-
-    private ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
-    private ConsistencyLevel ReadConsistencyLevel=ConsistencyLevel.CL_LOCAL_ONE;
-
-
-    private  ColumnFamily<String, Integer> CF;
-
-
-    private final String ResultOK = "Ok";
-    private final String CacheMiss = null;
-    private int MaxColCount = 5;
     @Inject
-    public CassAstyanaxPlugin(PropertyFactory propertyFactory) {
-        this.propertyFactory = propertyFactory;
-    }
+    private CassandraAstynaxConfiguration config;
+
+    private volatile DataGenerator dataGenerator;
+    private volatile String ClusterName;
+    private volatile String ClusterContactPoint;
+    private volatile String KeyspaceName;
+    private volatile String ColumnFamilyName;
+    private volatile ConsistencyLevel WriteConsistencyLevel;
+    private volatile ConsistencyLevel ReadConsistencyLevel;
+    private volatile long MaxColCount;
+
+    private volatile ColumnFamily<String, Integer> CF;
+    private volatile AstyanaxContext<Keyspace> context;
+    private volatile Keyspace keyspace;
 
     /**
      * Initialize the client
@@ -82,41 +71,36 @@ public class CassAstyanaxPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public void init(DataGenerator dataGenerator) throws Exception {
-
-
-        ClusterName = propertyFactory.getProperty(PROP_NAMESPACE + "cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty(PROP_NAMESPACE + "cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty(PROP_NAMESPACE + "cass.keyspace").asString("dev1").get();
-        ColumnFamilyName =propertyFactory.getProperty(PROP_NAMESPACE + "cass.cfname").asString("emp_thrift").get();
-
-        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(PROP_NAMESPACE +"cass.readConsistencyLevel").asString(ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
-        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(PROP_NAMESPACE +"cass.writeConsistencyLevel").asString(ConsistencyLevel.CL_LOCAL_ONE.toString()).get());
-
-        MaxColCount = propertyFactory.getProperty(PROP_NAMESPACE +"cass.colsPerRow")
-                .asInteger(100).get();
-
-
-
-        //ColumnFamily Definition
-        CF = new ColumnFamily<String, Integer>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
-
-        logger.info("Cassandra  Cluster: " + ClusterName);
+    public void init(DataGenerator dataGenerator) {
         this.dataGenerator = dataGenerator;
 
-         context = new AstyanaxContext.Builder()
-                .forCluster(ClusterName)
-                .forKeyspace(KeyspaceName)
-                .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
-                        .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE)
-                )
-                .withConnectionPoolConfiguration(new ConnectionPoolConfigurationImpl("MyConnectionPool")
-                        .setPort(9160)
-                        .setMaxConnsPerHost(1)
-                        .setSeeds(ClusterContactPoint+":9160")
-                )
-                .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
-                .buildKeyspace(ThriftFamilyFactory.getInstance());
+        ClusterName = config.getCluster();
+        logger.info("Cassandra  Cluster: " + ClusterName);
+        ClusterContactPoint = config.getHost();
+        KeyspaceName = config.getKeyspace();
+
+        //the defaults for these configuration options differ between cassandra implementations
+        ColumnFamilyName = config.getCfname();
+        ReadConsistencyLevel  = ConsistencyLevel.valueOf(config.getReadConsistencyLevel());
+        WriteConsistencyLevel = ConsistencyLevel.valueOf(config.getReadConsistencyLevel());
+        MaxColCount = config.getColsPerRow();
+
+        //ColumnFamily Definition
+        CF = new ColumnFamily<>(ColumnFamilyName, StringSerializer.get(), IntegerSerializer.get(), StringSerializer.get());
+
+        context = new AstyanaxContext.Builder()
+            .forCluster(ClusterName)
+            .forKeyspace(KeyspaceName)
+            .withAstyanaxConfiguration(new AstyanaxConfigurationImpl()
+                    .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE)
+            )
+            .withConnectionPoolConfiguration(new ConnectionPoolConfigurationImpl("MyConnectionPool")
+                    .setPort(9160)
+                    .setMaxConnsPerHost(1)
+                    .setSeeds(ClusterContactPoint)
+            )
+            .withConnectionPoolMonitor(new CountingConnectionPoolMonitor())
+            .buildKeyspace(ThriftFamilyFactory.getInstance());
 
         context.start();
         keyspace = context.getClient();
@@ -179,25 +163,6 @@ public class CassAstyanaxPlugin implements NdBenchClient{
     public void shutdown() throws Exception {
         logger.info("Shutting down CassAstyanaxPlugin");
         context.shutdown();
-
-    }
-
-    /**
-     * Perform a bulk read operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> readBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
-    }
-
-    /**
-     * Perform a bulk write operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> writeBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     /**
