@@ -19,7 +19,9 @@ package com.netflix.ndbench.plugin.dynamodb.operations;
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+import com.google.common.base.Preconditions;
 import com.netflix.ndbench.plugin.dynamodb.DynamoDBKeyValue;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,9 @@ public abstract class AbstractDynamoDBOperation {
     protected AbstractDynamoDBOperation(AmazonDynamoDB dynamoDB,
                                         String tableName,
                                         String partitionKeyName) {
+        Preconditions.checkNotNull(dynamoDB, "DynamoDB client must not be null");
+        Preconditions.checkArgument(StringUtils.isNotEmpty(tableName), "Invalid table name");
+        Preconditions.checkArgument(StringUtils.isNotEmpty(partitionKeyName), "Invalid partition key name");
         this.dynamoDB = dynamoDB;
         this.tableName = tableName;
         this.partitionKeyName = partitionKeyName;

@@ -26,6 +26,7 @@ import com.amazonaws.retry.RetryPolicy;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
+import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfiguration;
 import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.CreateDynamoDBTable;
 import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.DeleteDynamoDBTable;
 import com.netflix.ndbench.plugin.dynamodb.operations.controlplane.DescribeLimits;
@@ -48,7 +49,6 @@ import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigs;
 
 import static com.amazonaws.retry.PredefinedRetryPolicies.DEFAULT_RETRY_CONDITION;
 import static com.amazonaws.retry.PredefinedRetryPolicies.DYNAMODB_DEFAULT_BACKOFF_STRATEGY;
@@ -69,7 +69,7 @@ public class DynamoDBKeyValue implements NdBenchClient {
     @Inject
     private AWSCredentialsProvider awsCredentialsProvider;
     @Inject
-    private DynamoDBConfigs config;
+    private DynamoDBConfiguration config;
     @Inject
     private DynamoDBAutoscalingConfigurer dynamoDBAutoscalingConfigurer;
 

@@ -37,7 +37,7 @@ public class DynamoDBModule extends AbstractModule {
     }
 
     @Provides
-    DynamoDBConfigs getDynamoDBConfigs(ConfigProxyFactory factory) {
-        return factory.newProxy(DynamoDBConfigs.class);
+    DynamoDBConfiguration getDynamoDBConfigs(ConfigProxyFactory factory) {
+        return factory.newProxy(DynamoDBConfiguration.class);
     }
 }

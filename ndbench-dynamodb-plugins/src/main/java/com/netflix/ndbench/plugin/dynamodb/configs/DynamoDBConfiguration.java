@@ -27,8 +27,8 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
  *
  * @author ipapapa
  */
-@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE + "dynamodb")
-public interface DynamoDBConfigs {
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dynamodb")
+public interface DynamoDBConfiguration {
 
     @PropertyName(name = "tablename")
     @DefaultValue("ndbench-table")
@@ -108,7 +108,6 @@ public interface DynamoDBConfigs {
     /*
      * DAX endpoint
      */
-    @DefaultValue("xxx:8111")
     String getDaxEndpoint();
 
     /*
