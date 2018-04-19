@@ -54,11 +54,9 @@ public class DynamoDBWriteBulk extends AbstractDynamoDBDataPlaneOperation implem
                     .map(PutRequest::toString)
                     .collect(Collectors.toList());
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 

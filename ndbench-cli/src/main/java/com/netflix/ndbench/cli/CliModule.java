@@ -1,5 +1,5 @@
 /*
- *  Copyright 2018 Netflix, Inc.
+ *  Copyright 2016 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -14,30 +14,29 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.cli;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
-import com.netflix.ndbench.plugin.dynamodb.NdbenchAWSCredentialProvider;
+import com.netflix.ndbench.cli.config.CliConfigs;
 
 /**
- * 
- * @author ipapapa
+ * This Module allows Guice to inject archaius configuration for the CLI
  *
+ * @author Alexander Patrikalakis
  */
 @NdBenchClientPluginGuiceModule
-public class DynamoDBModule extends AbstractModule {
+public class CliModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(AWSCredentialsProvider.class).to(NdbenchAWSCredentialProvider.class);
     }
 
     @Provides
-    DynamoDBConfigs getDynamoDBConfigs(ConfigProxyFactory factory) {
-        return factory.newProxy(DynamoDBConfigs.class);
+    CliConfigs getCliConfigs(ConfigProxyFactory factory) {
+        return factory.newProxy(CliConfigs.class);
     }
+
 }

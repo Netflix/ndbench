@@ -48,11 +48,9 @@ public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements
                     .map(Map::toString)
                     .orElse(null);
         } catch (AmazonServiceException ase) {
-            amazonServiceException(ase);
-            throw ase;
+            throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {
-            amazonClientException(ace);
-            throw ace;
+            throw amazonClientException(ace);
         }
     }
 }

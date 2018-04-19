@@ -31,7 +31,7 @@ public class RandomStringKeyGenerator extends StringKeyGenerator {
 
     @Override
     public String getNextKey() {
-        int randomKeyIndex = kRandom.nextInt(getNumKeys());
+        int randomKeyIndex = kRandom.nextInt(numKeys);
         if (isPreLoadKeys()) {
             return keys.get(randomKeyIndex);
         } else {

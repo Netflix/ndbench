@@ -1,21 +1,22 @@
 repositories {
-   flatDir {
-       dirs buildDir
-   }
+    flatDir {
+        dirs buildDir
+    }
 }
 
 
 dependencies {
     compile project(':ndbench-api')
     compile "com.amazonaws:aws-java-sdk-dynamodb:latest.release"
+    compile "com.amazonaws:aws-java-sdk-applicationautoscaling:latest.release"
+    compile "com.amazonaws:aws-java-sdk-sts:latest.release"
 
     download {
         src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
         dest buildDir
         overwrite false
     }
-    
-    compileOnly name: 'DaxJavaClient-latest'
-        
-}
 
+    compileOnly name: 'DaxJavaClient-latest'
+
+}
