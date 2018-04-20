@@ -18,6 +18,7 @@ package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.netflix.ndbench.plugin.dynamodb.operations.AbstractDynamoDBOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +45,10 @@ public class DeleteDynamoDBTable extends AbstractDynamoDBOperation {
             logger.info("Waiting for " + tableName + " to be deleted...this may take a while...");
 
             table.waitForDelete();
+        } catch (ResourceNotFoundException e) {
+            logger.info("Table was already deleted");
         } catch (Exception e) {
             throw new IllegalStateException("DeleteTable request failed for " + tableName, e);
         }
-        table.delete(); // cleanup
     }
 }
