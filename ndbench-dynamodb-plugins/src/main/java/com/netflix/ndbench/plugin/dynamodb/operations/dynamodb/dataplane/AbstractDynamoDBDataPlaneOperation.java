@@ -19,6 +19,7 @@ package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
@@ -42,6 +43,7 @@ public class AbstractDynamoDBDataPlaneOperation extends AbstractDynamoDBOperatio
     }
 
     protected double getConsumedCapacityForTable(List<ConsumedCapacity> consumedCapacities) {
+        Preconditions.checkNotNull(consumedCapacities);
         return consumedCapacities.stream()
                 .filter(c -> tableName.equals(c.getTableName()))
                 .map(ConsumedCapacity::getCapacityUnits)

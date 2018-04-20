@@ -26,5 +26,9 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
  * @author Alexander Patrikalakis
  */
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dynamodb")
-public interface DynamoDBConfiguration extends DynamoDBConfigurationBase {
+public interface DaxConfiguration extends DynamoDBConfigurationBase {
+    /*
+     * DAX endpoint
+     */
+    String getDaxEndpoint();
 }

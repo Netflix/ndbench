@@ -23,7 +23,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfiguration;
+import com.netflix.ndbench.plugin.dynamodb.configs.CredentialsConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -36,11 +36,11 @@ import org.apache.commons.lang3.StringUtils;
 @Singleton
 public class NdbenchAWSCredentialProvider implements AWSCredentialsProvider {
 
-    private DynamoDBConfiguration config;
+    private final CredentialsConfiguration config;
     private volatile AWSCredentialsProvider credentialsProvider;
 
     @Inject
-    public NdbenchAWSCredentialProvider(DynamoDBConfiguration config) {
+    public NdbenchAWSCredentialProvider(CredentialsConfiguration config) {
         this.config = config;
         refresh();
     }

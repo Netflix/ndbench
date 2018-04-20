@@ -31,7 +31,6 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -89,7 +88,7 @@ public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation
 
     @Override
     public BatchGetItemResult measureConsumedCapacity(BatchGetItemResult result) {
-        consumed.addAndGet(getConsumedCapacityForTable(result.getConsumedCapacity()));
+        consumed.addAndGet(result.getConsumedCapacity() == null ? 0 : getConsumedCapacityForTable(result.getConsumedCapacity()));
         return result;
     }
 }

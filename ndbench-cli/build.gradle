@@ -19,6 +19,9 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    flatDir {
+        dirs buildDir
+    }
 }
 
 dependencies {
@@ -33,6 +36,13 @@ dependencies {
     compile project(':ndbench-janusgraph-plugins')
     compile project(':ndbench-sample-plugins')
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    download {
+        src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
+        dest buildDir
+        overwrite false
+    }
+
+    compile name: 'DaxJavaClient-latest'
 }
 
 task run (type: JavaExec, dependsOn: classes){

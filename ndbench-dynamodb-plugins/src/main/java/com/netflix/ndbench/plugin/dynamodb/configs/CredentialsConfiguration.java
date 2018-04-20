@@ -19,12 +19,18 @@ package com.netflix.ndbench.plugin.dynamodb.configs;
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-/**
- * Configurations for DynamoDB benchmarks
- *
- * @author ipapapa
- * @author Alexander Patrikalakis
- */
-@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dynamodb")
-public interface DynamoDBConfiguration extends DynamoDBConfigurationBase {
+@Deprecated
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "aws")
+public interface CredentialsConfiguration {
+    /**
+     * The AWS access key to use to connect to DynamoDB. Prefer using the default credentials provider chain.
+     */
+    @Deprecated
+    String accessKey();
+
+    /**
+     * The AWS secret key to use to connect to DynamoDB. Prefer using the default credentials provider chain.
+     */
+    @Deprecated
+    String secretKey();
 }

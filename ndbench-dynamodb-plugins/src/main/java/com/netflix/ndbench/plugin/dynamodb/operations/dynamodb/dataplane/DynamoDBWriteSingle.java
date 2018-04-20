@@ -20,19 +20,20 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.PutItemRequest;
 import com.amazonaws.services.dynamodbv2.model.PutItemResult;
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * @author Alexander Patrikalakis
  * @author ipapapa
  */
-public class DynamoDBWriteSingle extends AbstractDynamoDBDataPlaneOperation implements Function<String, String> {
+public class DynamoDBWriteSingle extends AbstractDynamoDBDataPlaneOperation
+        implements CapacityConsumingFunction<PutItemResult, String, String> {
     public DynamoDBWriteSingle(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
                                String partitionKeyName, ReturnConsumedCapacity returnConsumedCapacity) {
         super(dynamoDB, tableName, partitionKeyName, dataGenerator, returnConsumedCapacity);
@@ -41,6 +42,7 @@ public class DynamoDBWriteSingle extends AbstractDynamoDBDataPlaneOperation impl
     @Override
     public String apply(String key) {
         PutItemRequest request = new PutItemRequest()
+                .withTableName(tableName)
                 .withReturnConsumedCapacity(returnConsumedCapacity)
                 .addItemEntry(partitionKeyName, new AttributeValue().withS(key))
                 .addItemEntry(ATTRIBUTE_NAME, new AttributeValue().withS(dataGenerator.getRandomValue()));
@@ -57,8 +59,12 @@ public class DynamoDBWriteSingle extends AbstractDynamoDBDataPlaneOperation impl
         }
     }
 
-    private PutItemResult measureConsumedCapacity(PutItemResult result) {
-        consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+    @Override
+    public PutItemResult measureConsumedCapacity(PutItemResult result) {
+        ConsumedCapacity consumedCapacity = result.getConsumedCapacity();
+        if (consumedCapacity != null && consumedCapacity.getCapacityUnits() != null) {
+            consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+        }
         return result;
     }
 }

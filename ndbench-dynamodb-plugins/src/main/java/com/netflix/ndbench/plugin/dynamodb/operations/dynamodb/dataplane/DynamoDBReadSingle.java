@@ -20,6 +20,7 @@ import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
@@ -28,13 +29,13 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
 
 /**
  * @author Alexander Patrikalakis
  * @author ipapapa
  */
-public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements Function<String, String> {
+public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation
+        implements CapacityConsumingFunction<GetItemResult, String, String> {
     public DynamoDBReadSingle(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
                               String partitionKeyName, boolean consistentRead,
                               ReturnConsumedCapacity returnConsumedCapacity) {
@@ -44,6 +45,7 @@ public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements
     @Override
     public String apply(String key) {
         final GetItemRequest request = new GetItemRequest()
+                .withTableName(tableName)
                 .withKey(ImmutableMap.of(partitionKeyName, new AttributeValue(key)))
                 .withReturnConsumedCapacity(returnConsumedCapacity)
                 .withConsistentRead(consistentRead);
@@ -60,8 +62,12 @@ public class DynamoDBReadSingle extends AbstractDynamoDBReadOperation implements
         }
     }
 
-    private GetItemResult measureConsumedCapacity(GetItemResult result) {
-        consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+    @Override
+    public GetItemResult measureConsumedCapacity(GetItemResult result) {
+        ConsumedCapacity consumedCapacity = result.getConsumedCapacity();
+        if (consumedCapacity != null && consumedCapacity.getCapacityUnits() != null) {
+            consumed.addAndGet(result.getConsumedCapacity().getCapacityUnits());
+        }
         return result;
     }
 }
