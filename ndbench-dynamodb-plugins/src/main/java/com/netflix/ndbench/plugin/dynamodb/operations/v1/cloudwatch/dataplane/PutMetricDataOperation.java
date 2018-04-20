@@ -14,29 +14,29 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.controlplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.cloudwatch.dataplane;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.amazonaws.services.cloudwatch.model.PutMetricAlarmRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricAlarmResult;
-import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.AbstractCloudWatchOperation;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.cloudwatch.AbstractCloudWatchOperation;
 
 import java.util.function.Function;
 
 /**
  * @author Alexander Patrikalakis
  */
-public class PutMetricAlarmOperation extends AbstractCloudWatchOperation implements Function<PutMetricAlarmRequest, PutMetricAlarmResult> {
-    public PutMetricAlarmOperation(AmazonCloudWatch cloudWatch) {
+public class PutMetricDataOperation extends AbstractCloudWatchOperation implements Function<PutMetricDataRequest, PutMetricDataResult> {
+    public PutMetricDataOperation(AmazonCloudWatch cloudWatch) {
         super(cloudWatch);
     }
 
     @Override
-    public PutMetricAlarmResult apply(PutMetricAlarmRequest putMetricAlarmRequest) {
+    public PutMetricDataResult apply(PutMetricDataRequest putMetricDataRequest) {
         try {
-            return cloudWatch.putMetricAlarm(putMetricAlarmRequest);
+            return cloudWatch.putMetricData(putMetricDataRequest);
         } catch (AmazonServiceException ase) {
             throw amazonServiceException(ase);
         } catch (AmazonClientException ace) {

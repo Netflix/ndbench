@@ -36,11 +36,11 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.plugin.dynamodb.configs.ProgrammaticDynamoDBConfiguration;
-import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.controlplane.PutMetricAlarmOperation;
-import com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch.dataplane.PutMetricDataOperation;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.DescribeLimits;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.CreateDynamoDBTable;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.DeleteDynamoDBTable;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.cloudwatch.controlplane.PutMetricAlarmOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.cloudwatch.dataplane.PutMetricDataOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane.DescribeLimits;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane.CreateDynamoDBTable;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane.DeleteDynamoDBTable;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @NdBenchClientPlugin("DynamoDBProgrammaticKeyValue")
-public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<ProgrammaticDynamoDBConfiguration> implements NdBenchClient {
+public class DynamoDBProgrammaticKeyValue extends BaseConfigurationDynamoDBKeyValue<ProgrammaticDynamoDBConfiguration> implements NdBenchClient {
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBProgrammaticKeyValue.class);
     private static final String ND_BENCH_DYNAMO_DB_CONSUMED_RCU = "ConsumedRcuHighRes";
     private static final String ND_BENCH_DYNAMO_DB_CONSUMED_WCU = "ConsumedWcuHighRes";
@@ -101,8 +101,7 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
 
     @Override
     public void init(DataGenerator dataGenerator) {
-        createAndSetDynamoDBClient();
-        instantiateDataPlaneOperations(dataGenerator);
+        super.init(dataGenerator);
 
         //prerequisite data from configuration
         String tableName = config.getTableName();
@@ -222,7 +221,6 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
 
     @Override
     public void shutdown() {
-        super.shutdown();
         if (cloudwatchReporterExecutor.get() != null) {
             cloudwatchReporterExecutor.get().shutdownNow();
             cloudwatchReporterExecutor.set(null);
@@ -230,5 +228,6 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
         cloudWatch.shutdown();
         logger.info("CloudWatch shutdown");
         deleteTable.delete();
+        super.shutdown();
     }
 }

@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;

@@ -22,7 +22,7 @@ import com.amazonaws.services.dynamodbv2.model.DescribeTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.waiters.AmazonDynamoDBWaiters;
 import com.amazonaws.waiters.Waiter;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.DeleteDynamoDBTable;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane.DeleteDynamoDBTable;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;

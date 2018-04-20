@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.dataplane;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
@@ -22,14 +22,15 @@ import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
 import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.AtomicDouble;
 import com.netflix.ndbench.api.plugin.DataGenerator;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.CapacityConsumingFunction;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.AbstractDynamoDBOperation;
 
 import java.util.List;
 
 /**
  * @author Alexander Patrikalakis
  */
-public class AbstractDynamoDBDataPlaneOperation extends AbstractDynamoDBOperation {
+public abstract class AbstractDynamoDBDataPlaneOperation<T, I, O> extends AbstractDynamoDBOperation implements CapacityConsumingFunction<T, I, O> {
     protected final DataGenerator dataGenerator;
     protected final AtomicDouble consumed = new AtomicDouble(0.0);
     protected final ReturnConsumedCapacity returnConsumedCapacity;
@@ -51,6 +52,7 @@ public class AbstractDynamoDBDataPlaneOperation extends AbstractDynamoDBOperatio
                 .orElse(0.0);
     }
 
+    @Override
     public double getAndResetConsumed() {
         return consumed.getAndSet(0.0);
     }

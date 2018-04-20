@@ -14,12 +14,12 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.DescribeLimitsRequest;
 import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.AbstractDynamoDBOperation;
 
 import java.util.function.Supplier;
 

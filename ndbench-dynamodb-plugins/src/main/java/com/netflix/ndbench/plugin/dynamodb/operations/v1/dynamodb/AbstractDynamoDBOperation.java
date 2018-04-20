@@ -14,11 +14,11 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.google.common.base.Preconditions;
-import com.netflix.ndbench.plugin.dynamodb.operations.AbstractAwsOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.AbstractAwsOperation;
 
 import org.apache.commons.lang3.StringUtils;
 

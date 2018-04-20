@@ -14,19 +14,19 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.cloudwatch;
+package com.netflix.ndbench.plugin.dynamodb.operations;
 
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.netflix.ndbench.plugin.dynamodb.operations.AbstractAwsOperation;
+import java.util.function.Function;
 
 /**
+ * This class will allow generalizes data plane operations between AWS SDK v1 and v2.
+ * @param <T> This is the class of the result type from which to pull consumed capacity
+ * @param <I> This is the class of input into the data plane operation
+ * @param <O> This is the class of output of the data plane operation, after being interpreted from T
+ *
  * @author Alexander Patrikalakis
  */
-public abstract class AbstractCloudWatchOperation extends AbstractAwsOperation {
-
-    protected final AmazonCloudWatch cloudWatch;
-
-    protected AbstractCloudWatchOperation(AmazonCloudWatch cloudWatch) {
-        this.cloudWatch = cloudWatch;
-    }
+public interface CapacityConsumingFunction<T, I, O> extends Function<I, O> {
+    T measureConsumedCapacity(T t);
+    double getAndResetConsumed();
 }

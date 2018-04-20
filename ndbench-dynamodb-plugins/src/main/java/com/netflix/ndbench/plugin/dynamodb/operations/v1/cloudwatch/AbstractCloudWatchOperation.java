@@ -14,10 +14,19 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.cloudwatch;
 
-import java.util.function.Function;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.AbstractAwsOperation;
 
-public interface CapacityConsumingFunction<T, I, O> extends Function<I, O> {
-    T measureConsumedCapacity(T t);
+/**
+ * @author Alexander Patrikalakis
+ */
+public abstract class AbstractCloudWatchOperation extends AbstractAwsOperation {
+
+    protected final AmazonCloudWatch cloudWatch;
+
+    protected AbstractCloudWatchOperation(AmazonCloudWatch cloudWatch) {
+        this.cloudWatch = cloudWatch;
+    }
 }

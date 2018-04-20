@@ -18,27 +18,22 @@ package com.netflix.ndbench.plugin.dax;
 
 import com.amazon.dax.client.dynamodbv2.AmazonDaxClientBuilder;
 import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.services.dynamodbv2.model.ReturnConsumedCapacity;
-import com.google.common.base.Preconditions;
+import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.plugin.dynamodb.DynamoDBKeyValueBase;
 import com.netflix.ndbench.plugin.dax.configs.DaxConfiguration;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadBulk;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadSingle;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteBulk;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteSingle;
-import org.apache.commons.lang.StringUtils;
+import com.netflix.ndbench.plugin.dynamodb.BaseConfigurationDynamoDBKeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Singleton
 @NdBenchClientPlugin("DaxKeyValue")
-public class DaxKeyValue extends DynamoDBKeyValueBase<DaxConfiguration> implements NdBenchClient {
+public class DaxKeyValue extends BaseConfigurationDynamoDBKeyValue<DaxConfiguration> implements NdBenchClient {
     private static final Logger logger = LoggerFactory.getLogger(DaxKeyValue.class);
+    private AmazonDynamoDB dynamoDB;
 
     /**
      * Public constructor to inject credentials and configuration
@@ -52,31 +47,15 @@ public class DaxKeyValue extends DynamoDBKeyValueBase<DaxConfiguration> implemen
     }
 
     @Override
-    public void init(DataGenerator dataGenerator) {
-        logger.info("Initializing AWS DAX client");
-
+    protected void createAndSetDynamoDBClient() {
         AmazonDaxClientBuilder amazonDaxClientBuilder = AmazonDaxClientBuilder.standard();
         amazonDaxClientBuilder.withEndpointConfiguration(this.config.getDaxEndpoint());
         dynamoDB = amazonDaxClientBuilder.build();
+    }
 
-        //instantiate operations
-        String tableName = config.getTableName();
-        String partitionKeyName = config.getAttributeName();
-        ReturnConsumedCapacity returnConsumedCapacity = ReturnConsumedCapacity.NONE;
-        Preconditions.checkState(StringUtils.isNotEmpty(tableName));
-        Preconditions.checkState(StringUtils.isNotEmpty(partitionKeyName));
-
-        //data plane
-        boolean consistentRead = config.consistentRead();
-        this.singleRead = new DynamoDBReadSingle(dataGenerator, dynamoDB, tableName, partitionKeyName, consistentRead,
-                returnConsumedCapacity);
-        this.bulkRead = new DynamoDBReadBulk(dataGenerator, dynamoDB, tableName, partitionKeyName, consistentRead,
-                returnConsumedCapacity);
-        this.singleWrite = new DynamoDBWriteSingle(dataGenerator, dynamoDB, tableName, partitionKeyName,
-                returnConsumedCapacity);
-        this.bulkWrite = new DynamoDBWriteBulk(dataGenerator, dynamoDB, tableName, partitionKeyName,
-                returnConsumedCapacity);
-
-        logger.info("DynamoDB Plugin initialized");
+    @Override
+    public void shutdown() {
+        dynamoDB.shutdown();
+        logger.info("Shutdown DynamoDB.");
     }
 }

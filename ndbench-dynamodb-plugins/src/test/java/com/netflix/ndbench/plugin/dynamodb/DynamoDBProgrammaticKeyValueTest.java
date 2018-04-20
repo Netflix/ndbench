@@ -9,6 +9,7 @@ import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.archaius.test.TestPropertyOverride;
 import com.netflix.governator.guice.test.ModulesForTesting;
 import com.netflix.governator.guice.test.junit4.GovernatorJunit4ClassRunner;
+import com.netflix.ndbench.aws.defaultimpl.AwsDefaultsModule;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
 import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBModule;
@@ -28,7 +29,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @RunWith(GovernatorJunit4ClassRunner.class)
-@ModulesForTesting({DynamoDBModule.class, ArchaiusModule.class, NdBenchGuiceModule.class})
+@ModulesForTesting({DynamoDBModule.class, ArchaiusModule.class, NdBenchGuiceModule.class, AwsDefaultsModule.class})
 public class DynamoDBProgrammaticKeyValueTest {
     @Inject
     ProgrammaticDynamoDBConfiguration configuration;
