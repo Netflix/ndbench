@@ -33,6 +33,7 @@ dependencies {
     compile "com.amazonaws:aws-java-sdk-dynamodb:latest.release"
     compile "com.amazonaws:aws-java-sdk-applicationautoscaling:latest.release"
     compile "com.amazonaws:aws-java-sdk-sts:latest.release"
+    compile "com.amazonaws:aws-java-sdk-cloudwatch:latest.release"
     testCompile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
     testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
 
