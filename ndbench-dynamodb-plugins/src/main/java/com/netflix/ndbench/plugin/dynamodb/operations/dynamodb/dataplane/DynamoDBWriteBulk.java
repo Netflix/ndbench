@@ -88,7 +88,7 @@ public class DynamoDBWriteBulk extends AbstractDynamoDBDataPlaneOperation
 
     @Override
     public BatchWriteItemResult measureConsumedCapacity(BatchWriteItemResult result) {
-        consumed.addAndGet(getConsumedCapacityForTable(result.getConsumedCapacity()));
+        consumed.addAndGet(result.getConsumedCapacity() == null ? 0 : getConsumedCapacityForTable(result.getConsumedCapacity()));
         return result;
     }
 }
