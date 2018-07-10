@@ -14,26 +14,32 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.janusgraph.configs;
+package com.netflix.ndbench.plugin.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.archaius.api.annotations.PropertyName;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-/**
- * Common configs for JanusGraph benchmark
- *
- * @author pencal
- */
-@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + "janusgraph")
-public interface IJanusGraphConfig {
-    // One can benchmark either the Tinkerpop API or the JanusGraph Core API if
-    // needed
-    @DefaultValue("false")
-    boolean useJanusgraphTransaction();
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cass.udt")
+public interface CassandraUdtConfiguration extends CassandraConfigurationBase {
+    @PropertyName(name = "address_type")
+    @DefaultValue("address_type")
+    String getAddressType();
 
-    String getStorageHostname();
+    @PropertyName(name = "fullname_type")
+    @DefaultValue("fullname_type")
+    String getFullnameType();
 
-    @DefaultValue("9042")
-    String getStoragePort();
+    @PropertyName(name = "email_type")
+    @DefaultValue("email_type")
+    String getEmailType();
+
+    @PropertyName(name = "randomReads")
+    @DefaultValue("true")
+    Boolean getRandomReads();
+
+    @PropertyName(name = "randomWrites")
+    @DefaultValue("true")
+    Boolean getRandomWrites();
 }

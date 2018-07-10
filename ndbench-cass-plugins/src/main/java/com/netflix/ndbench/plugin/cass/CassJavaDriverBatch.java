@@ -6,9 +6,8 @@ package com.netflix.ndbench.plugin.cass;
 import com.datastax.driver.core.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
+import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
 
 import java.time.Instant;
 import java.util.List;
@@ -18,32 +17,29 @@ import java.util.Random;
  */
 @Singleton
 @NdBenchClientPlugin("CassJavaDriverBatch")
-public class CassJavaDriverBatch extends CJavaDriverBasePlugin {
+public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericConfiguration> {
 
     //Settings
-    private static String TableName2;
-    private static Integer batchSize;
-    private static Boolean useTimeStamp;
-    private static Boolean useMultiPartition;
+    private volatile String TableName2;
+    private volatile Integer batchSize;
+    private volatile Boolean useTimeStamp;
+    private volatile Boolean useMultiPartition;
 
     Random randomObj = new Random();
 
     protected PreparedStatement writePstmt2;
 
     @Inject
-    public CassJavaDriverBatch(PropertyFactory propertyFactory, CassJavaDriverManager javaDriverManager) {
-        super(propertyFactory, javaDriverManager);
+    public CassJavaDriverBatch(CassJavaDriverManager javaDriverManager, CassandraGenericConfiguration cassConfigs) {
+        super(javaDriverManager, cassConfigs);
     }
 
     @Override
     void prepStatements(Session session) {
 
         readPstmt = session.prepare(" SELECT cyclist_name, expense_id, amount, description, paid FROM "+TableName+" WHERE cyclist_name = ?" );
-
         writePstmt = session.prepare("INSERT INTO "+TableName+" (cyclist_name, expense_id, amount, description, paid) VALUES (?, ?, ?, ?, ?)");
         writePstmt2 = session.prepare("INSERT INTO "+TableName2+" (expense_id, cyclist_name) VALUES (?, ?)");
-
-
     }
 
     @Override
@@ -59,15 +55,14 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin {
 
     @Override
     void preInit() {
-        TableName2  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cfname2").asString("test2").get();
-        batchSize = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.batchSize").asInteger(3).get();
-        useTimeStamp = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.useTimestamp").asBoolean(true).get();
-        useMultiPartition = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.useMultiPartition").asBoolean(false).get();
-    }
-
-    @Override
-    void postInit() {
-
+        this.TableName2 = config.getCfname2();
+        this.batchSize = config.getBatchSize();
+        this.useTimeStamp = config.getUseTimestamp();
+        this.useMultiPartition = config.getUseMultiPartition();
+        this.TableName = config.getCfname();
+        this.ReadConsistencyLevel = ConsistencyLevel.valueOf(config.getReadConsistencyLevel());
+        this.WriteConsistencyLevel = ConsistencyLevel.valueOf(config.getWriteConsistencyLevel());
+        this.MaxColCount = config.getColsPerRow();
     }
 
     @Override
@@ -123,24 +118,6 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin {
         session.execute(batch);
         batch.clear();
         return ResultOK;
-    }
-
-    /**
-     * Perform a bulk read operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> readBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
-    }
-
-    /**
-     * Perform a bulk write operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> writeBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
     private BoundStatement getBStmtTable1(String key) {

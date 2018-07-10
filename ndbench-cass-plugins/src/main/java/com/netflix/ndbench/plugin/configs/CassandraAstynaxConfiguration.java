@@ -14,26 +14,23 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.janusgraph.configs;
+package com.netflix.ndbench.plugin.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-/**
- * Common configs for JanusGraph benchmark
- *
- * @author pencal
- */
-@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + "janusgraph")
-public interface IJanusGraphConfig {
-    // One can benchmark either the Tinkerpop API or the JanusGraph Core API if
-    // needed
-    @DefaultValue("false")
-    boolean useJanusgraphTransaction();
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cass")
+public interface CassandraAstynaxConfiguration extends CassandraConfigurationBase {
+    @DefaultValue("emp_thrift")
+    String getCfname();
 
-    String getStorageHostname();
+    @DefaultValue("CL_LOCAL_ONE")
+    String getReadConsistencyLevel();
 
-    @DefaultValue("9042")
-    String getStoragePort();
+    @DefaultValue("CL_LOCAL_ONE")
+    String getWriteConsistencyLevel();
+
+    @DefaultValue("5L")
+    Long getColsPerRow();
 }
