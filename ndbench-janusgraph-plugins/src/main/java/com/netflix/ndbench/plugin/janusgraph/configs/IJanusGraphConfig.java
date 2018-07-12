@@ -32,7 +32,6 @@ public interface IJanusGraphConfig {
     @DefaultValue("false")
     boolean useJanusgraphTransaction();
 
-    @DefaultValue("127.0.0.1")
     String getStorageHostname();
 
     @DefaultValue("9042")

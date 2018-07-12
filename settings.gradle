@@ -1,8 +1,9 @@
 rootProject.name='ndbench'
 
 include 'ndbench-api'
-include 'ndbench-core'
 include 'ndbench-cass-plugins'
+include 'ndbench-cli'
+include 'ndbench-core'
 include 'ndbench-dynamodb-plugins'
 include 'ndbench-dyno-plugins'
 include 'ndbench-es-plugins'

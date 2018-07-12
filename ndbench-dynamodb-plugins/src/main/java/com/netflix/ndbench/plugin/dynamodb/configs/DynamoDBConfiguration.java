@@ -14,20 +14,17 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dataplane;
+package com.netflix.ndbench.plugin.dynamodb.configs;
 
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.netflix.ndbench.api.plugin.DataGenerator;
+import com.netflix.archaius.api.annotations.Configuration;
+import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 /**
+ * Configurations for DynamoDB benchmarks
+ *
+ * @author ipapapa
  * @author Alexander Patrikalakis
  */
-public class AbstractDynamoDBReadOperation extends AbstractDynamoDBDataPlaneOperation {
-    protected final boolean consistentRead;
-
-    protected AbstractDynamoDBReadOperation(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
-                                            String partitionKeyName, boolean consistentRead) {
-        super(dynamoDB, tableName, partitionKeyName, dataGenerator);
-        this.consistentRead = consistentRead;
-    }
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dynamodb")
+public interface DynamoDBConfiguration extends DynamoDBConfigurationBase {
 }

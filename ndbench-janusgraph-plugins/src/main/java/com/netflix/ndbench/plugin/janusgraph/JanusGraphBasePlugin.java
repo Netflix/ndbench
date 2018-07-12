@@ -38,7 +38,7 @@ public abstract class JanusGraphBasePlugin {
     final String storageHost;
     final String storagePort;
 
-    public JanusGraphBasePlugin(String backend, String host, String port) {
+    protected JanusGraphBasePlugin(String backend, String host, String port) {
         this.storageBackend = backend;
         this.storageHost = host;
         this.storagePort = port;

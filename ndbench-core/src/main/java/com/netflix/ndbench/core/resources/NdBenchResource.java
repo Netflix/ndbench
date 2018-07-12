@@ -524,12 +524,10 @@ public class NdBenchResource {
             logger.error(returnMsg);
             return new ErrorResponse(returnMsg);
         }
-        if(loadPattern.equals(LoadPattern.SLIDING_WINDOW)) {
-            if (windowSize < 1 || durationInSec < 1) {
-                returnMsg+="WindowSize and DurationInSeconds can not be less than 1, provided: windowSize: "+windowSize+", durationInSec: "+durationInSec;
-                logger.error(returnMsg);
-                return new ErrorResponse(returnMsg);
-            }
+        if(loadPattern.equals(LoadPattern.SLIDING_WINDOW) && (windowSize < 1 || durationInSec < 1)) {
+            returnMsg += "WindowSize and DurationInSeconds can not be less than 1, provided: windowSize: "+windowSize+", durationInSec: "+durationInSec;
+            logger.error(returnMsg);
+            return new ErrorResponse(returnMsg);
         }
         return new SuccessResponse("");
     }

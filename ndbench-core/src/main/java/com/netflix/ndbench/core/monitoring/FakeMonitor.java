@@ -16,11 +16,13 @@
  */
 package com.netflix.ndbench.core.monitoring;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.SlidingTimeWindowReservoir;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
-import com.netflix.ndbench.core.util.EstimatedHistogram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,17 +32,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 /**
  * @author vchella
  */
 @Singleton
 public class FakeMonitor implements NdBenchMonitor {
-
     private static final Logger logger = LoggerFactory.getLogger(FakeMonitor.class);
 
     private final AtomicReference<ScheduledExecutorService> timerRef = new AtomicReference<>(null);
-
-    private final IConfiguration config;
+    private final AtomicReference<Histogram> readHistogram = new AtomicReference<>();
+    private final AtomicReference<Histogram> writeHistogram = new AtomicReference<>();
 
     private final AtomicLong readSuccess = new AtomicLong(0L);
     private final AtomicLong readFailure = new AtomicLong(0L);
@@ -48,13 +51,10 @@ public class FakeMonitor implements NdBenchMonitor {
     private final AtomicLong writeFailure = new AtomicLong(0L);
     private final AtomicLong cacheHits = new AtomicLong(0L);
     private final AtomicLong cacheMiss = new AtomicLong(0L);
-
-    private EstimatedHistogram readHistogram = new EstimatedHistogram(180);
-    private EstimatedHistogram writeHistogram = new EstimatedHistogram(180);
-
     private final AtomicLong readRPS = new AtomicLong(0L);
     private final AtomicLong writeRPS = new AtomicLong(0L);
 
+    private final IConfiguration config;
 
     @Inject
     public FakeMonitor(IConfiguration config)
@@ -73,15 +73,16 @@ public class FakeMonitor implements NdBenchMonitor {
             timer = Executors.newScheduledThreadPool(1);
             logger.info(String.format("Initializing NdBenchMonitor with timing counter reset frequency %d seconds",
                     config.getStatsResetFreqSeconds()));
-            timer.scheduleAtFixedRate(new Runnable() {
-                @Override
-                public void run() {
-                    readHistogram.getBuckets(true);
-                    writeHistogram.getBuckets(true);
-                }
-            }, 1, config.getStatsResetFreqSeconds(), TimeUnit.SECONDS);
+            timer.scheduleAtFixedRate(this::setReadWriteHistograms, 1, config.getStatsResetFreqSeconds(), TimeUnit.SECONDS);
+            timerRef.set(timer);
         }
     }
+
+    private void setReadWriteHistograms() {
+        readHistogram.set(createHistogramFromConfig());
+        writeHistogram.set(createHistogramFromConfig());
+    }
+
     @Override
     public void incReadSuccess() {
         readSuccess.incrementAndGet();
@@ -144,67 +145,67 @@ public class FakeMonitor implements NdBenchMonitor {
 
     @Override
     public void recordReadLatency(long duration) {
-        readHistogram.add(duration);
+        readHistogram.get().update(duration);
     }
 
     @Override
     public long getReadLatAvg() {
-        return readHistogram.mean();
+        return longValueOfDouble(readHistogram.get().getSnapshot().getMean());
     }
 
     @Override
     public long getReadLatP50() {
-        return readHistogram.percentile(0.5);
+        return longValueOfDouble(readHistogram.get().getSnapshot().getMedian());
     }
 
     @Override
     public long getReadLatP95() {
-        return readHistogram.percentile(0.95);
+        return longValueOfDouble(readHistogram.get().getSnapshot().get95thPercentile());
     }
 
     @Override
     public long getReadLatP99() {
-        return readHistogram.percentile(0.99);
+        return longValueOfDouble(readHistogram.get().getSnapshot().get99thPercentile());
     }
 
     @Override
     public long getReadLatP995() {
-        return readHistogram.percentile(0.995);
+        return longValueOfDouble(readHistogram.get().getSnapshot().getValue(.995));
     }
 
     @Override
     public long getReadLatP999() {
-        return readHistogram.percentile(0.999);
+        return longValueOfDouble(readHistogram.get().getSnapshot().get999thPercentile());
     }
 
     @Override
     public long getWriteLatAvg() {
-            return writeHistogram.mean();
+        return longValueOfDouble(writeHistogram.get().getSnapshot().getMean());
     }
 
     @Override
     public long getWriteLatP50() {
-            return writeHistogram.percentile(0.5);
+            return longValueOfDouble(writeHistogram.get().getSnapshot().getMedian());
     }
 
     @Override
     public long getWriteLatP95() {
-        return writeHistogram.percentile(0.95);
+        return longValueOfDouble(writeHistogram.get().getSnapshot().get95thPercentile());
     }
 
     @Override
     public long getWriteLatP99() {
-        return writeHistogram.percentile(0.99);
+        return longValueOfDouble(writeHistogram.get().getSnapshot().get99thPercentile());
     }
 
     @Override
     public long getWriteLatP995() {
-        return writeHistogram.percentile(0.995);
+        return longValueOfDouble(writeHistogram.get().getSnapshot().getValue(0.995));
     }
 
     @Override
     public long getWriteLatP999() {
-        return writeHistogram.percentile(0.999);
+        return longValueOfDouble(writeHistogram.get().getSnapshot().get999thPercentile());
     }
 
     @Override
@@ -229,7 +230,7 @@ public class FakeMonitor implements NdBenchMonitor {
 
     @Override
     public void recordWriteLatency(long duration) {
-        writeHistogram.add(duration);
+        writeHistogram.get().update(duration);
     }
 
     @Override
@@ -247,8 +248,7 @@ public class FakeMonitor implements NdBenchMonitor {
         cacheMiss.set(0L);
         readRPS.set(0L);
         writeRPS.set(0L);
-        readHistogram = new EstimatedHistogram();
-        writeHistogram = new EstimatedHistogram();
+        setReadWriteHistograms();
 
     }
     private float getCacheHitRatio() {
@@ -259,6 +259,14 @@ public class FakeMonitor implements NdBenchMonitor {
             return 0;
         }
 
-        return (float) ((float) (hits * 100L) / (float) (hits + miss));
+        return (float) (hits * 100L) / (float) (hits + miss);
+    }
+
+    private long longValueOfDouble(double d) {
+        return Double.valueOf(d).longValue();
+    }
+
+    private Histogram createHistogramFromConfig() {
+        return new Histogram(new SlidingTimeWindowReservoir(config.getStatsResetFreqSeconds(), TimeUnit.SECONDS));
     }
 }

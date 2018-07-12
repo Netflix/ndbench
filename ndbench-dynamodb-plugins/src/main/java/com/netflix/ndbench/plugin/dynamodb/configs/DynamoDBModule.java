@@ -26,6 +26,7 @@ import com.netflix.ndbench.plugin.dynamodb.NdbenchAWSCredentialProvider;
 /**
  * 
  * @author ipapapa
+ * @author Alexander Patrikalakis
  *
  */
 @NdBenchClientPluginGuiceModule
@@ -37,8 +38,22 @@ public class DynamoDBModule extends AbstractModule {
     }
 
     @Provides
-    DynamoDBConfigs getDynamoDBConfigs(ConfigProxyFactory factory) {
-        return factory.newProxy(DynamoDBConfigs.class);
+    DynamoDBConfiguration getDynamoDBConfiguration(ConfigProxyFactory factory) {
+        return factory.newProxy(DynamoDBConfiguration.class);
     }
 
+    @Provides
+    ProgrammaticDynamoDBConfiguration getProgrammaticDynamoDBConfiguration(ConfigProxyFactory factory) {
+        return factory.newProxy(ProgrammaticDynamoDBConfiguration.class);
+    }
+
+    @Provides
+    DaxConfiguration getDaxConfiguration(ConfigProxyFactory factory) {
+        return factory.newProxy(DaxConfiguration.class);
+    }
+
+    @Provides
+    CredentialsConfiguration getCredentialsConfiguration(ConfigProxyFactory factory) {
+        return factory.newProxy(CredentialsConfiguration.class);
+    }
 }

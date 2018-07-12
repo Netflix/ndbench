@@ -16,12 +16,11 @@
  */
 package com.netflix.ndbench.plugin.cass;
 
-
 import com.datastax.driver.core.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,14 +30,12 @@ import java.util.List;
 @Singleton
 @NdBenchClientPlugin("CassJavaDriverGeneric")
 @SuppressWarnings("unused")
-public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
-
+public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGenericConfiguration> {
     private static final Logger logger = LoggerFactory.getLogger(CassJavaDriverGeneric.class);
 
-
     @Inject
-    public CassJavaDriverGeneric(PropertyFactory propertyFactory, CassJavaDriverManager cassJavaDriverManager) {
-        super(propertyFactory, cassJavaDriverManager);
+    public CassJavaDriverGeneric(CassJavaDriverManager cassJavaDriverManager, CassandraGenericConfiguration cassConfigs) {
+        super(cassJavaDriverManager, cassConfigs);
     }
 
     @Override
@@ -68,7 +65,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
     }
 
     @Override
-    public String writeSingle(String key) throws Exception {
+    public String writeSingle(String key) {
         BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
         for (int i = 0; i < this.MaxColCount; i++) {
             BoundStatement bStmt = writePstmt.bind();
@@ -83,24 +80,6 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
         return ResultOK;
     }
 
-    /**
-     * Perform a bulk read operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> readBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
-    }
-
-    /**
-     * Perform a bulk write operation
-     * @return a list of response codes
-     * @throws Exception
-     */
-    public List<String> writeBulk(final List<String> keys) throws Exception {
-        throw new UnsupportedOperationException("bulk operation is not supported");
-    }
-
     @Override
     void upsertKeyspace(Session session) {
        upsertGenereicKeyspace();
@@ -110,17 +89,6 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin {
         session.execute("CREATE TABLE IF NOT EXISTS "+TableName+" (key text, column1 int, value text, PRIMARY KEY ((key), column1))");
 
     }
-
-    @Override
-    void preInit() {
-
-    }
-
-    @Override
-    void postInit() {
-
-    }
-
 
     @Override
     void prepStatements(Session session) {

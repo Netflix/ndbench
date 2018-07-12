@@ -14,19 +14,20 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.controlplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane;
 
-import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.dynamodbv2.util.TableUtils;
-import com.netflix.ndbench.plugin.dynamodb.operations.AbstractDynamoDBOperation;
+import com.google.common.base.Preconditions;
+import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,6 +45,8 @@ public class CreateDynamoDBTable extends AbstractDynamoDBOperation implements Su
     public CreateDynamoDBTable(AmazonDynamoDB dynamoDB, String tableName, String partitionKeyName,
                                long readCapacityUnits, long writeCapacityUnits) {
         super(dynamoDB, tableName, partitionKeyName);
+        Preconditions.checkArgument(readCapacityUnits > 0);
+        Preconditions.checkArgument(writeCapacityUnits > 0);
         this.readCapacityUnits = readCapacityUnits;
         this.writeCapacityUnits = writeCapacityUnits;
     }
@@ -78,20 +81,17 @@ public class CreateDynamoDBTable extends AbstractDynamoDBOperation implements Su
         logger.info("Creating Table: " + tableName);
 
         // Creating table
-        if (TableUtils.createTableIfNotExists(dynamoDB, request)) {
-            logger.info("Table already exists.  No problem!");
-            return dynamoDB.describeTable(tableName).getTable();
-        }
-
-        // Waiting util the table is ready
         try {
-            logger.debug("Waiting until the table is in ACTIVE state");
-            TableUtils.waitUntilActive(dynamoDB, tableName);
             return dynamoDB.describeTable(tableName).getTable();
-        } catch (AmazonClientException e) {
-            throw new IllegalStateException("Table didn't become active", e);
-        } catch (InterruptedException e) {
-            throw new IllegalStateException("Table interrupted exception", e);
+        } catch (ResourceNotFoundException e) {
+            TableDescription tableDescription = dynamoDB.createTable(request).getTableDescription();
+            logger.debug("Waiting until the table is in ACTIVE state");
+            try {
+                TableUtils.waitUntilActive(dynamoDB, tableName);
+            } catch (InterruptedException e1) {
+                throw new IllegalStateException("Table interrupted exception", e);
+            }
+            return tableDescription;
         }
     }
 }

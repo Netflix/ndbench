@@ -22,7 +22,7 @@ package com.netflix.ndbench.api.plugin.common;
  */
 public final class NdBenchConstants {
     public static final String WEBAPP_NAME = "ndbench";
-    public static final String PROP_NAMESPACE =  (WEBAPP_NAME + ".config") + ".";
+    public static final String PROP_NAMESPACE = (WEBAPP_NAME + ".config") + ".";
 
     public static final String NUM_KEYS="numKeys";
     public static final String NUM_VALUES="numValues";

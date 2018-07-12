@@ -19,7 +19,9 @@ package com.netflix.ndbench.core;
 
 import com.google.common.util.concurrent.RateLimiter;
 import com.google.inject.Inject;
+import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import com.netflix.archaius.api.config.SettableConfig;
 import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.DataGenerator;
@@ -115,7 +117,6 @@ public class NdBenchDriver {
             }
         });
     }
-
 
     public void start(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
         logger.info("Starting Load Test Driver...");
@@ -237,26 +238,23 @@ public class NdBenchDriver {
                 while (!Thread.currentThread().isInterrupted()) {
                     boolean noMoreKey = false;
 
-                    if ((operation.isReadType() && readsStarted.get()) ||
-                            (operation.isWriteType() && writesStarted.get())) {
-                        if (rateLimiter.get().tryAcquire()) {
+                    if (((operation.isReadType() && readsStarted.get()) ||
+                            (operation.isWriteType() && writesStarted.get())) && rateLimiter.get().tryAcquire()) {
+                        final Set<String> keys = new HashSet<>(bulkSize * 2);
+                        while (keys.size() < bulkSize) {
+                            keys.add(keyGenerator.getNextKey());
+                            if (!keyGenerator.hasNextKey()) {
+                                noMoreKey = true;
+                                break;
+                            }
+                        } // eo keygens
 
-                            final Set<String> keys = new HashSet<>(bulkSize * 2);
-                            while (keys.size() < bulkSize) {
-                                keys.add(keyGenerator.getNextKey());
-                                if (!keyGenerator.hasNextKey()) {
-                                    noMoreKey = true;
-                                    break;
-                                }
-                            } // eo keygens
-
-                            operation.process(
-                                    NdBenchDriver.this,
-                                    ndBenchMonitor,
-                                    new ArrayList<>(keys),
-                                    rateLimiter,
-                                    isAutoTuneEnabled);
-                        } // eo rateLimiter tryGet
+                        operation.process(
+                                NdBenchDriver.this,
+                                ndBenchMonitor,
+                                new ArrayList<>(keys),
+                                rateLimiter,
+                                isAutoTuneEnabled);
                     } // eo if read or write
 
                     if (noMoreKey) {

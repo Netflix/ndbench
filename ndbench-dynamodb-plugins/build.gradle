@@ -1,21 +1,48 @@
 repositories {
-   flatDir {
-       dirs buildDir
-   }
+    flatDir {
+        dirs buildDir
+    }
 }
 
+apply plugin: "jacoco"
+
+jacoco {
+    toolVersion = "0.8.1"
+    reportsDir = file("$buildDir/customJacocoReportDir")
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled false
+        csv.enabled false
+        html.destination file("${buildDir}/jacocoHtml")
+    }
+}
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.9
+            }
+        }
+    }
+}
 
 dependencies {
     compile project(':ndbench-api')
     compile "com.amazonaws:aws-java-sdk-dynamodb:latest.release"
+    compile "com.amazonaws:aws-java-sdk-applicationautoscaling:latest.release"
+    compile "com.amazonaws:aws-java-sdk-sts:latest.release"
+    compile "com.amazonaws:aws-java-sdk-cloudwatch:latest.release"
+    testCompile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
+    testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
 
     download {
         src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
         dest buildDir
         overwrite false
     }
-    
-    compileOnly name: 'DaxJavaClient-latest'
-        
-}
 
+    compileOnly name: 'DaxJavaClient-latest'
+
+}

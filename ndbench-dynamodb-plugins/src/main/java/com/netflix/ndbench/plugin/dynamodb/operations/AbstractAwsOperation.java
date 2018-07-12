@@ -18,32 +18,13 @@ package com.netflix.ndbench.plugin.dynamodb.operations;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.netflix.ndbench.plugin.dynamodb.DynamoDBKeyValue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * @author Alexander Patrikalakis
- * @author ipapapa
- */
-public abstract class AbstractDynamoDBOperation {
-    protected static final String ATTRIBUTE_NAME = "value";
-    private static final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
+public abstract class AbstractAwsOperation {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractAwsOperation.class);
 
-    protected final AmazonDynamoDB dynamoDB;
-    protected final String tableName;
-    protected final String partitionKeyName;
-
-    protected AbstractDynamoDBOperation(AmazonDynamoDB dynamoDB,
-                                        String tableName,
-                                        String partitionKeyName) {
-        this.dynamoDB = dynamoDB;
-        this.tableName = tableName;
-        this.partitionKeyName = partitionKeyName;
-    }
-
-    protected void amazonServiceException(AmazonServiceException ase) {
+    protected AmazonServiceException amazonServiceException(AmazonServiceException ase) {
         logger.error("Caught an AmazonServiceException, which means your request made it "
                 + "to AWS, but was rejected with an error response for some reason.");
         logger.error("Error Message:    " + ase.getMessage());
@@ -51,12 +32,14 @@ public abstract class AbstractDynamoDBOperation {
         logger.error("AWS Error Code:   " + ase.getErrorCode());
         logger.error("Error Type:       " + ase.getErrorType());
         logger.error("Request ID:       " + ase.getRequestId());
+        return ase;
     }
 
-    protected void amazonClientException(AmazonClientException ace) {
+    protected AmazonClientException amazonClientException(AmazonClientException ace) {
         logger.error("Caught an AmazonClientException, which means the client encountered "
                 + "a serious internal problem while trying to communicate with AWS, "
                 + "such as not being able to access the network.");
         logger.error("Error Message: " + ace.getMessage());
+        return ace;
     }
 }

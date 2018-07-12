@@ -7,18 +7,19 @@ import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
-import com.google.inject.Inject;
-import com.netflix.archaius.api.PropertyFactory;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
-import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
+import com.netflix.ndbench.plugin.configs.CassandraConfigurationBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * @author vchella
+ * @author Alexander Patrikalakis
  */
-public abstract class CJavaDriverBasePlugin implements NdBenchClient {
+public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase> implements NdBenchClient {
 
     private static final Logger logger = LoggerFactory.getLogger(CJavaDriverBasePlugin.class);
 
@@ -26,92 +27,119 @@ public abstract class CJavaDriverBasePlugin implements NdBenchClient {
     protected static final String ResutlFailed = "Failed";
     protected static final String CacheMiss = null;
 
-    protected DataGenerator dataGenerator;
-    protected PropertyFactory propertyFactory;
+    protected final CassJavaDriverManager cassJavaDriverManager;
+    protected final C config;
 
     // settings
-    protected static String ClusterName, KeyspaceName, TableName, ClusterContactPoint;
-    protected static String username, password;
-    int connections, port;
+    protected volatile DataGenerator dataGenerator;
+    protected volatile String ClusterName;
+    protected volatile String KeyspaceName;
+    protected volatile String TableName;
+    protected volatile String ClusterContactPoint;
+    protected volatile String username;
+    protected volatile String password;
+    protected volatile int connections;
+    protected volatile int port;
+    protected volatile ConsistencyLevel WriteConsistencyLevel = ConsistencyLevel.LOCAL_ONE;
+    protected volatile ConsistencyLevel ReadConsistencyLevel = ConsistencyLevel.LOCAL_ONE;
+    protected volatile Long MaxColCount;
 
-    protected ConsistencyLevel WriteConsistencyLevel=ConsistencyLevel.LOCAL_ONE, ReadConsistencyLevel=ConsistencyLevel.LOCAL_ONE;
+    protected volatile Cluster cluster;
+    protected volatile Session session;
+    protected volatile PreparedStatement readPstmt;
+    protected volatile PreparedStatement writePstmt;
 
 
-    protected final CassJavaDriverManager cassJavaDriverManager;
-    protected Cluster cluster;
-    protected Session session;
-    protected PreparedStatement readPstmt;
-    protected PreparedStatement writePstmt;
-    Long MaxColCount;
-
-    @Inject
-    public CJavaDriverBasePlugin(PropertyFactory propertyFactory, CassJavaDriverManager javaDriverManager) {
-        this.propertyFactory = propertyFactory;
+    /**
+     * Creates an instance of the abstract CJavaDriverBasePlugin class. Subclasses calling this method should use
+     * Guice injection to provide the arguments.
+     * @param javaDriverManager
+     * @param config
+     */
+    protected CJavaDriverBasePlugin(CassJavaDriverManager javaDriverManager, C config) {
         this.cassJavaDriverManager = javaDriverManager;
+        this.config = config;
     }
 
     @Override
     public void init(DataGenerator dataGenerator) throws Exception {
         this.dataGenerator = dataGenerator;
+        this.ClusterName = config.getCluster();
+        this.ClusterContactPoint = config.getHost();
+        this.port = config.getHostPort();
+        this.KeyspaceName = config.getKeyspace();
+        this.connections = config.getConnections();
+        this.username = config.getUsername();
+        this.password = config.getPassword();
 
-        ClusterName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cluster").asString("localhost").get();
-        ClusterContactPoint = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.host").asString("127.0.0.1").get();
-        KeyspaceName = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.keyspace").asString("dev1").get();
-        TableName =propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.cfname").asString("emp").get();
-        port = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE + "cass.host.port").asInteger(9042).get();
-        connections = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.connections").asInteger(2).get();
+        // we do not set ReadConsistencyLevel and WriteConsistencyLevel and MaxColCount here because the
+        // enum classes corresponding to the consistency levels differ among the concrete subclasses and because
+        // the configs for the concrete subclasses indicate a different default value for MaxColCount.
 
-        username = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.username").asString(null).get();
-        password = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.password").asString(null).get();
-
-        ReadConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.readConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
-        WriteConsistencyLevel = ConsistencyLevel.valueOf(propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.writeConsistencyLevel").asString(ConsistencyLevel.LOCAL_ONE.toString()).get());
-
-       MaxColCount  = propertyFactory.getProperty(NdBenchConstants.PROP_NAMESPACE +"cass.colsPerRow").asLong(100L).get();
-
-       preInit();
-       initDriver();
-       postInit();
-       prepStatements(this.session);
+        preInit();
+        initDriver();
+        postInit();
+        prepStatements(this.session);
     }
 
 
     @Override
-    public void shutdown() throws Exception {
-            this.cassJavaDriverManager.shutDown();
+    public void shutdown() {
+        this.cassJavaDriverManager.shutDown();
     }
 
     @Override
-    public String getConnectionInfo() throws Exception {
-        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ", ClusterName, KeyspaceName, TableName
-                ,ReadConsistencyLevel,WriteConsistencyLevel);
+    public String getConnectionInfo() {
+        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ",
+                ClusterName, KeyspaceName, TableName, ReadConsistencyLevel, WriteConsistencyLevel);
     }
 
     @Override
-    public String runWorkFlow() throws Exception {
+    public String runWorkFlow() {
         return null;
     }
 
-    private void initDriver() throws Exception {
-
+    private void initDriver() {
         logger.info("Cassandra  Cluster: " + ClusterName);
 
-        this.cluster = cassJavaDriverManager.registerCluster(ClusterName,ClusterContactPoint,connections,port,username,password);
+        this.cluster = cassJavaDriverManager.registerCluster(ClusterName, ClusterContactPoint, connections, port,
+                username, password);
         this.session = cassJavaDriverManager.getSession(cluster);
 
         upsertKeyspace(this.session);
         upsertCF(this.session);
     }
 
-   abstract void prepStatements(Session session);
-   abstract void upsertKeyspace(Session session);
-   abstract void upsertCF(Session session);
-   abstract void preInit();
-   abstract void postInit();
+    abstract void prepStatements(Session session);
+    abstract void upsertKeyspace(Session session);
+    abstract void upsertCF(Session session);
+    void preInit() {
 
-   protected void upsertGenereicKeyspace()
-   {
-       session.execute("CREATE KEYSPACE IF NOT EXISTS " +KeyspaceName+" WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};");
-       session.execute("Use " + KeyspaceName);
-   }
+    }
+    void postInit() {
+
+    }
+
+    /**
+     * Perform a bulk read operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> readBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
+    /**
+     * Perform a bulk write operation
+     * @return a list of response codes
+     * @throws Exception
+     */
+    public List<String> writeBulk(final List<String> keys) throws Exception {
+        throw new UnsupportedOperationException("bulk operation is not supported");
+    }
+
+    protected void upsertGenereicKeyspace() {
+        session.execute("CREATE KEYSPACE IF NOT EXISTS " +KeyspaceName+" WITH replication = {'class': 'SimpleStrategy','replication_factor': '1'};");
+        session.execute("Use " + KeyspaceName);
+    }
 }
