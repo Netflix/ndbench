@@ -67,8 +67,6 @@ public class CassAstyanaxPlugin implements NdBenchClient {
 
     /**
      * Initialize the client
-     *
-     * @throws Exception
      */
     @Override
     public void init(DataGenerator dataGenerator) {

@@ -64,8 +64,6 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
 
     /**
      * Initialize the client
-     *
-     * @throws Exception
      */
     @Override
     public void init(DataGenerator dataGenerator) {
