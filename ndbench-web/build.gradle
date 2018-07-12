@@ -8,7 +8,7 @@ dependencies {
         exclude group: 'ch.qos.logback'
     }
     
-    compile project(':ndbench-dynamodb-plugins')  
+    // compile project(':ndbench-dynamodb-plugins')  // Commented as part of https://github.com/Netflix/ndbench/issues/197
     compile project(':ndbench-dyno-plugins')
     compile project(':ndbench-es-plugins')
     compile project(':ndbench-evcache-plugins') 
