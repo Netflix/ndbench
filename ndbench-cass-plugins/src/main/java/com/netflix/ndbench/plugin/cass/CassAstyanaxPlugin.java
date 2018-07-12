@@ -111,7 +111,7 @@ public class CassAstyanaxPlugin implements NdBenchClient {
      *
      * @param key
      * @return
-     * @throws Exception
+     * @throws  This could throw exceptions when there are exceptions in read path
      */
     @Override
     public String readSingle(String key) throws Exception {
@@ -137,7 +137,7 @@ public class CassAstyanaxPlugin implements NdBenchClient {
      *
      * @param key
      * @return
-     * @throws Exception
+     * @throws This could throw exceptions when there are exceptions in write path
      */
     @Override
     public String writeSingle(String key) throws Exception {

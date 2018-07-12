@@ -4,7 +4,7 @@ include 'ndbench-api'
 include 'ndbench-cass-plugins'
 include 'ndbench-cli'
 include 'ndbench-core'
-include 'ndbench-dynamodb-plugins'
+// include 'ndbench-dynamodb-plugins' // Commented as part of https://github.com/Netflix/ndbench/issues/197
 include 'ndbench-dyno-plugins'
 include 'ndbench-es-plugins'
 include 'ndbench-evcache-plugins'

@@ -28,7 +28,7 @@ dependencies {
     compile project(':ndbench-core')
     compile project(':ndbench-api')
     compile project(':ndbench-cass-plugins')
-    compile project(':ndbench-dynamodb-plugins')
+    // compile project(':ndbench-dynamodb-plugins') // Commented as part of https://github.com/Netflix/ndbench/issues/197
     compile project(':ndbench-dyno-plugins')
     compile project(':ndbench-es-plugins')
     //compile project(':ndbench-evcache-plugins')
@@ -36,13 +36,16 @@ dependencies {
     compile project(':ndbench-janusgraph-plugins')
     compile project(':ndbench-sample-plugins')
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    download {
-        src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
-        dest buildDir
-        overwrite false
-    }
+    /**
+    * DaxJavaClient dependency is commented as part of https://github.com/Netflix/ndbench/issues/197
+    */
+    // download {
+    //     src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
+    //     dest buildDir
+    //     overwrite false
+    // }
 
-    compile name: 'DaxJavaClient-latest'
+    // compile name: 'DaxJavaClient-latest'
 }
 
 task run (type: JavaExec, dependsOn: classes){
