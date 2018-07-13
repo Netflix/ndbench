@@ -27,7 +27,6 @@ import com.amazonaws.services.cloudwatch.model.PutMetricAlarmRequest;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.amazonaws.services.cloudwatch.model.Statistic;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.DescribeLimitsResult;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.google.common.base.Preconditions;
@@ -77,7 +76,6 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
     private final AtomicReference<ExecutorService> cloudwatchReporterExecutor = new AtomicReference<>(null);
 
     private DynamoDBAutoscalingConfigurer dynamoDBAutoscalingConfigurer;
-    private DynamoDBKeyValue dynamoDBKeyValue;
     private AmazonCloudWatch cloudWatch;
     private CreateDynamoDBTable createTable;
     private DeleteDynamoDBTable deleteTable;
@@ -96,19 +94,15 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
     @Inject
     public DynamoDBProgrammaticKeyValue(AWSCredentialsProvider awsCredentialsProvider,
                                         ProgrammaticDynamoDBConfiguration configuration,
-                                        DynamoDBAutoscalingConfigurer dynamoDBAutoscalingConfigurer,
-                                        DynamoDBKeyValue dynamoDBKeyValue) {
+                                        DynamoDBAutoscalingConfigurer dynamoDBAutoscalingConfigurer) {
         super(awsCredentialsProvider, configuration);
-        this.dynamoDBKeyValue = dynamoDBKeyValue;
         this.dynamoDBAutoscalingConfigurer = dynamoDBAutoscalingConfigurer;
     }
 
     @Override
     public void init(DataGenerator dataGenerator) {
-        dynamoDBKeyValue.init(dataGenerator);
-
-        //get dynamodb client from the encapsulated DynamoDBKeyValue
-        AmazonDynamoDB dynamoDB = dynamoDBKeyValue.dynamoDB;
+        createAndSetDynamoDBClient();
+        instantiateDataPlaneOperations(dataGenerator);
 
         //prerequisite data from configuration
         String tableName = config.getTableName();
@@ -126,9 +120,11 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
         TableDescription td = createTable.get();
         logger.info("Table Description: " + td.toString());
         final DescribeLimitsResult limits = describeLimits.get();
-        dynamoDBAutoscalingConfigurer.setupAutoscaling(rcu, wcu, config.getTableName(), limits,
-                Integer.valueOf(config.getTargetWriteUtilization()),
-                Integer.valueOf(config.getTargetReadUtilization()));
+        if (config.getAutoscaling()) {
+            dynamoDBAutoscalingConfigurer.setupAutoscaling(rcu, wcu, config.getTableName(), limits,
+                    Integer.valueOf(config.getTargetWriteUtilization()),
+                    Integer.valueOf(config.getTargetReadUtilization()));
+        }
 
         // build cloudwatch client
         AmazonCloudWatchClientBuilder cloudWatchClientBuilder = AmazonCloudWatchClientBuilder.standard();
@@ -205,12 +201,12 @@ public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<Programma
     }
 
     private MetricDatum createConsumedRcuDatum(Date now) {
-        return createCapacityUnitMetricDatumAndResetCounter(now, dynamoDBKeyValue.getAndResetReadCounsumed(),
+        return createCapacityUnitMetricDatumAndResetCounter(now, getAndResetReadCounsumed(),
                 ND_BENCH_DYNAMO_DB_CONSUMED_RCU);
     }
 
     private MetricDatum createConsumedWcuDatum(Date now) {
-        return createCapacityUnitMetricDatumAndResetCounter(now, dynamoDBKeyValue.getAndResetWriteCounsumed(),
+        return createCapacityUnitMetricDatumAndResetCounter(now, getAndResetWriteCounsumed(),
                 ND_BENCH_DYNAMO_DB_CONSUMED_WCU);
     }
 

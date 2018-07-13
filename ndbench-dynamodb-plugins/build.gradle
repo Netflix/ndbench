@@ -1,3 +1,9 @@
+repositories {
+    maven {
+        url 'https://s3-us-west-2.amazonaws.com/dynamodb-local/release'
+    }
+}
+
 apply plugin: "jacoco"
 
 jacoco {
@@ -30,5 +36,22 @@ dependencies {
     compile "com.amazonaws:aws-java-sdk-cloudwatch:latest.release"
     testCompile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
     testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
+    testCompile project(':ndbench-core')
+    testCompile 'com.amazonaws:DynamoDBLocal:[1.11,2.0)'
 
+}
+
+task copyNativeDeps(type: Copy) {
+    from (configurations.testCompile) {
+        include "*.dylib"
+        include "*.so"
+        include "*.dll"
+    }
+    into 'build/libs'
+}
+
+test.dependsOn copyNativeDeps
+test.doFirst {
+    systemProperty "java.library.path", 'build/libs'
+    systemProperty "sqlite4java.library.path", 'build/libs'
 }
