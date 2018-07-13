@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.plugin.dax.configs;
 
 import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
@@ -22,6 +22,7 @@ import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 import com.netflix.ndbench.plugin.dynamodb.NdbenchAWSCredentialProvider;
+import com.netflix.ndbench.plugin.dynamodb.configs.CredentialsConfiguration;
 
 /**
  * 
@@ -30,7 +31,7 @@ import com.netflix.ndbench.plugin.dynamodb.NdbenchAWSCredentialProvider;
  *
  */
 @NdBenchClientPluginGuiceModule
-public class DynamoDBModule extends AbstractModule {
+public class DaxModule extends AbstractModule {
 
     @Override
     protected void configure() {
@@ -38,13 +39,8 @@ public class DynamoDBModule extends AbstractModule {
     }
 
     @Provides
-    DynamoDBConfiguration getDynamoDBConfiguration(ConfigProxyFactory factory) {
-        return factory.newProxy(DynamoDBConfiguration.class);
-    }
-
-    @Provides
-    ProgrammaticDynamoDBConfiguration getProgrammaticDynamoDBConfiguration(ConfigProxyFactory factory) {
-        return factory.newProxy(ProgrammaticDynamoDBConfiguration.class);
+    DaxConfiguration getDaxConfiguration(ConfigProxyFactory factory) {
+        return factory.newProxy(DaxConfiguration.class);
     }
 
     @Provides

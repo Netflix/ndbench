@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb;
+package com.netflix.ndbench.plugin.dax;
 
 import com.amazon.dax.client.dynamodbv2.AmazonDaxClientBuilder;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -25,7 +25,8 @@ import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
-import com.netflix.ndbench.plugin.dynamodb.configs.DaxConfiguration;
+import com.netflix.ndbench.plugin.dynamodb.DynamoDBKeyValueBase;
+import com.netflix.ndbench.plugin.dax.configs.DaxConfiguration;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadBulk;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadSingle;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteBulk;

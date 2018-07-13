@@ -1,4 +1,4 @@
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.plugin.dax.configs;
 
 import com.netflix.archaius.guice.ArchaiusModule;
 import com.netflix.governator.guice.test.ModulesForTesting;
@@ -11,7 +11,7 @@ import javax.inject.Inject;
 import static org.junit.Assert.*;
 
 @RunWith(GovernatorJunit4ClassRunner.class)
-@ModulesForTesting({DynamoDBModule.class, ArchaiusModule.class})
+@ModulesForTesting({DaxModule.class, ArchaiusModule.class})
 public class DaxConfigurationTest {
     @Inject
     DaxConfiguration configuration;
