@@ -17,7 +17,7 @@
 * Elassandra
 * Amazon DynamoDB
 * Apache Geode
-* Apache JanusGraph
+* JanusGraph
 * Netflix Dynomite (Redis API)
 * Netflix EVCache (Memcache API)
 
