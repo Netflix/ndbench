@@ -14,10 +14,11 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.plugin.dax.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
+import com.netflix.ndbench.plugin.dynamodb.configs.DynamoDBConfigurationBase;
 
 /**
  * Configurations for DynamoDB benchmarks
@@ -25,7 +26,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
  * @author ipapapa
  * @author Alexander Patrikalakis
  */
-@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dynamodb")
+@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "dax")
 public interface DaxConfiguration extends DynamoDBConfigurationBase {
     /*
      * DAX endpoint

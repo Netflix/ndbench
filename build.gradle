@@ -45,7 +45,7 @@ subprojects {
     targetCompatibility = '1.8'
 
     repositories {
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -59,8 +59,8 @@ subprojects {
       compile 'org.slf4j:slf4j-api:1.6.1'
       compile 'org.slf4j:slf4j-log4j12:1.6.1'
 
-        // Archaius-2
-        compile group: 'com.netflix.archaius', name: 'archaius2-core', version: '2.1.11'
+      // Archaius-2
+      compile group: 'com.netflix.archaius', name: 'archaius2-core', version: '2.1.11'
 
       //Unit Testing
       testCompile 'org.jmockit:jmockit:1.19'
