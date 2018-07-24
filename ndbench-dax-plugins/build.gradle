@@ -1,9 +1,3 @@
-repositories {
-    flatDir {
-        dirs buildDir
-    }
-}
-
 apply plugin: "jacoco"
 
 jacoco {
@@ -30,15 +24,7 @@ jacocoTestCoverageVerification {
 
 dependencies {
     compile project(':ndbench-dynamodb-plugins')
+    compile 'com.amazonaws:amazon-dax-client:1.0.200704.0'
     testCompile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
     testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
-
-    download {
-        src 'http://dax-sdk.s3-website-us-west-2.amazonaws.com/java/DaxJavaClient-latest.jar'
-        dest buildDir
-        overwrite false
-    }
-
-    compileOnly name: 'DaxJavaClient-latest'
-
 }
