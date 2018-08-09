@@ -249,7 +249,7 @@ public class DynoJedisUtils {
             returnOp = jedisClient.get().zadd(zKey, i, dataGenerator.getRandomValue() + "__" + zKey);
             success += returnOp;
         }
-        // all the above operations will seperate entries
+        // all the above operations will separate entries
         if (success != max_score - 1) {
             return null;
         }
