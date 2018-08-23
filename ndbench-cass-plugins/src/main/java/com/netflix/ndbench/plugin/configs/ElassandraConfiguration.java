@@ -30,6 +30,6 @@ public interface ElassandraConfiguration extends CassandraConfigurationBase {
     @DefaultValue("LOCAL_ONE")
     String getWriteConsistencyLevel();
 
-    @DefaultValue("5L")
+    @DefaultValue("5")
     Long getColsPerRow();
 }

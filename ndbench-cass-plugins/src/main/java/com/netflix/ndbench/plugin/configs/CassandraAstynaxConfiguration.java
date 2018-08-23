@@ -31,6 +31,6 @@ public interface CassandraAstynaxConfiguration extends CassandraConfigurationBas
     @DefaultValue("CL_LOCAL_ONE")
     String getWriteConsistencyLevel();
 
-    @DefaultValue("5L")
+    @DefaultValue("5")
     Long getColsPerRow();
 }

@@ -30,6 +30,6 @@ public interface CassandraGenericConfiguration extends CassandraConfigurationBas
     @DefaultValue("DEFAULT_CONSISTENCY_LEVEL")
     String getWriteConsistencyLevel();
 
-    @DefaultValue("100L")
+    @DefaultValue("100")
     Long getColsPerRow();
 }
