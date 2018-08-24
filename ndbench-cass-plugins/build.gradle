@@ -6,7 +6,7 @@ dependencies {
     //Netflix - Cassandra Astyanax
     compile group: 'com.netflix.astyanax', name: 'astyanax-core', version: 'latest.release'
     compile group: 'com.netflix.astyanax', name: 'astyanax-thrift', version: 'latest.release'
-    compile group: 'com.netflix.astyanax', name: 'astyanax-cassandra', version: 'latest.release'
+    // Note: to support Astyanax CqlFamilyFactory, include astyanax-cql
 
     //Support Cassandra  UDT
     compile 'com.datastax.cassandra:cassandra-driver-mapping:3.+'
