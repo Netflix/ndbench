@@ -18,10 +18,19 @@ package com.netflix.ndbench.plugin.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.archaius.api.annotations.PropertyName;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cass")
 public interface CassandraAstynaxConfiguration extends CassandraConfigurationBase {
+
+    /**
+     * Default to C*'s default thrift port since ndbench doesn't implement cql over Astyanax
+     */
+    @PropertyName(name = "host.port")
+    @DefaultValue("9160")
+    Integer getHostPort();
+
     @DefaultValue("emp_thrift")
     String getCfname();
 

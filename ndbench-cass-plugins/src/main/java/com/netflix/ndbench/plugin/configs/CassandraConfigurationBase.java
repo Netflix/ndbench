@@ -24,6 +24,10 @@ public interface CassandraConfigurationBase {
     String getCluster();
 
     @PropertyName(name = "host")
+    // Ignore PMD java rule as inapplicable because we're setting an overridable default
+    @SuppressWarnings("PMD.AvoidUsingHardCodedIP")
+    // Default to running locally against local C* host
+    @DefaultValue("127.0.0.1")
     String getHost();
 
     @PropertyName(name = "host.port")
