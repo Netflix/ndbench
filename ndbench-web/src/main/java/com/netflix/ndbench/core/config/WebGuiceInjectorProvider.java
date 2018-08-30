@@ -13,14 +13,14 @@ import java.util.List;
 /**
  * ndbench-web app-specific GuiceInjectorProvider impl which adds EurekaModule (local or AWS) to avoid conflicts from
  * different modules instantiating different LookupService implementations.
- * <p/>
+ * <p>
  * {@inheritDoc}
  */
 public class WebGuiceInjectorProvider extends GuiceInjectorProvider {
     /**
      * GuiceInjectorProvider impl which adds EurekaModule (local or AWS) to avoid conflicts from different modules
      * instantiating different LookupService implementations.
-     * <p/>
+     * <p>
      * {@inheritDoc}
      */
     @Override
