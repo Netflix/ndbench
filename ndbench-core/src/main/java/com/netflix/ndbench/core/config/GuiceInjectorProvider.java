@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GuiceInjectorProvider {
-    private List<Module> getModuleList(AbstractModule... modules) {
+    List<Module> getModuleList(AbstractModule... modules) {
         List<Module> moduleList = Lists.newArrayList();
 
         // Add default list of modules

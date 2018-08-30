@@ -19,24 +19,22 @@ package com.netflix.ndbench.plugin.evcache.configs;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
-import com.netflix.discovery.guice.EurekaModule;
 import com.netflix.evcache.EVCacheModule;
 import com.netflix.evcache.connection.ConnectionModule;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 
 /**
- * 
- * @author ipapapa
+ * Note this module relies on LookupService (e.g. Eureka). But to avoid conflicts with different modules binding
+ * different LookupService implementations, we defer the install to an application-level module.
  *
+ * @author ipapapa
  */
 @NdBenchClientPluginGuiceModule
 public class EVCachePluginModule extends AbstractModule {
     @Override
     protected void configure() {
-        install(new EurekaModule());
         install(new EVCacheModule());
         install(new ConnectionModule());
-        
     }
 
     @Provides

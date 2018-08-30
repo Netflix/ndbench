@@ -93,7 +93,7 @@ public class CassAstyanaxPlugin implements NdBenchClient {
                     .setDiscoveryType(NodeDiscoveryType.RING_DESCRIBE)
             )
             .withConnectionPoolConfiguration(new ConnectionPoolConfigurationImpl("MyConnectionPool")
-                    .setPort(9160)
+                    .setPort(config.getHostPort())
                     .setMaxConnsPerHost(1)
                     .setSeeds(ClusterContactPoint)
             )
