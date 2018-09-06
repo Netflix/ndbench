@@ -19,7 +19,6 @@
 * Apache Geode
 * JanusGraph
 * Netflix Dynomite (Redis API)
-* Netflix EVCache (Memcache API)
 
 ## Features
    * Dynamically change the benchmark configurations while the test is running, hence perform tests along with our production microservices.
