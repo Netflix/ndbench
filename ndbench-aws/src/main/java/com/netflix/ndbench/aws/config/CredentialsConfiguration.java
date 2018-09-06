@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.configs;
+package com.netflix.ndbench.aws.config;
 
 import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
@@ -23,13 +23,13 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "aws")
 public interface CredentialsConfiguration {
     /**
-     * The AWS access key to use to connect to DynamoDB. Prefer using the default credentials provider chain.
+     * The AWS access key to use to connect to AWS services (e.g., DynamoDB). Prefer using the default credentials provider chain.
      */
     @Deprecated
     String accessKey();
 
     /**
-     * The AWS secret key to use to connect to DynamoDB. Prefer using the default credentials provider chain.
+     * The AWS secret key to use to connect to AWS services (e.g., DynamoDB). Prefer using the default credentials provider chain.
      */
     @Deprecated
     String secretKey();

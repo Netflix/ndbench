@@ -30,6 +30,7 @@ jacocoTestCoverageVerification {
 
 dependencies {
     compile project(':ndbench-api')
+    compile project(':ndbench-aws')
     compile "com.amazonaws:aws-java-sdk-dynamodb:latest.release"
     compile "com.amazonaws:aws-java-sdk-applicationautoscaling:latest.release"
     compile "com.amazonaws:aws-java-sdk-sts:latest.release"

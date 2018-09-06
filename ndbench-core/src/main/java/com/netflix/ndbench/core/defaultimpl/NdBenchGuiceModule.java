@@ -16,6 +16,7 @@
  */
 package com.netflix.ndbench.core.defaultimpl;
 
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
@@ -31,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * This module defines the default bindings, this can be customized internally if one has specific services for Service discovery, metrics etc.,
  * @author vchella
  */
 public class NdBenchGuiceModule extends AbstractModule {
@@ -56,7 +58,6 @@ public class NdBenchGuiceModule extends AbstractModule {
         }
         bind(DataGenerator.class).to(DefaultDataGenerator.class);
         bind(NdbenchConfigListener.class).asEagerSingleton();
-
     }
 
     @Provides
