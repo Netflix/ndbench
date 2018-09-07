@@ -72,8 +72,8 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
     @Override
     void upsertKeyspace(Session session) {
-        session.execute("CREATE KEYSPACE IF NOT EXISTS " +KeyspaceName+" WITH replication = {'class': 'NetworkTopologyStrategy','eu-west': '3','us-east': '3'};");
-        session.execute("Use " + KeyspaceName);
+        session.execute("CREATE KEYSPACE IF NOT EXISTS " + keyspaceName + " WITH replication = {'class': 'NetworkTopologyStrategy','eu-west': '3','us-east': '3'};");
+        session.execute("Use " + keyspaceName);
 
     }
 
@@ -86,37 +86,37 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
         session.execute("CREATE TYPE IF NOT EXISTS  "+ emailType +" (fp text, domain text)");
 
-        session.execute("CREATE TABLE IF NOT EXISTS  "+TableName+" ( id text PRIMARY KEY, name frozen <fullname_type>, emails set<frozen <email_type>>, billing_addresses map<text, frozen <address_type>>, account_type text)");
+        session.execute("CREATE TABLE IF NOT EXISTS  " + tableName + " ( id text PRIMARY KEY, name frozen <fullname_type>, emails set<frozen <email_type>>, billing_addresses map<text, frozen <address_type>>, account_type text)");
     }
 
     @Override
     void prepStatements(Session session) {
-        readPstmt1 = session.prepare(" SELECT * FROM "+TableName+" WHERE id = ?" );
-        readPstmt2 = session.prepare(" SELECT name.lastname FROM "+TableName+" WHERE id = ?" );
-        readPstmt3 = session.prepare(" SELECT emails, billing_addresses FROM "+TableName+" WHERE id = ?" );
+        readPstmt1 = session.prepare(" SELECT * FROM " + tableName + " WHERE id = ?" );
+        readPstmt2 = session.prepare(" SELECT name.lastname FROM " + tableName + " WHERE id = ?" );
+        readPstmt3 = session.prepare(" SELECT emails, billing_addresses FROM " + tableName + " WHERE id = ?" );
 
-        insertPstmt1 = session.prepare("INSERT INTO "+TableName+" (id, name, account_type) VALUES  (?, ?, ?)");
-
-
-        updatePstmt1 = session.prepare("UPDATE "+TableName+" SET billing_addresses = billing_addresses + ? " +
-                ", emails = emails + ? WHERE id = ?");
+        insertPstmt1 = session.prepare("INSERT INTO " + tableName + " (id, name, account_type) VALUES  (?, ?, ?)");
 
 
-        casPstmt1 = session.prepare("UPDATE "+TableName+" SET billing_addresses = billing_addresses + ? WHERE id = ?                   if account_type='Paid'");
+        updatePstmt1 = session.prepare("UPDATE " + tableName + " SET billing_addresses = billing_addresses + ? " +
+                                       ", emails = emails + ? WHERE id = ?");
 
-        casPstmt2 = session.prepare("UPDATE "+TableName+" SET emails = emails - ? WHERE id = ? if exists");
 
-        updatePstmt2 = session.prepare("UPDATE "+TableName+" SET billing_addresses = billing_addresses - ? WHERE id = ?");
+        casPstmt1 = session.prepare("UPDATE " + tableName + " SET billing_addresses = billing_addresses + ? WHERE id = ?                   if account_type='Paid'");
+
+        casPstmt2 = session.prepare("UPDATE " + tableName + " SET emails = emails - ? WHERE id = ? if exists");
+
+        updatePstmt2 = session.prepare("UPDATE " + tableName + " SET billing_addresses = billing_addresses - ? WHERE id = ?");
 
     }
     @Override
     void postInit() {
         cassAddressType = session.getCluster().
-                getMetadata().getKeyspace(KeyspaceName).getUserType("address_type");
+                getMetadata().getKeyspace(keyspaceName).getUserType("address_type");
         cassFullnameType = session.getCluster().
-                getMetadata().getKeyspace(KeyspaceName).getUserType("fullname_type");
+                getMetadata().getKeyspace(keyspaceName).getUserType("fullname_type");
         cassEmailType = session.getCluster().
-                getMetadata().getKeyspace(KeyspaceName).getUserType("email_type");
+                getMetadata().getKeyspace(keyspaceName).getUserType("email_type");
     }
 
     @Override
@@ -152,7 +152,7 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
     {
         BoundStatement statement = preparedStatement.bind();
         statement.setString("id", key);
-        statement.setConsistencyLevel(this.ReadConsistencyLevel);
+        statement.setConsistencyLevel(ConsistencyLevel.valueOf(config.getReadConsistencyLevel()));
         ResultSet rs = session.execute(statement);
 
         List<Row> result = rs.all();
@@ -206,7 +206,7 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
         BoundStatement bStmt = insertPstmt1.bind(key,name,this.dataGenerator.getRandomInteger()%2==0?"Paid":"Free");
 
-        bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
+        bStmt.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
 
         ResultSet rs = session.execute(bStmt);
 
@@ -249,7 +249,7 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
         bStmt.setSet("emails", emails);
         bStmt.setString("id", key);
 
-        bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
+        bStmt.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
 
         ResultSet rs = session.execute(bStmt);
 
@@ -285,7 +285,7 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
         bStmt1.setMap("billing_addresses", billing_addresses);
         bStmt1.setString("id", key);
-        bStmt1.setConsistencyLevel(this.WriteConsistencyLevel);
+        bStmt1.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
 
         batch.add(bStmt1);
 
@@ -303,7 +303,7 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
         bStmt2.setSet("emails", emails);
         bStmt2.setString("id", key);
-        bStmt2.setConsistencyLevel(this.WriteConsistencyLevel);
+        bStmt2.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
 
         batch.add(bStmt2);
 

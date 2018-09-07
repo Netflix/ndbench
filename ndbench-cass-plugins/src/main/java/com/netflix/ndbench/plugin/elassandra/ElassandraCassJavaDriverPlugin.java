@@ -168,7 +168,7 @@ public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
 
     void upsertKeyspace(Session session) {
         session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class': 'NetworkTopologyStrategy', 'dc1': '1'}  AND durable_writes = true;");
-        //session.execute("CREATE KEYSPACE IF NOT EXISTS " + KeyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor': 2};");
+        //session.execute("CREATE KEYSPACE IF NOT EXISTS " + keyspaceName +" WITH replication = {'class':'SimpleStrategy','replication_factor': 2};");
         session.execute("Use " + KeyspaceName);
     }
     

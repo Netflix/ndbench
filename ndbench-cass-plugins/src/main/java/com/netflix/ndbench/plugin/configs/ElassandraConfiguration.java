@@ -21,15 +21,4 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cass")
 public interface ElassandraConfiguration extends CassandraConfigurationBase {
-    @DefaultValue("external")
-    String getCfname();
-
-    @DefaultValue("LOCAL_ONE")
-    String getReadConsistencyLevel();
-
-    @DefaultValue("LOCAL_ONE")
-    String getWriteConsistencyLevel();
-
-    @DefaultValue("5")
-    Long getColsPerRow();
 }

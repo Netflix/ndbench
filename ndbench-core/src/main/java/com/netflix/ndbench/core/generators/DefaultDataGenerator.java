@@ -16,109 +16,114 @@
  */
 package com.netflix.ndbench.core.generators;
 
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.core.config.IConfiguration;
-import org.apache.commons.lang.RandomStringUtils;
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * @author vchella
  */
 
 @Singleton
-public class DefaultDataGenerator implements DataGenerator {
+public class DefaultDataGenerator implements DataGenerator
+{
     private static Logger logger = LoggerFactory.getLogger(DefaultDataGenerator.class);
     protected final IConfiguration config;
-
-
     private final List<String> values = new ArrayList<String>();
-
     private final Random vRandom = new Random();
     private final Random vvRandom = new Random(DateTime.now().getMillis()); // variable value random
 
-    private final String StaticValue;
-
-
-
     @Inject
-    public DefaultDataGenerator(IConfiguration config) {
+    public DefaultDataGenerator(IConfiguration config)
+    {
         this.config = config;
-        StaticValue = getRandomString();
 
-        if (config.isUseVariableDataSize()) {
-            initialize(config.getDataSizeLowerBound(), config.getDataSizeUpperBound());
-        } else {
-            initialize();
-        }
+        initialize();
+
+        //Schedule a task to upsert/ modify random entries from the pre generated values
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        logger.info("Scheduling a thread to modify random values from generated values data set");
+        executor.scheduleAtFixedRate(this::upsertRandomString, 10, 10, TimeUnit.MILLISECONDS);
     }
 
     @Override
-    public String getRandomValue() {
+    public String getRandomValue()
+    {
         int randomValueIndex = vRandom.nextInt(config.getNumValues());
         return values.get(randomValueIndex);
     }
 
     @Override
-    public Integer getRandomInteger() {
+    public Integer getRandomInteger()
+    {
         return vRandom.nextInt();
     }
+
     @Override
-    public Integer getRandomIntegerValue() {
+    public Integer getRandomIntegerValue()
+    {
         return vRandom.nextInt(config.getNumValues());
     }
-
 
     @Override
     public String getRandomString()
     {
-        return RandomStringUtils.randomAlphanumeric(config.getDataSize());
+        return generateRandomString(getValueSize());
     }
 
-
-    private void initialize(int lowerBound, int upperBound) {
-        if (config.isUseVariableDataSize()) {
-            for (int i = 0; i < config.getNumKeys(); i++) {
-                if(i%1000==0) {
-                    logger.info("Still initializing sample data for variable data size values. So far: "+ i+" /"+config.getNumKeys());
-                }
-                int valueSize = upperBound;
-                if (upperBound > lowerBound) {
-                    valueSize = vvRandom.nextInt(upperBound - lowerBound) + lowerBound;
-                }
-
-                String value = RandomStringUtils.randomAlphanumeric(valueSize);
-
-                values.add(value);
+    private void initialize()
+    {
+        Instant start = Instant.now();
+        for (int i = 0; i < config.getNumValues(); i++)
+        {
+            if (i % 1000 == 0)
+            {
+                logger.info("Still initializing sample data for values. So far: " + i + " /" + config.getNumValues());
             }
+            values.add(generateRandomString(getValueSize()));
         }
+        Instant end = Instant.now();
+        logger.info("Duration to initialize the dataset of random data (ISO-8601 format): " + Duration.between(start, end));
     }
 
-    private void initialize() {
-        for (int i = 0; i < config.getNumValues(); i++) {
-            if(i%1000==0) {
-                logger.info("Still initializing sample data for values. So far: "+ i+" /"+config.getNumValues());
-            }
-            values.add(constructRandomValue());
+    private int getValueSize()
+    {
+        if (config.isUseVariableDataSize())
+        {
+            return vvRandom.nextInt(
+            Math.abs(config.getDataSizeUpperBound() - config.getDataSizeLowerBound()))
+                   + config.getDataSizeLowerBound();
         }
-
+        return config.getDataSize();
     }
 
-    private String constructRandomValue() {
-
-        if (config.isUseStaticData()) {
-            return StaticValue;
-        }
-
-        return getRandomString();
-
+    private void upsertRandomString()
+    {
+        values.add(vRandom.nextInt(config.getNumValues()), generateRandomString(getValueSize()));
     }
 
+    private String generateRandomString(int length)
+    {
+        StringBuilder builder = new StringBuilder();
+        while (builder.length()<length)
+        {
+            builder.append(Long.toHexString(vRandom.nextLong()));
+        }
+        return builder.toString().substring(0,length);
+    }
 }
