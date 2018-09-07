@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb;
+package com.netflix.ndbench.aws.config;
 
 import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.AWSCredentialsProvider;
@@ -23,7 +23,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import com.netflix.ndbench.plugin.dynamodb.configs.CredentialsConfiguration;
 import org.apache.commons.lang3.StringUtils;
 
 /**

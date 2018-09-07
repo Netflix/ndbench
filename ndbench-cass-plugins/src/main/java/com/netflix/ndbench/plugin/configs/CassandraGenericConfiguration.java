@@ -21,15 +21,8 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cass")
 public interface CassandraGenericConfiguration extends CassandraConfigurationBase {
-    @DefaultValue("emp")
-    String getCfname();
-
-    @DefaultValue("DEFAULT_CONSISTENCY_LEVEL")
-    String getReadConsistencyLevel();
-
-    @DefaultValue("DEFAULT_CONSISTENCY_LEVEL")
-    String getWriteConsistencyLevel();
-
-    @DefaultValue("100")
-    Long getColsPerRow();
+    @DefaultValue("2")
+    Integer getRowsPerPartition();
+    @DefaultValue("5")
+    Integer getColsPerRow();
 }

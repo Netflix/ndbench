@@ -191,11 +191,6 @@ public class AbstractPluginTest {
             }
 
             @Override
-            public boolean isUseStaticData() {
-                return false;
-            }
-
-            @Override
             public int getReadRateLimit() {
                 return 0;
             }

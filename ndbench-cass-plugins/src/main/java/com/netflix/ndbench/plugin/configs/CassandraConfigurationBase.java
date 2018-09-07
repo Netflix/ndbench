@@ -38,6 +38,9 @@ public interface CassandraConfigurationBase {
     @DefaultValue("dev1")
     String getKeyspace();
 
+    @DefaultValue("test1")
+    String getCfname();
+
     @PropertyName(name = "cfname2")
     @DefaultValue("test2")
     String getCfname2();
@@ -63,4 +66,10 @@ public interface CassandraConfigurationBase {
     @PropertyName(name = "useMultiPartition")
     @DefaultValue("false")
     Boolean getUseMultiPartition();
+
+    @DefaultValue("LOCAL_ONE")
+    String getReadConsistencyLevel();
+
+    @DefaultValue("LOCAL_ONE")
+    String getWriteConsistencyLevel();
 }

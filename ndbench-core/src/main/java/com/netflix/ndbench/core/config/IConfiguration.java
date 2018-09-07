@@ -86,9 +86,6 @@ public interface IConfiguration {
     @DefaultValue("5000")
     int getDataSizeUpperBound();
 
-    @DefaultValue("false")
-    boolean isUseStaticData();
-
 
     //Tunable configs
     @DefaultValue("100")

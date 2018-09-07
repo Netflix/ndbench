@@ -21,9 +21,6 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericC
 
     //Settings
     private volatile String TableName2;
-    private volatile Integer batchSize;
-    private volatile Boolean useTimeStamp;
-    private volatile Boolean useMultiPartition;
 
     Random randomObj = new Random();
 
@@ -37,39 +34,32 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericC
     @Override
     void prepStatements(Session session) {
 
-        readPstmt = session.prepare(" SELECT cyclist_name, expense_id, amount, description, paid FROM "+TableName+" WHERE cyclist_name = ?" );
-        writePstmt = session.prepare("INSERT INTO "+TableName+" (cyclist_name, expense_id, amount, description, paid) VALUES (?, ?, ?, ?, ?)");
+        readPstmt = session.prepare(" SELECT cyclist_name, expense_id, amount, description, paid FROM " + tableName + " WHERE cyclist_name = ?" );
+        writePstmt = session.prepare("INSERT INTO " + tableName + " (cyclist_name, expense_id, amount, description, paid) VALUES (?, ?, ?, ?, ?)");
         writePstmt2 = session.prepare("INSERT INTO "+TableName2+" (expense_id, cyclist_name) VALUES (?, ?)");
     }
 
     @Override
     void upsertKeyspace(Session session) {
-        upsertGenereicKeyspace();
+        upsertGenereicKeyspace(session);
     }
 
     @Override
     void upsertCF(Session session) {
-        session.execute("CREATE TABLE IF NOT EXISTS "+TableName+" (cyclist_name text, balance float STATIC, expense_id int, amount float, description text, paid boolean, PRIMARY KEY (cyclist_name, expense_id) )");
+        session.execute("CREATE TABLE IF NOT EXISTS " + tableName + " (cyclist_name text, balance float STATIC, expense_id int, amount float, description text, paid boolean, PRIMARY KEY (cyclist_name, expense_id) )");
         session.execute("CREATE TABLE IF NOT EXISTS "+TableName2+" (expense_id int, cyclist_name text, PRIMARY KEY (expense_id, cyclist_name)) ");
     }
 
     @Override
     void preInit() {
         this.TableName2 = config.getCfname2();
-        this.batchSize = config.getBatchSize();
-        this.useTimeStamp = config.getUseTimestamp();
-        this.useMultiPartition = config.getUseMultiPartition();
-        this.TableName = config.getCfname();
-        this.ReadConsistencyLevel = ConsistencyLevel.valueOf(config.getReadConsistencyLevel());
-        this.WriteConsistencyLevel = ConsistencyLevel.valueOf(config.getWriteConsistencyLevel());
-        this.MaxColCount = config.getColsPerRow();
     }
 
     @Override
     public String readSingle(String key) throws Exception {
         BoundStatement statement = readPstmt.bind();
         statement.setString("cyclist_name", key);
-        statement.setConsistencyLevel(this.ReadConsistencyLevel);
+        statement.setConsistencyLevel(ConsistencyLevel.valueOf(config.getReadConsistencyLevel()));
         ResultSet rs = session.execute(statement);
 
         List<Row> result = rs.all();
@@ -90,10 +80,10 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericC
     public String writeSingle(String key) throws Exception {
 
         BatchStatement batch = new BatchStatement();
-        for (int i = 0; i < this.batchSize; i++) {
+        for (int i = 0; i < config.getBatchSize(); i++) {
 
             BoundStatement bStmt;
-            if(useMultiPartition)
+            if(config.getUseMultiPartition())
             {
                 if(randomObj.nextBoolean())
                 {
@@ -109,10 +99,10 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericC
                 bStmt = getBStmtTable1(key);
             }
 
-            bStmt.setConsistencyLevel(this.WriteConsistencyLevel);
+            bStmt.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
             batch.add(bStmt);
         }
-        if(useTimeStamp) {
+        if(config.getUseTimestamp()) {
             batch.setDefaultTimestamp(Instant.now().toEpochMilli()*1000);
         }
         session.execute(batch);
