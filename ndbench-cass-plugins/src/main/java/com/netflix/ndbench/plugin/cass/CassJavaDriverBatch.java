@@ -46,8 +46,8 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericC
 
     @Override
     void upsertCF(Session session) {
-        session.execute("CREATE TABLE IF NOT EXISTS " + tableName + " (cyclist_name text, balance float STATIC, expense_id int, amount float, description text, paid boolean, PRIMARY KEY (cyclist_name, expense_id) )");
-        session.execute("CREATE TABLE IF NOT EXISTS "+TableName2+" (expense_id int, cyclist_name text, PRIMARY KEY (expense_id, cyclist_name)) ");
+        session.execute("CREATE TABLE IF NOT EXISTS " + tableName + " (cyclist_name text, balance float STATIC, expense_id int, amount float, description text, paid boolean, PRIMARY KEY (cyclist_name, expense_id) ) WITH compression = {'sstable_compression': ''}");
+        session.execute("CREATE TABLE IF NOT EXISTS "+TableName2+" (expense_id int, cyclist_name text, PRIMARY KEY (expense_id, cyclist_name)) WITH compression = {'sstable_compression': ''}");
     }
 
     @Override

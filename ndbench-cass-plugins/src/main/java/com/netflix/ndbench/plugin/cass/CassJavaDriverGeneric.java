@@ -112,7 +112,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
     @Override
     void upsertCF(Session session) {
-        String createTblQuery = "CREATE TABLE IF NOT EXISTS %s (key text, column1 int, %s, PRIMARY KEY ((key), column1))";
+        String createTblQuery = "CREATE TABLE IF NOT EXISTS %s (key text, column1 int, %s, PRIMARY KEY ((key), column1)) WITH compression = {'sstable_compression': ''}";
 
         String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value"+i+" text").collect(Collectors.joining(", "));
         session.execute(String.format(createTblQuery, tableName, values));
