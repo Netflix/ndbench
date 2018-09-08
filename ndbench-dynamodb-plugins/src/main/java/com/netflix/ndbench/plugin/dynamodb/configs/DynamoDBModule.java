@@ -20,7 +20,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
-import com.netflix.ndbench.aws.config.CredentialsConfiguration;
 
 /**
  * 
@@ -45,8 +44,4 @@ public class DynamoDBModule extends AbstractModule {
         return factory.newProxy(ProgrammaticDynamoDBConfiguration.class);
     }
 
-    @Provides
-    CredentialsConfiguration getCredentialsConfiguration(ConfigProxyFactory factory) {
-        return factory.newProxy(CredentialsConfiguration.class);
-    }
 }

@@ -16,12 +16,10 @@
  */
 package com.netflix.ndbench.plugin.dax.configs;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
-import com.netflix.ndbench.aws.config.CredentialsConfiguration;
 
 /**
  * 
@@ -39,10 +37,5 @@ public class DaxModule extends AbstractModule {
     @Provides
     DaxConfiguration getDaxConfiguration(ConfigProxyFactory factory) {
         return factory.newProxy(DaxConfiguration.class);
-    }
-
-    @Provides
-    CredentialsConfiguration getCredentialsConfiguration(ConfigProxyFactory factory) {
-        return factory.newProxy(CredentialsConfiguration.class);
     }
 }
