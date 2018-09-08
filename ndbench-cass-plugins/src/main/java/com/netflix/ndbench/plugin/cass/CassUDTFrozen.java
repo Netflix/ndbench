@@ -86,7 +86,7 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
         session.execute("CREATE TYPE IF NOT EXISTS  "+ emailType +" (fp text, domain text)");
 
-        session.execute("CREATE TABLE IF NOT EXISTS  " + tableName + " ( id text PRIMARY KEY, name frozen <fullname_type>, emails set<frozen <email_type>>, billing_addresses map<text, frozen <address_type>>, account_type text)");
+        session.execute("CREATE TABLE IF NOT EXISTS  " + tableName + " ( id text PRIMARY KEY, name frozen <fullname_type>, emails set<frozen <email_type>>, billing_addresses map<text, frozen <address_type>>, account_type text) WITH compression = {'sstable_compression': ''}");
     }
 
     @Override
