@@ -29,7 +29,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({NdBenchGuiceModule.class, ArchaiusModule.class})
-
 public class NdbenchDriverTest {
     @Rule
     @RuntimeLayer

@@ -41,7 +41,7 @@ public class DataBackfill {
     private final AtomicBoolean stop = new AtomicBoolean(false);
     private final AtomicReference<ExecutorService> threadPool = new AtomicReference<ExecutorService>(null);
     private final AtomicInteger missCount = new AtomicInteger(0);
-    private final AtomicInteger count = new AtomicInteger(0);
+    final AtomicInteger count = new AtomicInteger(0);
 
     private final AtomicReference<Future<Void>> futureRef = new AtomicReference<Future<Void>>(null);
     @Inject
@@ -105,8 +105,7 @@ public class DataBackfill {
                         try {
                             String key = "T" + k;
                             String result = backfillOperation.process(client, key);
-                            logger.info("Backfill Key:" + key + " | Result: " + result);
-
+                            logger.debug("Backfill Key:" + key + " | Result: " + result);
                             k++;
                             count.incrementAndGet();
                         } catch (Exception e) {
