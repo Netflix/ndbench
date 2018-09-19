@@ -17,17 +17,27 @@
 
 package com.netflix.ndbench.core;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.core.config.IConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @author vchella
@@ -42,6 +52,7 @@ public class DataBackfill {
     private final AtomicReference<ExecutorService> threadPool = new AtomicReference<ExecutorService>(null);
     private final AtomicInteger missCount = new AtomicInteger(0);
     final AtomicInteger count = new AtomicInteger(0);
+    private final Random random = new Random();
 
     private final AtomicReference<Future<Void>> futureRef = new AtomicReference<Future<Void>>(null);
     @Inject
@@ -79,22 +90,20 @@ public class DataBackfill {
     private void backfillAsync(final NdBenchAbstractClient<?> client, final BackfillOperation backfillOperation) {
         stop.set(false);
 
-        final int numThreads = config.getNumBackfill();
-        final int backFillStartKey = config.getBackfillStartKey();
-        final int numKeysPerThread = (config.getNumKeys() - backFillStartKey) / numThreads;
-
-        logger.info("NUM THREADS: " + numThreads);
-        logger.info("NUM KEYS: " + config.getNumKeys());
-        logger.info("NUM KEYS PER TH: " + numKeysPerThread);
+        //Default #Cores*4 so that we can keep the CPUs busy even while waiting on I/O
+        final int numThreads = Runtime.getRuntime().availableProcessors() * 4;
 
         initThreadPool(numThreads);
+
+        List<Pair<Integer, Integer>> keyRanges = getKeyRangesPerThread(numThreads,
+                                                                       config.getBackfillKeySlots(),
+                                                                       config.getNumKeys());
 
         final CountDownLatch latch = new CountDownLatch(numThreads);
 
         for (int i = 0; i < numThreads; i++) {
-            final int threadId = i;
-            final int startKey = threadId * numKeysPerThread + backFillStartKey;
-            final int endKey = startKey + numKeysPerThread;
+            final int startKey = keyRanges.get(i).getLeft();
+            final int endKey = keyRanges.get(i).getRight();
 
             threadPool.get().submit(new Callable<Void>() {
                 @Override
@@ -105,7 +114,7 @@ public class DataBackfill {
                         try {
                             String key = "T" + k;
                             String result = backfillOperation.process(client, key);
-                            logger.debug("Backfill Key:" + key + " | Result: " + result);
+                            logger.info("Backfill Key:" + key + " | Result: " + result);
                             k++;
                             count.incrementAndGet();
                         } catch (Exception e) {
@@ -224,10 +233,44 @@ public class DataBackfill {
     }
 
     public void shutdown() {
-        if (threadPool != null) {
+        if (threadPool.get() != null) {
             threadPool.get().shutdownNow();
             threadPool.set(null);
         }
+    }
+
+    /**
+     * This method returns the key range to be back filled in [1 - IConfiguration.getNumKeys()] keyspace.
+     * Algorithm to determine keyrange:
+     * NumKeys/BackfillKeySlots --> This gives the key range slots to be processed.
+     * Each worker randomly picks the slot from above. With low #BackfillKeySlots there is high probability
+     * to cover keyspace without any misses.
+     * @return
+     */
+    List<Pair<Integer, Integer>> getKeyRangesPerThread(int numThreads, int keySlots, int numKeys)
+    {
+        List<Pair<Integer, Integer>> keyRangesPerThread = new LinkedList<>();
+
+        int slotSize = numKeys / keySlots;
+        int randomSlot = random.nextInt(keySlots);
+
+        int startKey = randomSlot * slotSize;
+        int endKey = startKey + slotSize;
+
+        int numKeysToProcess = endKey - startKey;
+
+        int numKeysPerThread = numKeysToProcess / numThreads;
+
+        logger.info("Num keys (KEYSPACE): {}, Num threads: {}, Num slots: {}", numKeys, numThreads, keySlots);
+        logger.info("MyNode: Num keys to be processed: {}, Num keys per thread: {}, My key slot: {}",
+                    numKeysToProcess, numKeysPerThread, randomSlot);
+        for (int i = 0; i < numThreads; i++)
+        {
+            int startKeyPerThread = startKey + (i * numKeysPerThread);
+            int endKeyPerThread = startKeyPerThread + numKeysPerThread;
+            keyRangesPerThread.add(Pair.of(startKeyPerThread, endKeyPerThread));
+        }
+        return keyRangesPerThread;
     }
 
 }
