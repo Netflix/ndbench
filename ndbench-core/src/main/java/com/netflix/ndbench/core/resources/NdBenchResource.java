@@ -166,7 +166,7 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response stopDataFill() throws Exception {
 
-        logger.info("stop NdBench data fill");
+        logger.info("Stop NdBench data fill");
         try {
             dataBackfill.stopBackfill();
             return sendSuccessResponse("data fill stop!" );
@@ -184,7 +184,7 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response shutdownDataFill() throws Exception {
 
-        logger.info("shutdown NdBench data fill");
+        logger.info("Shutdown NdBench data fill");
         try {
             dataBackfill.shutdown();
             return sendSuccessResponse("data fill stop!" );

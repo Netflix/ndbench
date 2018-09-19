@@ -219,11 +219,14 @@ public class DataBackfill {
         if (future != null) {
             future.cancel(true);
         }
+        shutdown();
+
     }
 
     public void shutdown() {
         if (threadPool != null) {
             threadPool.get().shutdownNow();
+            threadPool.set(null);
         }
     }
 
