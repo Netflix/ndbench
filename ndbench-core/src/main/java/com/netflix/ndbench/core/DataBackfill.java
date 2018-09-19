@@ -104,8 +104,27 @@ public class DataBackfill {
             final int startKey = keyRanges.get(i).getLeft();
             final int endKey = keyRanges.get(i).getRight();
 
+<<<<<<< HEAD
             threadPool.get().submit(() -> {
                 int k = startKey;
+=======
+            threadPool.get().submit(new Callable<Void>() {
+                @Override
+                public Void call() throws Exception {
+                    int k = startKey;
+
+                    while (k < endKey && !stop.get()) {
+                        try {
+                            String key = "T" + k;
+                            String result = backfillOperation.process(client, key);
+                            logger.debug("Backfill Key:" + key + " | Result: " + result);
+                            k++;
+                            count.incrementAndGet();
+                        } catch (Exception e) {
+                            logger.error("Retrying after failure", e);
+                        }
+                    }
+>>>>>>> f117b23... Make the backfill log level to debug
 
                 while (k < endKey && !stop.get()) {
                     try {
