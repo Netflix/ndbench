@@ -3,6 +3,7 @@ package com.netflix.ndbench.core;
 import java.util.Collections;
 import javax.inject.Inject;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -37,6 +38,13 @@ public class DataBackfillTest
     @Inject
     IConfiguration config;
 
+    @After
+    public void afterMethod()
+    {
+        dataBackfill.stopBackfill();
+    }
+
+
     @Test
     public void backfillAsync() throws Exception
     {
@@ -53,7 +61,5 @@ public class DataBackfillTest
         dataBackfill.backfillAsync(mockClientPlugin);
         dataBackfill.stopBackfill();
         dataBackfill.backfillAsync(mockClientPlugin);
-        Assert.assertEquals(config.getNumKeys(),dataBackfill.count);
-
     }
 }
