@@ -44,7 +44,6 @@ public class DataBackfillTest
         dataBackfill.stopBackfill();
     }
 
-
     @Test
     public void backfillAsync() throws Exception
     {
