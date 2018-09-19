@@ -114,7 +114,7 @@ public class DataBackfill {
                         try {
                             String key = "T" + k;
                             String result = backfillOperation.process(client, key);
-                            logger.debug("Backfill Key:" + key + " | Result: " + result);
+                            logger.info("Backfill Key:" + key + " | Result: " + result);
                             k++;
                             count.incrementAndGet();
                         } catch (Exception e) {
