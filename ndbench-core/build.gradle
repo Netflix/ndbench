@@ -3,6 +3,7 @@ dependencies {
     compile group: 'com.google.code.gson', name: 'gson', version: '2.7'
     compile group: 'joda-time', name: 'joda-time', version: 'latest.release'
     compile group: 'org.apache.commons', name: 'commons-math3', version: '3.6.+'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'com.codahale.metrics', name: 'metrics-core', version: '3.0.1'
 
     compile 'com.sun.jersey:jersey-bundle:1.19.1'

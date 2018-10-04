@@ -19,6 +19,7 @@ package com.netflix.ndbench.plugin.cass;
 import com.datastax.driver.core.*;
 import com.google.inject.Inject;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraUdtConfiguration;
 import org.apache.commons.lang.RandomStringUtils;
 
@@ -65,9 +66,9 @@ public class CassUDTFrozen extends CJavaDriverBasePlugin<CassandraUdtConfigurati
 
     }
     @Inject
-    public CassUDTFrozen(CassJavaDriverManager javaDriverManager,
+    public CassUDTFrozen(CassJavaDriverManager javaDriverManager, IConfiguration coreConfig,
                          CassandraUdtConfiguration cassUdtConfigs) {
-        super(javaDriverManager, cassUdtConfigs);
+        super(javaDriverManager, coreConfig, cassUdtConfigs);
     }
 
     @Override

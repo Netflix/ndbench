@@ -13,6 +13,7 @@ import com.netflix.archaius.api.PropertyListener;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraConfigurationBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +37,7 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
     protected static final String CacheMiss = null;
     protected final CassJavaDriverManager cassJavaDriverManager;
     protected final C config;
+    protected final IConfiguration coreConfig;
 
     // settings
     protected volatile DataGenerator dataGenerator;
@@ -58,8 +60,9 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
      * @param javaDriverManager
      * @param config
      */
-    protected CJavaDriverBasePlugin(CassJavaDriverManager javaDriverManager, C config) {
+    protected CJavaDriverBasePlugin(CassJavaDriverManager javaDriverManager, IConfiguration coreConfig, C config) {
         this.cassJavaDriverManager = javaDriverManager;
+        this.coreConfig = coreConfig;
         this.config = config;
     }
 

@@ -26,13 +26,19 @@ import org.slf4j.LoggerFactory;
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.Host;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
+import org.apache.commons.io.*;
+
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 @Singleton
 @NdBenchClientPlugin("CassJavaDriverGeneric")
@@ -41,8 +47,8 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
     private static final Logger logger = LoggerFactory.getLogger(CassJavaDriverGeneric.class);
 
     @Inject
-    public CassJavaDriverGeneric(CassJavaDriverManager cassJavaDriverManager, CassandraGenericConfiguration cassConfigs) {
-        super(cassJavaDriverManager, cassConfigs);
+    public CassJavaDriverGeneric(CassJavaDriverManager cassJavaDriverManager, IConfiguration coreConfig, CassandraGenericConfiguration cassConfigs) {
+        super(cassJavaDriverManager, coreConfig, cassConfigs);
     }
 
     @Override
@@ -130,5 +136,33 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
         writePstmt = session.prepare(String.format(insertQuery, tableName, values, bindValues));
         readPstmt = session.prepare("SELECT * FROM " + tableName + " WHERE key = ?");
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        int bytesPerCol=coreConfig.getDataSize();
+        int numColsPerRow=config.getColsPerRow();
+        int numRowsPerPartition=config.getRowsPerPartition();
+        int numPartitions= coreConfig.getNumKeys();
+        int RF = 3;
+        Long numNodes = cluster.getMetadata().getAllHosts()
+                               .stream()
+                               .collect(groupingBy(Host::getDatacenter,counting()))
+                               .values().stream().findFirst().get();
+
+
+        int partitionSizeInBytes = bytesPerCol * numColsPerRow * numRowsPerPartition;
+        int totalSizeInBytes = partitionSizeInBytes * numPartitions * RF;
+        long totalSizeInBytesPerNode = totalSizeInBytes / numNodes;
+
+
+
+        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ::: " +
+                             "DataSize per Node: %s, Total DataSize on Cluster: %s, Num nodes in C* DC: %s, PartitionSize: %s",
+                             clusterName, keyspaceName, tableName, config.getReadConsistencyLevel(), config.getWriteConsistencyLevel(),
+                             FileUtils.byteCountToDisplaySize(totalSizeInBytesPerNode),
+                             FileUtils.byteCountToDisplaySize(totalSizeInBytes),
+                             numNodes,
+                             FileUtils.byteCountToDisplaySize(partitionSizeInBytes));
     }
 }

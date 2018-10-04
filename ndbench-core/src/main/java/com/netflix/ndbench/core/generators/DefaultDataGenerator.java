@@ -114,7 +114,7 @@ public class DefaultDataGenerator implements DataGenerator
 
     private void upsertRandomString()
     {
-        values.add(vRandom.nextInt(config.getNumValues()), generateRandomString(getValueSize()));
+        values.set(vRandom.nextInt(config.getNumValues()), generateRandomString(getValueSize()));
     }
 
     private String generateRandomString(int length)
