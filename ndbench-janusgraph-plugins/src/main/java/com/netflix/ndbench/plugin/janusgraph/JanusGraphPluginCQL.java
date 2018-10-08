@@ -47,7 +47,7 @@ import java.util.Optional;
  */
 @Singleton
 @NdBenchClientPlugin("janusgraph-cql")
-public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBenchClient {
+public class JanusGraphPluginCQL extends JanusGraphBasePlugin implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(JanusGraphPluginCQL.class);
     private static String BACKEND = "cql";
 

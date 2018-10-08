@@ -33,10 +33,10 @@ import java.util.Map;
  */
 @Singleton
 @NdBenchClientPlugin("InMemoryTest")
-public class InMemoryTestPlugin implements NdBenchClient{
+public class InMemoryTestPlugin<K,W> implements NdBenchClient<K,W>{
     private static final Logger logger = LoggerFactory.getLogger(InMemoryTestPlugin.class);
 
-    private final Map<String, String> data = Maps.newConcurrentMap();
+    private final Map<K, String> data = Maps.newConcurrentMap();
 
     private DataGenerator dataGenerator;
     private static final String ResultOK = "Ok";
@@ -63,7 +63,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public String readSingle(String key) throws Exception {
+    public String readSingle(K key) throws Exception {
         String res = data.get(key);
         if(res!=null)
         {
@@ -76,7 +76,6 @@ public class InMemoryTestPlugin implements NdBenchClient{
         {
             return CacheMiss;
         }
-
         return ResultOK;
     }
 
@@ -88,9 +87,9 @@ public class InMemoryTestPlugin implements NdBenchClient{
      * @throws Exception
      */
     @Override
-    public String writeSingle(String key) throws Exception {
+    public W writeSingle(K key) throws Exception {
         data.put(key, this.dataGenerator.getRandomValue());
-        return ResultOK;
+        return (W)ResultOK;
     }
 
     /**
@@ -98,7 +97,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
      * @return a list of response codes
      * @throws Exception
      */
-    public List<String> readBulk(final List<String> keys) throws Exception {
+    public List<String> readBulk(final List<K> keys) throws Exception {
         throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
@@ -107,7 +106,7 @@ public class InMemoryTestPlugin implements NdBenchClient{
      * @return a list of response codes
      * @throws Exception
      */
-    public List<String> writeBulk(final List<String> keys) throws Exception {
+    public List<W> writeBulk(final List<K> keys) throws Exception {
         throw new UnsupportedOperationException("bulk operation is not supported");
     }
 

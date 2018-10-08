@@ -60,19 +60,19 @@ public class DataBackfill {
         this.config = config;
     }
 
-    public void backfill(final NdBenchAbstractClient<?> client) throws Exception {
+    public void backfill(final NdBenchAbstractClient<?,?>client) throws Exception {
         backfill(client, new NormalBackfill());
     }
 
-    public void conditionalBackfill(final NdBenchAbstractClient<?> client) throws Exception {
+    public void conditionalBackfill(final NdBenchAbstractClient<?,?>client) throws Exception {
         backfill(client, new ConditionalBackfill());
     }
 
-    public void verifyBackfill(final NdBenchAbstractClient<?> client) throws Exception {
+    public void verifyBackfill(final NdBenchAbstractClient<?,?>client) throws Exception {
         backfill(client, new VerifyBackfill());
     }
 
-    private void backfill(final NdBenchAbstractClient<?> client, final BackfillOperation backfillOperation) throws Exception {
+    private void backfill(final NdBenchAbstractClient<?,?>client, final BackfillOperation backfillOperation) throws Exception {
 
         long start = System.currentTimeMillis();
 
@@ -83,11 +83,11 @@ public class DataBackfill {
         logger.info("Backfiller latch done! in " + (System.currentTimeMillis() - start) + " ms");
     }
 
-    public void backfillAsync(final NdBenchAbstractClient<?> client) {
+    public void backfillAsync(final NdBenchAbstractClient<?,?>client) {
         backfillAsync(client, new NormalBackfill());
     }
 
-    private void backfillAsync(final NdBenchAbstractClient<?> client, final BackfillOperation backfillOperation) {
+    private void backfillAsync(final NdBenchAbstractClient<?,?>client, final BackfillOperation backfillOperation) {
         stop.set(false);
 
         //Default #Cores*4 so that we can keep the CPUs busy even while waiting on I/O
@@ -166,23 +166,23 @@ public class DataBackfill {
         return false; //Never started
     }
 
-    private interface BackfillOperation {
-        String process(final NdBenchAbstractClient<?> client, final String key) throws Exception;
+    private interface BackfillOperation<K,W> {
+        String process(final NdBenchAbstractClient<K,W> client, final K key) throws Exception;
     }
 
-    private class NormalBackfill implements BackfillOperation {
+    private class NormalBackfill<K,W> implements BackfillOperation<K,W> {
 
         @Override
-        public String process(NdBenchAbstractClient<?> client, String key) throws Exception {
+        public String process(NdBenchAbstractClient<K,W> client, K key) throws Exception {
             Object result =  client.writeSingle(key);
             return result == null ? "<null>"  : result.toString();
         }
     }
 
-    private class ConditionalBackfill implements BackfillOperation {
+    private class ConditionalBackfill<K,W> implements BackfillOperation<K,W> {
 
         @Override
-        public String process(NdBenchAbstractClient<?> client, String key) throws Exception {
+        public String process(NdBenchAbstractClient<K,W> client, K key) throws Exception {
             String result = client.readSingle(key);
             if (result == null) {
                 missCount.incrementAndGet();
@@ -193,10 +193,10 @@ public class DataBackfill {
         }
     }
 
-    private class VerifyBackfill implements BackfillOperation {
+    private class VerifyBackfill<K,W> implements BackfillOperation<K,W> {
 
         @Override
-        public String process(NdBenchAbstractClient<?> client, String key) throws Exception {
+        public String process(NdBenchAbstractClient<K,W> client, K key) throws Exception {
             Object result =  client.writeSingle(key);
             String value = client.readSingle(key);
             if (value == null) {

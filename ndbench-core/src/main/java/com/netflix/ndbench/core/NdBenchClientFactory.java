@@ -29,15 +29,15 @@ import java.util.Set;
 @Singleton
 public class NdBenchClientFactory {
 
-    private Map<String, NdBenchAbstractClient<?>> clientMap;
+    private Map<String, NdBenchAbstractClient<?,?>> clientMap;
 
     @Inject
-    public NdBenchClientFactory(Map<String, NdBenchAbstractClient<?>> driverMap) {
+    public NdBenchClientFactory(Map<String, NdBenchAbstractClient<?,?>> driverMap) {
         this.clientMap = driverMap;
     }
 
-    public NdBenchAbstractClient<?> getClient(String clientName) {
-        NdBenchAbstractClient<?> client = clientMap.get(clientName);
+    public NdBenchAbstractClient<?,?> getClient(String clientName) {
+        NdBenchAbstractClient<?,?> client = clientMap.get(clientName);
         if (client == null) {
             throw new RuntimeException("Client not found: " + clientName);
         }

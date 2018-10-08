@@ -37,7 +37,7 @@ import org.slf4j.LoggerFactory;
 
 @Singleton
 @NdBenchClientPlugin("DaxKeyValue")
-public class DaxKeyValue extends DynamoDBKeyValueBase<DaxConfiguration> implements NdBenchClient {
+public class DaxKeyValue extends DynamoDBKeyValueBase<DaxConfiguration> implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(DaxKeyValue.class);
 
     /**

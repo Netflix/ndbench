@@ -39,7 +39,7 @@ import java.util.List;
 
 @Singleton
 @NdBenchClientPlugin("ES_REST")
-public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
+public class EsRestPlugin implements NdBenchAbstractClient<String,WriteResult> {
     static final String RESULT_OK = "Ok";
     public static final int MAX_INDEX_ROLLS_PER_HOUR = 60;
 

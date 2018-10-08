@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @author vchella, pencal
  */
- public interface NdBenchClient extends NdBenchAbstractClient<String> {
+ public interface NdBenchClient<K,W> extends NdBenchAbstractClient<K, W> {
 
     /**
      * Initialize the client
@@ -35,21 +35,21 @@ import java.util.List;
      * @return
      * @throws Exception
      */
-     String readSingle(final String key) throws Exception;
+     String readSingle(final K key) throws Exception;
 
     /**
      * Perform a single write operation
      * @return
      * @throws Exception
      */
-     String writeSingle(final String key) throws Exception;
+     W writeSingle(final K key) throws Exception;
 
     /**
      * Perform a bulk read operation
      * @return
      * @throws Exception
      */
-    default List<String> readBulk(final List<String> keys) throws Exception {
+    default List<String> readBulk(final List<K> keys) throws Exception {
         throw new UnsupportedOperationException("bulk operation is not supported");
     }
 
@@ -58,7 +58,7 @@ import java.util.List;
      * @return
      * @throws Exception
      */
-    default List<String> writeBulk(final List<String> keys) throws Exception {
+    default List<W> writeBulk(final List<K> keys) throws Exception {
         throw new UnsupportedOperationException("bulk operation is not supported");
     }
 

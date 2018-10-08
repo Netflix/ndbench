@@ -40,7 +40,7 @@ import java.util.List;
  */
 @Singleton
 @NdBenchClientPlugin("ElassandraCassJavaDriverPlugin")
-public class ElassandraCassJavaDriverPlugin implements NdBenchClient{
+public class ElassandraCassJavaDriverPlugin implements NdBenchClient<String,String>{
     private static final Logger logger = LoggerFactory.getLogger(ElassandraCassJavaDriverPlugin.class);
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;

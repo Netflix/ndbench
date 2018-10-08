@@ -32,7 +32,7 @@ import java.util.List;
  *
  * @author vchella, pencal
  */
-public interface NdBenchAbstractClient<W> {
+public interface NdBenchAbstractClient<K, W> {
 
     /**
      * Initialize the client
@@ -47,7 +47,7 @@ public interface NdBenchAbstractClient<W> {
      * @return
      * @throws Exception
      */
-    String readSingle(final String key) throws Exception;
+    String readSingle(final K key) throws Exception;
 
     /**
      * Perform a bulk read operation given the list of keys
@@ -55,7 +55,7 @@ public interface NdBenchAbstractClient<W> {
      * @return
      * @throws Exception
      */
-    List<String> readBulk(final List<String> keys) throws Exception;
+    List<String> readBulk(final List<K> keys) throws Exception;
 
     /**
      * Perform a single write operation
@@ -63,7 +63,7 @@ public interface NdBenchAbstractClient<W> {
      * @return
      * @throws Exception
      */
-    W writeSingle(final String key) throws Exception;
+    W writeSingle(final K key) throws Exception;
 
     /**
      * Perform bulk write operation given the list of keys
@@ -71,7 +71,7 @@ public interface NdBenchAbstractClient<W> {
      * @param keys
      * @return
      */
-    List<W> writeBulk(final List<String> keys) throws Exception;
+    List<W> writeBulk(final List<K> keys) throws Exception;
 
     /**
      * shutdown the client

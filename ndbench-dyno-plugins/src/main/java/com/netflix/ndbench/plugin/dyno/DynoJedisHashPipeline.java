@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @NdBenchClientPlugin("DynoHashPipeline")
-public class DynoJedisHashPipeline implements NdBenchClient {
+public class DynoJedisHashPipeline implements NdBenchClient<String,String> {
 
     private static final Logger logger = LoggerFactory.getLogger(DynoJedisHashPipeline.class);
 

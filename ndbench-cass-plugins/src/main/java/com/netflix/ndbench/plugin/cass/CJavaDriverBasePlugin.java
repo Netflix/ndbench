@@ -29,7 +29,7 @@ import org.apache.commons.lang.StringUtils;
  * @author vchella
  * @author Alexander Patrikalakis
  */
-public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase> implements NdBenchClient {
+public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase> implements NdBenchClient<String,String> {
 
     private static final Logger logger = LoggerFactory.getLogger(CJavaDriverBasePlugin.class);
     protected static final String ResultOK = "Ok";

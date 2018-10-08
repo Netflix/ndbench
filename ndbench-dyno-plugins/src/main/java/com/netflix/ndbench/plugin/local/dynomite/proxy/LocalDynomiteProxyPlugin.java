@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @NdBenchClientPlugin("LocalDynomiteProxyPlugin")
-public class LocalDynomiteProxyPlugin implements NdBenchClient{
+public class LocalDynomiteProxyPlugin implements NdBenchClient<String,String>{
     private static final Logger logger = LoggerFactory.getLogger(DynoJedis.class);
 
     private static final String ResultOK = "Ok";
