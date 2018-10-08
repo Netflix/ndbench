@@ -158,7 +158,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
 
         return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ::: " +
-                             "DataSize per Node: %s, Total DataSize on Cluster: %s, Num nodes in C* DC: %s, PartitionSize: %s",
+                             "DataSize per Node: ~[%s], Total DataSize on Cluster: ~[%s], Num nodes in C* DC: %s, PartitionSize: %s",
                              clusterName, keyspaceName, tableName, config.getReadConsistencyLevel(), config.getWriteConsistencyLevel(),
                              FileUtils.byteCountToDisplaySize(totalSizeInBytesPerNode),
                              FileUtils.byteCountToDisplaySize(totalSizeInBytes),
