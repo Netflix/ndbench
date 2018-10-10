@@ -35,8 +35,8 @@ import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
-import org.apache.commons.io.*;
 
+import static com.netflix.ndbench.core.util.NdbUtil.humanReadableByteCount;
 import static java.util.stream.Collectors.counting;
 import static java.util.stream.Collectors.groupingBy;
 
@@ -152,7 +152,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
 
         int partitionSizeInBytes = bytesPerCol * numColsPerRow * numRowsPerPartition;
-        int totalSizeInBytes = partitionSizeInBytes * numPartitions * RF;
+        long totalSizeInBytes = (long) partitionSizeInBytes * numPartitions * RF;
         long totalSizeInBytesPerNode = totalSizeInBytes / numNodes;
 
 
@@ -160,9 +160,9 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
         return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ::: " +
                              "DataSize per Node: ~[%s], Total DataSize on Cluster: ~[%s], Num nodes in C* DC: %s, PartitionSize: %s",
                              clusterName, keyspaceName, tableName, config.getReadConsistencyLevel(), config.getWriteConsistencyLevel(),
-                             FileUtils.byteCountToDisplaySize(totalSizeInBytesPerNode),
-                             FileUtils.byteCountToDisplaySize(totalSizeInBytes),
+                             humanReadableByteCount(totalSizeInBytesPerNode),
+                             humanReadableByteCount(totalSizeInBytes),
                              numNodes,
-                             FileUtils.byteCountToDisplaySize(partitionSizeInBytes));
+                             humanReadableByteCount(partitionSizeInBytes));
     }
 }
