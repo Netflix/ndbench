@@ -13,3 +13,5 @@ bin/
 ndbench-cass-plugins/out/
 ndbench-cli/src/test/
 ndbench-core/out/
+ndbench-web/out/
+.vscode/*
