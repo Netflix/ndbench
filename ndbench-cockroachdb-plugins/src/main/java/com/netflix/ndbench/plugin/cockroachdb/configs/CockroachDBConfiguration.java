@@ -17,6 +17,8 @@
 package com.netflix.ndbench.plugin.cockroachdb.configs;
 
 import com.netflix.archaius.api.annotations.Configuration;
+import com.netflix.archaius.api.annotations.DefaultValue;
+import com.netflix.archaius.api.annotations.PropertyName;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
 /**
@@ -25,5 +27,20 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
  * @author Sumanth Pasupuleti
  */
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cockroachdb")
-public interface CockroachDBConfiguration extends CockroachDBConfigurationBase {
+public interface CockroachDBConfiguration {
+    @PropertyName(name = "dbname")
+    @DefaultValue("perftest")
+    String getDBName();
+
+    @PropertyName(name = "tablename")
+    @DefaultValue("test")
+    String getTableName();
+
+    @PropertyName(name = "loadbalancer")
+    @DefaultValue("test-loadbalancer")
+    String getLoadBalancer();
+
+    @PropertyName(name = "user")
+    @DefaultValue("maxroach")
+    String getUser();
 }
