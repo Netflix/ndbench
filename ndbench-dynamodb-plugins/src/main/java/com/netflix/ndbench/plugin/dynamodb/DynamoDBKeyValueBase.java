@@ -44,7 +44,7 @@ import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
 /**
  * Base class with shared fields among the various implementations of NdBenchClient.
  */
-public abstract class DynamoDBKeyValueBase<C extends DynamoDBConfigurationBase> implements NdBenchClient {
+public abstract class DynamoDBKeyValueBase<C extends DynamoDBConfigurationBase> implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValueBase.class);
     private static final boolean DO_HONOR_MAX_ERROR_RETRY_IN_CLIENT_CONFIG = true;
 

@@ -67,7 +67,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @NdBenchClientPlugin("DynamoDBProgrammaticKeyValue")
-public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<ProgrammaticDynamoDBConfiguration> implements NdBenchClient {
+public class DynamoDBProgrammaticKeyValue extends DynamoDBKeyValueBase<ProgrammaticDynamoDBConfiguration> implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBProgrammaticKeyValue.class);
     private static final String ND_BENCH_DYNAMO_DB_CONSUMED_RCU = "ConsumedRcuHighRes";
     private static final String ND_BENCH_DYNAMO_DB_CONSUMED_WCU = "ConsumedWcuHighRes";

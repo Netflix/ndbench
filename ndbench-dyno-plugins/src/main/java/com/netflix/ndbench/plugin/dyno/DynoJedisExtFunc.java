@@ -44,7 +44,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Singleton
 @NdBenchClientPlugin("DynoExtFunc")
-public class DynoJedisExtFunc extends NdBenchBaseClient {
+public class DynoJedisExtFunc extends NdBenchBaseClient<String,String> {
     private final Logger logger = LoggerFactory.getLogger(DynoJedisExtFunc.class);
 
     private static final int MIN_PIPE_KEYS = 3;

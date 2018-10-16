@@ -44,7 +44,7 @@ import org.slf4j.LoggerFactory;
  */
 @Singleton
 @NdBenchClientPlugin("CassAstyanaxPlugin")
-public class CassAstyanaxPlugin implements NdBenchClient {
+public class CassAstyanaxPlugin implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(CassAstyanaxPlugin.class);
     private static final String ResultOK = "Ok";
     private static final String CacheMiss = null;

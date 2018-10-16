@@ -75,8 +75,8 @@ public class NdBenchDriver {
     private final AtomicReference<ExecutorService> timerRef = new AtomicReference<ExecutorService>(null);
     private final RPSCount rpsCount;
 
-    private final AtomicReference<NdBenchAbstractClient<?>> clientRef =
-            new AtomicReference<NdBenchAbstractClient<?>>(null);
+    private final AtomicReference<NdBenchAbstractClient<?,?>> clientRef =
+            new AtomicReference<NdBenchAbstractClient<?,?>>(null);
 
     private final AtomicReference<KeyGenerator> keyGeneratorWriteRef = new AtomicReference<>(null);
     private final AtomicReference<KeyGenerator> keyGeneratorReadRef = new AtomicReference<>(null);
@@ -334,19 +334,7 @@ public class NdBenchDriver {
         logger.info("Threadpool has terminated!");
     }
 
-    public interface NdBenchOperation {
-        boolean process(NdBenchDriver driver,
-                        NdBenchMonitor monitor,
-                        List<String> keys,
-                        AtomicReference<RateLimiter> rateLimiter,
-                        boolean isAutoTuneEnabled);
-
-        boolean isReadType();
-
-        boolean isWriteType();
-    }
-
-    public void init(NdBenchAbstractClient<?> client) throws Exception {
+    public void init(NdBenchAbstractClient<?,?> client) throws Exception {
         if (!clientInited.get()) {
             try {
                 if (clientInited.compareAndSet(false, true)) {
@@ -434,22 +422,22 @@ public class NdBenchDriver {
         }
     }
 
-    public String readSingle(String key) throws Exception {
-        try {
-            return clientRef.get().readSingle(key);
-        } catch (Exception e) {
-            logger.error("FAILED readSingle ", e);
-            throw e;
-        }
-    }
+//    public String readSingle(String key) throws Exception {
+//        try {
+//            return clientRef.get().readSingle(key);
+//        } catch (Exception e) {
+//            logger.error("FAILED readSingle ", e);
+//            throw e;
+//        }
+//    }
+//
+//
+//    public String writeSingle(String key) throws Exception {
+//        Object result = clientRef.get().writeSingle(key);
+//        return result == null ? "<null>" : result.toString();
+//    }
 
-
-    public String writeSingle(String key) throws Exception {
-        Object result = clientRef.get().writeSingle(key);
-        return result == null ? "<null>" : result.toString();
-    }
-
-    public NdBenchAbstractClient<?> getClient() {
+    public NdBenchAbstractClient<?,?> getClient() {
         return clientRef.get();
     }
 

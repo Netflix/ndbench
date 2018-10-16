@@ -54,7 +54,7 @@ import static com.amazonaws.retry.PredefinedRetryPolicies.NO_RETRY_POLICY;
  */
 @Singleton
 @NdBenchClientPlugin("DynamoDBKeyValue")
-public class DynamoDBKeyValue extends DynamoDBKeyValueBase<DynamoDBConfiguration> implements NdBenchClient {
+public class DynamoDBKeyValue extends DynamoDBKeyValueBase<DynamoDBConfiguration> implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(DynamoDBKeyValue.class);
 
     /**

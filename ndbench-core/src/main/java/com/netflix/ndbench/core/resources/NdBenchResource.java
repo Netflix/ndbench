@@ -100,7 +100,7 @@ public class NdBenchResource {
 
         logger.info("Starting NdBench data fill");
         try {
-            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?,?> client = ndBenchDriver.getClient();
             dataBackfill.backfill(client);
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
@@ -117,7 +117,7 @@ public class NdBenchResource {
 
         logger.info("Starting NdBench data fill - Async");
         try {
-            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?,?> client = ndBenchDriver.getClient();
             dataBackfill.backfillAsync(client);
             return sendSuccessResponse( "Async data fill started !");
         } catch (Exception e) {
@@ -134,7 +134,7 @@ public class NdBenchResource {
 
         logger.info("Starting NdBench data fill");
         try {
-            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?,?> client = ndBenchDriver.getClient();
             dataBackfill.conditionalBackfill(client);
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
@@ -151,7 +151,7 @@ public class NdBenchResource {
 
         logger.info("Starting NdBench data fill");
         try {
-            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?,?> client = ndBenchDriver.getClient();
             dataBackfill.verifyBackfill(client);
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
@@ -200,7 +200,7 @@ public class NdBenchResource {
     @Produces(MediaType.APPLICATION_JSON)
     public Response init(@PathParam("client") String clientName) throws Exception {
         try {
-            NdBenchAbstractClient<?> client = clientFactory.getClient(clientName);
+            NdBenchAbstractClient<?,?> client = clientFactory.getClient(clientName);
             ndBenchDriver.init(client);
 
             return sendSuccessResponse("NdBench client initiated!");
@@ -340,7 +340,7 @@ public class NdBenchResource {
     public Response readSingle(@PathParam("key") String key) throws Exception {
 
         try {
-            String value = ndBenchDriver.readSingle(key);
+            String value = "";//ndBenchDriver.readSingle(key);
 
             return sendSuccessResponse(value);
         } catch (Exception e) {
@@ -355,7 +355,7 @@ public class NdBenchResource {
     public Response writeSingle(@PathParam("key") String key) throws Exception {
 
         try {
-            String result = ndBenchDriver.writeSingle(key);
+            String result = "";//ndBenchDriver.writeSingle(key);
 
             return sendSuccessResponse(result);
         } catch (Exception e) {
@@ -453,7 +453,7 @@ public class NdBenchResource {
             serverStatusJson.put("LoadPatterns", Arrays.asList(LoadPattern.values()));
             String currentRunningDriver="NA",connectionInfo="NA", currentWriteLoadPattern="NA", currentReadLoadPattern="NA";
 
-            NdBenchAbstractClient<?> NdBenchClient= ndBenchDriver.getClient();
+            NdBenchAbstractClient<?,?> NdBenchClient= ndBenchDriver.getClient();
 
             if(NdBenchClient!=null)
             {
@@ -507,7 +507,7 @@ public class NdBenchResource {
     public Response runWorkflow() throws Exception {
 
         try {
-            NdBenchAbstractClient<?> client = ndBenchDriver.getClient();
+            NdBenchAbstractClient<?,?> client = ndBenchDriver.getClient();
             return sendSuccessResponse(client.runWorkFlow());
         } catch (Exception e) {
             logger.error("Error in running workflow", e);

@@ -21,6 +21,8 @@ import com.google.common.util.concurrent.RateLimiter;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.NdBenchDriver;
+import com.netflix.ndbench.core.NdBenchOperation;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,19 +33,20 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * @author vchella
  */
-public class ReadOperation implements NdBenchDriver.NdBenchOperation {
+public class ReadOperation<K> implements NdBenchOperation<K>
+{
     private static final Logger logger = LoggerFactory.getLogger(ReadOperation.class);
 
-    private final NdBenchAbstractClient<?> client;
+    private final NdBenchAbstractClient<K,?> client;
 
-    public ReadOperation(NdBenchAbstractClient<?> pClient) {
+    public ReadOperation(NdBenchAbstractClient<K,?> pClient) {
         client = pClient;
     }
 
     @Override
     public boolean process(NdBenchDriver driver,
                            NdBenchMonitor monitor,
-                           List<String> keys,
+                           List<K> keys,
                            AtomicReference<RateLimiter> ignoredForNow,
                            boolean isAutoTuneEnabled) {
         try {

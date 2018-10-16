@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @NdBenchClientPlugin("DynoGetSetPipeline")
-public class DynoJedisGetSetPipeline implements NdBenchClient {
+public class DynoJedisGetSetPipeline implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(DynoJedisGetSetPipeline.class);
 
     private static final int MIN_PIPE_KEYS = 3;

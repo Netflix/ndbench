@@ -43,7 +43,7 @@ import java.util.Set;
 public class NdBenchClientModule extends AbstractModule {
     private static final Logger logger = LoggerFactory.getLogger(NdBenchClientModule.class);
 
-    private MapBinder<String, NdBenchAbstractClient<?>> maps;
+    private MapBinder<String, NdBenchAbstractClient<?,?>> maps;
 
     private String getAnnotationValue(Class<?> ndBenchClientImpl) {
         String name = ndBenchClientImpl.getName();
@@ -61,7 +61,7 @@ public class NdBenchClientModule extends AbstractModule {
         if (maps == null) {
             TypeLiteral<String> stringTypeLiteral = new TypeLiteral<String>() {
             };
-            TypeLiteral<NdBenchAbstractClient<?>> ndbClientTypeLiteral = (new TypeLiteral<NdBenchAbstractClient<?>>() {
+            TypeLiteral<NdBenchAbstractClient<?,?>> ndbClientTypeLiteral = (new TypeLiteral<NdBenchAbstractClient<?,?>>() {
             });
             maps = MapBinder.newMapBinder(binder(), stringTypeLiteral, ndbClientTypeLiteral);
         }
@@ -69,7 +69,7 @@ public class NdBenchClientModule extends AbstractModule {
         String name = getAnnotationValue(ndBenchClientImpl);
 
 
-        maps.addBinding(name).to((Class<? extends NdBenchAbstractClient<?>>) ndBenchClientImpl);
+        maps.addBinding(name).to((Class<? extends NdBenchAbstractClient<?,?>>) ndBenchClientImpl);
     }
 
     @Override

@@ -35,7 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @Singleton
 @NdBenchClientPlugin("DynoJedis")
-public class DynoJedis implements NdBenchClient {
+public class DynoJedis implements NdBenchClient<String,String> {
     private static final Logger logger = LoggerFactory.getLogger(DynoJedis.class);
 
     private static final String ResultOK = "Ok";

@@ -23,26 +23,26 @@ import java.util.List;
 /**
  * @author vchella, pencal
  */
-public abstract class NdBenchBaseClient implements NdBenchClient {
+public abstract class NdBenchBaseClient<K,W> implements NdBenchClient<K,W> {
 
     @Override
-    public String readSingle(final String key) throws Exception {
+    public String readSingle(final K key) throws Exception {
         return null;
     }
 
 
     @Override
-    public String writeSingle(final String key) throws Exception {
+    public W writeSingle(final K key) throws Exception {
         return null;
     }
 
     @Override
-    public List<String> readBulk(final List<String> keys) throws Exception {
+    public List<String> readBulk(final List<K> keys) throws Exception {
         return null;
     }
 
     @Override
-    public List<String> writeBulk(final List<String> keys) throws Exception {
+    public List<W> writeBulk(final List<K> keys) throws Exception {
         return null;
     }
 
