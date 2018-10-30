@@ -1,10 +1,13 @@
 package com;
 
 import com.netflix.archaius.guice.ArchaiusModule;
+import com.netflix.archaius.test.TestPropertyOverride;
 import com.netflix.governator.guice.test.ModulesForTesting;
 import com.netflix.governator.guice.test.junit4.GovernatorJunit4ClassRunner;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
+
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -18,17 +21,15 @@ import javax.inject.Inject;
  */
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({NdBenchGuiceModule.class, ArchaiusModule.class})
+@TestPropertyOverride(value={"ndbench.config.numKeys=777" })
 public class ConfigurationPropertiesTest {
-    static {
-        System.setProperty("ndbench.config.numKeys", "777");
-    }
 
     @Inject
     IConfiguration config;
 
     @Test
     public void testInvokingProcessMethodOnWriteOperationSetsNewRateLimit() throws Exception {
-        assert (config.getNumKeys() == 777);
+        Assert.assertEquals(777, config.getNumKeys());
     }
 }
 
