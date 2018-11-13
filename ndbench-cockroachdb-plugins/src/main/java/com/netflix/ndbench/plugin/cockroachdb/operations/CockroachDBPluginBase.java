@@ -110,4 +110,22 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
     public abstract void createTables() throws Exception;
 
     public abstract void prepareStatements();
+
+    /**
+     * Assumes delimiter to be comma since that covers all the usecase for now.
+     * Will parameterize if use cases differ on delimiter.
+     * @param n
+     * @return
+     */
+    public String getNDelimitedStrings(int n)
+    {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < n; i++)
+        {
+            sb.append("'" + dataGenerator.getRandomValue() + "',");
+        }
+
+        //remove the trailing extra comma delimiter
+        return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
+    }
 }
