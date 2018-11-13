@@ -102,9 +102,12 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
         this.cluster = cassJavaDriverManager.registerCluster(clusterName, clusterContactPoint, connections, port,
                                                              username, password);
         this.session = cassJavaDriverManager.getSession(cluster);
-
-        upsertKeyspace(this.session);
-        upsertCF(this.session);
+        if(config.getCreateSchema())
+        {
+            logger.info("Trying to upsert schema");
+            upsertKeyspace(this.session);
+            upsertCF(this.session);
+        }
     }
 
     abstract void prepStatements(Session session);

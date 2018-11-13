@@ -35,7 +35,7 @@ public interface CassandraConfigurationBase {
     Integer getHostPort();
 
     @PropertyName(name = "keyspace")
-    @DefaultValue("dev1")
+    @DefaultValue("perftest")
     String getKeyspace();
 
     @DefaultValue("test1")
@@ -72,4 +72,7 @@ public interface CassandraConfigurationBase {
 
     @DefaultValue("LOCAL_ONE")
     String getWriteConsistencyLevel();
+
+    @DefaultValue("true")
+    Boolean getCreateSchema();
 }

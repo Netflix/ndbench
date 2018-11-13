@@ -31,7 +31,7 @@ public interface CassandraAstynaxConfiguration extends CassandraConfigurationBas
     @DefaultValue("9160")
     Integer getHostPort();
 
-    @DefaultValue("emp_thrift")
+    @DefaultValue("test1_thrift")
     String getCfname();
 
     @DefaultValue("CL_LOCAL_ONE")
@@ -40,6 +40,6 @@ public interface CassandraAstynaxConfiguration extends CassandraConfigurationBas
     @DefaultValue("CL_LOCAL_ONE")
     String getWriteConsistencyLevel();
 
-    @DefaultValue("5")
+    @DefaultValue("10")
     Long getColsPerRow();
 }
