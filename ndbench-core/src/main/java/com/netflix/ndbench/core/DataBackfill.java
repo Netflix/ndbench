@@ -24,11 +24,13 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang3.tuple.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -225,8 +227,10 @@ public class DataBackfill {
         if (threadPool.get() != null) {
             throw new RuntimeException("Backfill already started");
         }
-
-        ExecutorService newPool = Executors.newFixedThreadPool(numThreads + 1);
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                                      .setNameFormat("ndbench-backfill-pool-%d")
+                                      .setDaemon(false).build();
+        ExecutorService newPool = Executors.newFixedThreadPool(numThreads + 1, threadFactory);
         boolean success = threadPool.compareAndSet(null, newPool);
         if (!success) {
             newPool.shutdownNow();

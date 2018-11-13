@@ -16,6 +16,11 @@ dependencies {
     // Archaius-2
     compile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
 
+    //dropwizard metrics
+    compile group: 'io.dropwizard.metrics', name: 'metrics-core', version: '4.0.3'
+    compile group: 'io.dropwizard.metrics', name: 'metrics-jmx', version: '4.0.3'
+
+
     compile  project(':ndbench-api')
 
     compile 'junit:junit:latest.release'

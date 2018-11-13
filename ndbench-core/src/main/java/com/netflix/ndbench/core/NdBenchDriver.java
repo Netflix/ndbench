@@ -18,6 +18,8 @@
 package com.netflix.ndbench.core;
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.archaius.api.config.SettableConfig;
@@ -42,6 +44,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -217,8 +220,11 @@ public class NdBenchDriver {
             return;
         }
         keyGenerator.init();
-        ExecutorService threadPool = Executors.newFixedThreadPool(numWorkersConfig);
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                                      .setNameFormat("ndbench-"+operation.getClass().getSimpleName()+"-pool-%d")
+                                      .setDaemon(false).build();
 
+        ExecutorService threadPool = Executors.newFixedThreadPool(numWorkersConfig, threadFactory);
         boolean success = tpRef.compareAndSet(null, threadPool);
         if (!success) {
             throw new RuntimeException("Unknown threadpool when performing tpRef CAS operation");
@@ -405,7 +411,10 @@ public class NdBenchDriver {
         /** CODE TO PERIODICALLY LOG RPS */
         ExecutorService timer = timerRef.get();
         if (timer == null) {
-            timer = Executors.newFixedThreadPool(1);
+            ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                                          .setNameFormat("ndbench-updaterps-pool-%d")
+                                          .setDaemon(false).build();
+            timer = Executors.newFixedThreadPool(1, threadFactory);
             timer.submit(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
                     rpsCount.updateRPS();
