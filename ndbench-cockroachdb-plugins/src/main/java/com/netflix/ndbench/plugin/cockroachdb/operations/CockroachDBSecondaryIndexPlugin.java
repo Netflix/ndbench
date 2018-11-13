@@ -17,6 +17,8 @@
 package com.netflix.ndbench.plugin.cockroachdb.operations;
 
 import java.sql.ResultSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -31,8 +33,8 @@ import com.netflix.ndbench.plugin.cockroachdb.configs.CockroachDBConfiguration;
 @NdBenchClientPlugin("CockroachDBSecondaryIndexPlugin")
 public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
 {
-    private static String readFromMainQuery = "SELECT key, column1, column2, column3, column4 FROM %s where key = ";
-    private static String writeToMainQuery = "UPSERT INTO %s (key, column1, column2, column3, column4) VALUES ";
+    private static String readFromMainQuery = "SELECT key, %s FROM %s where key = ";
+    private static String writeToMainQuery = "UPSERT INTO %s (key, %s) VALUES ";
 
     @Inject
     public CockroachDBSecondaryIndexPlugin(CockroachDBConfiguration cockroachDBConfiguration) {
@@ -65,44 +67,34 @@ public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
     @Override
     public String writeSingle(String key) throws Exception
     {
-        String child1Key = dataGenerator.getRandomValue();
-        String child2Key = dataGenerator.getRandomValue();
-        String child3Key = dataGenerator.getRandomValue();
-        String child4Key = dataGenerator.getRandomValue();
+        String columns = getNDelimitedStrings(config.getColsPerRow());
 
         connection
         .createStatement()
-        .execute(String.format(writeToMainQuery, config.getTableName()) + "('" + key + "', '" + child1Key + "', '" + child2Key + "', '" + child3Key + "', '" + child4Key + "')");
+        .execute(writeToMainQuery + "('" + key + "', " + columns + ")");
         return ResultOK;
     }
 
     public void createTables() throws Exception
     {
+        String columns = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "column" + i + " STRING").collect(Collectors.joining(", "));
         connection
         .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 STRING, column2 STRING, column3 STRING, column4 STRING)", config.getDBName(), config.getTableName()));
+        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, %s)", config.getDBName(), config.getTableName(), columns));
 
-        //create secondary indices
-        connection
-        .createStatement()
-        .execute(String.format("CREATE INDEX IF NOT EXISTS %s_column1_index on %s (column1)", config.getTableName(), config.getTableName()));
-
-        connection
-        .createStatement()
-        .execute(String.format("CREATE INDEX IF NOT EXISTS %s_column2_index on %s (column2)", config.getTableName(), config.getTableName()));
-
-        connection
-        .createStatement()
-        .execute(String.format("CREATE INDEX IF NOT EXISTS %s_column3_index on %s (column3)", config.getTableName(), config.getTableName()));
-
-        connection
-        .createStatement()
-        .execute(String.format("CREATE INDEX IF NOT EXISTS %s_column4_index on %s (column4)", config.getTableName(), config.getTableName()));
+        // create secondary indices
+        for (int i = 0; i < config.getColsPerRow(); i++)
+        {
+            connection
+            .createStatement()
+            .execute(String.format("CREATE INDEX IF NOT EXISTS %s_column%d_index on %s (column%d)", config.getTableName(), i, config.getTableName(), i));
+        }
     }
 
     public void prepareStatements()
     {
-        readFromMainQuery = String.format(readFromMainQuery, config.getTableName());
-//     writeQuery = String.format(writeQuery, tableName.get());
+        String columns = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "column" + i).collect(Collectors.joining(", "));
+        readFromMainQuery = String.format(readFromMainQuery, columns, config.getTableName());
+        writeToMainQuery = String.format(writeToMainQuery, config.getTableName(), columns);
     }
 }

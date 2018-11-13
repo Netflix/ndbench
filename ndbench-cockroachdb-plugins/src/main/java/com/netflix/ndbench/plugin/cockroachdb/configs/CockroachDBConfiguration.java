@@ -43,4 +43,8 @@ public interface CockroachDBConfiguration {
     @PropertyName(name = "user")
     @DefaultValue("maxroach")
     String getUser();
+
+    @PropertyName(name = "colsPerRow")
+    @DefaultValue("5")
+    Integer getColsPerRow();
 }
