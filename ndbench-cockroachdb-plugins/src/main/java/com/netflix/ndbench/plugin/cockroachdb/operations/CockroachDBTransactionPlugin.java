@@ -87,13 +87,16 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
         {
             Statement statement = connection.createStatement();
 
-            statement.execute(writeToMainQuery + "('" + key + "', " + StringUtils.join(childKeys, ',') + ")");
+            // write to main table
+            statement.addBatch(writeToMainQuery + "('" + key + "', " + StringUtils.join(childKeys, ',') + ")");
 
+            // writes to child tables
             for (int i = 0; i < config.getColsPerRow(); i++)
             {
-                connection.createStatement()
-                          .execute(String.format(writeToChildQuery, i) + "(" + childKeys[i] + ", 1, '" + dataGenerator.getRandomValue() + "')");
+                statement.addBatch(String.format(writeToChildQuery, i) + "(" + childKeys[i] + ", 1, '" + dataGenerator.getRandomValue() + "')");
             }
+
+            statement.executeBatch();
 
             connection.releaseSavepoint(sp);
         }
