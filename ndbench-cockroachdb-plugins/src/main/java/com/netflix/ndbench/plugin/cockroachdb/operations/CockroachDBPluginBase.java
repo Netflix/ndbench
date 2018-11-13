@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,13 +121,6 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
      */
     public String getNDelimitedStrings(int n)
     {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; i++)
-        {
-            sb.append("'" + dataGenerator.getRandomValue() + "',");
-        }
-
-        //remove the trailing extra comma delimiter
-        return sb.length() > 0 ? sb.substring(0, sb.length() - 1) : "";
+        return IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "'" + dataGenerator.getRandomValue() + "'").collect(Collectors.joining(","));
     }
 }

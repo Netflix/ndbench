@@ -68,7 +68,6 @@ public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
     public String writeSingle(String key) throws Exception
     {
         String columns = getNDelimitedStrings(config.getColsPerRow());
-
         connection
         .createStatement()
         .execute(writeToMainQuery + "('" + key + "', " + columns + ")");
