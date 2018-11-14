@@ -28,19 +28,18 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
  */
 @Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "cockroachdb")
 public interface CockroachDBConfiguration {
-    @PropertyName(name = "dbname")
     @DefaultValue("perftest")
     String getDBName();
 
-    @PropertyName(name = "tablename")
     @DefaultValue("test")
     String getTableName();
 
-    @PropertyName(name = "loadbalancer")
     @DefaultValue("test-loadbalancer")
     String getLoadBalancer();
 
-    @PropertyName(name = "user")
     @DefaultValue("maxroach")
     String getUser();
+
+    @DefaultValue("5")
+    Integer getColsPerRow();
 }

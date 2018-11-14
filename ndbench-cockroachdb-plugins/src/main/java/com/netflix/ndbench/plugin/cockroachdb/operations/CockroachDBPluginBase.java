@@ -20,6 +20,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -110,4 +112,15 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
     public abstract void createTables() throws Exception;
 
     public abstract void prepareStatements();
+
+    /**
+     * Assumes delimiter to be comma since that covers all the usecase for now.
+     * Will parameterize if use cases differ on delimiter.
+     * @param n
+     * @return
+     */
+    public String getNDelimitedStrings(int n)
+    {
+        return IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "'" + dataGenerator.getRandomValue() + "'").collect(Collectors.joining(","));
+    }
 }

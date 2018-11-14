@@ -20,6 +20,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -33,9 +38,9 @@ import com.netflix.ndbench.plugin.cockroachdb.configs.CockroachDBConfiguration;
 @NdBenchClientPlugin("CockroachDBTransactionPlugin")
 public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
 {
-    private static String readFromMainQuery = "SELECT key, column1, column2, column3, column4 FROM %s where key = ";
-    private static String writeToMainQuery = "UPSERT INTO %s (key, column1, column2, column3, column4) VALUES ";
-    private static String writeToChildQuery = "UPSERT INTO %s (key, column1, value) VALUES ";
+    private static String readFromMainQuery = "SELECT key, %s FROM %s where key = ";
+    private static String writeToMainQuery = "UPSERT INTO %s (key, %s) VALUES ";
+    private static String writeToChildQuery = "UPSERT INTO child%d (key, column1, value) VALUES ";
 
     @Inject
     public CockroachDBTransactionPlugin(CockroachDBConfiguration cockroachDBConfiguration) {
@@ -69,10 +74,11 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
     public String writeSingle(String key) throws Exception
     {
         //execute transaction
-        String child1Key = dataGenerator.getRandomValue();
-        String child2Key = dataGenerator.getRandomValue();
-        String child3Key = dataGenerator.getRandomValue();
-        String child4Key = dataGenerator.getRandomValue();
+        String[] childKeys = new String[config.getColsPerRow()];
+        for (int i = 0; i < config.getColsPerRow(); i++)
+        {
+            childKeys[i] = "'" + dataGenerator.getRandomValue() + "'";
+        }
 
         connection.setAutoCommit(false);
         Savepoint sp = connection.setSavepoint("cockroach_restart");
@@ -81,16 +87,16 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
         {
             Statement statement = connection.createStatement();
 
-            statement.execute(String.format(writeToMainQuery, config.getTableName()) + "('" + key + "', '" + child1Key + "', '" + child2Key + "', '" + child3Key + "', '" + child4Key + "')");
+            // write to main table
+            statement.addBatch(writeToMainQuery + "('" + key + "', " + StringUtils.join(childKeys, ',') + ")");
 
-            connection.createStatement()
-                      .execute(String.format(writeToChildQuery, "child1") + "('" + child1Key + "', 1, '" + dataGenerator.getRandomValue() + "')");
-            connection.createStatement()
-                      .execute(String.format(writeToChildQuery, "child2") + "('" + child2Key + "', 1, '" + dataGenerator.getRandomValue() + "')");
-            connection.createStatement()
-                      .execute(String.format(writeToChildQuery, "child3") + "('" + child3Key + "', 1, '" + dataGenerator.getRandomValue() + "')");
-            connection.createStatement()
-                      .execute(String.format(writeToChildQuery, "child4") + "('" + child4Key + "', 1, '" + dataGenerator.getRandomValue() + "')");
+            // writes to child tables
+            for (int i = 0; i < config.getColsPerRow(); i++)
+            {
+                statement.addBatch(String.format(writeToChildQuery, i) + "(" + childKeys[i] + ", 1, '" + dataGenerator.getRandomValue() + "')");
+            }
+
+            statement.executeBatch();
 
             connection.releaseSavepoint(sp);
         }
@@ -113,30 +119,24 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
 
     public void createTables() throws Exception
     {
+        String columns = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "column" + i + " STRING").collect(Collectors.joining(", "));
         connection
         .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 STRING, column2 STRING, column3 STRING, column4 STRING)", config.getDBName(), config.getTableName()));
+        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, %s)", config.getDBName(), config.getTableName(), columns));
 
-        connection
-        .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), "child1"));
-
-        connection
-        .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), "child2"));
-
-        connection
-        .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), "child3"));
-
-        connection
-        .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), "child4"));
+        // create child tables
+        for (int i = 0; i < config.getColsPerRow(); i++)
+        {
+            connection
+            .createStatement()
+            .execute(String.format("CREATE TABLE IF NOT EXISTS %s.child%d (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), i));
+        }
     }
 
     public void prepareStatements()
     {
-        readFromMainQuery = String.format(readFromMainQuery, config.getTableName());
-//     writeQuery = String.format(writeQuery, tableName.get());
+        String columns = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "column" + i).collect(Collectors.joining(", "));
+        readFromMainQuery = String.format(readFromMainQuery, columns, config.getTableName());
+        writeToMainQuery = String.format(writeToMainQuery, config.getTableName(), columns);
     }
 }

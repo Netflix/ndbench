@@ -17,6 +17,8 @@
 package com.netflix.ndbench.plugin.cockroachdb.operations;
 
 import java.sql.ResultSet;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -30,8 +32,8 @@ import com.netflix.ndbench.plugin.cockroachdb.configs.CockroachDBConfiguration;
 @NdBenchClientPlugin("CockroachDBSimplePlugin")
 public class CockroachDBSimplePlugin extends CockroachDBPluginBase
 {
-    private static String readQuery = "SELECT key, column1, value FROM %s where key = ";
-    private static String writeQuery = "UPSERT INTO %s (key, column1, value) VALUES ";
+    private static String readQuery = "SELECT key, column1, %s FROM %s where key = ";
+    private static String writeQuery = "UPSERT INTO %s (key, column1, %s) VALUES ";
 
     @Inject
     public CockroachDBSimplePlugin(CockroachDBConfiguration cockroachDBConfiguration) {
@@ -64,22 +66,27 @@ public class CockroachDBSimplePlugin extends CockroachDBPluginBase
     @Override
     public String writeSingle(String key) throws Exception
     {
+        String values = getNDelimitedStrings(config.getColsPerRow());
+
         connection
         .createStatement()
-        .execute(writeQuery + "('" + key + "', 1, '" + dataGenerator.getRandomValue() + "')");
+        .execute(writeQuery + "('" + key + "', 1 ," + values + ")");
         return ResultOK;
     }
 
     public void createTables() throws Exception
     {
+        String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value" + i + " STRING").collect(Collectors.joining(", "));
+
         connection
         .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), config.getTableName()));
+        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, %s)", config.getDBName(), config.getTableName(), values));
     }
 
     public void prepareStatements()
     {
-        readQuery = String.format(readQuery, config.getTableName());
-        writeQuery = String.format(writeQuery, config.getTableName());
+        String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value" + i).collect(Collectors.joining(", "));
+        readQuery = String.format(readQuery, values, config.getTableName());
+        writeQuery = String.format(writeQuery, config.getTableName(), values);
     }
 }
