@@ -40,6 +40,15 @@ public interface CockroachDBConfiguration {
     @DefaultValue("maxroach")
     String getUser();
 
+    @DefaultValue("26257")
+    String getPort();
+
+    @DefaultValue("")
+    String getPassword();
+
     @DefaultValue("5")
     Integer getColsPerRow();
+
+    @DefaultValue("100")
+    String getPoolSize();
 }

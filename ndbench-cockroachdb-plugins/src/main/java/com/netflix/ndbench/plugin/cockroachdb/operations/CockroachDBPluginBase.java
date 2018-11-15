@@ -23,6 +23,8 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,12 +40,14 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
     protected static final String ResultOK = "Ok";
     protected static final String ResultFailed = "Failed";
     protected static final String CacheMiss = null;
+    protected static final String ResultAmbiguous = "Failed";
     private static final Logger logger = LoggerFactory.getLogger(CockroachDBPluginBase.class);
 
-    protected Connection connection;
     protected DataGenerator dataGenerator;
 
     protected final CockroachDBConfiguration config;
+
+    protected static HikariDataSource ds;
 
     protected CockroachDBPluginBase(CockroachDBConfiguration cockroachDBConfiguration) {
         this.config = cockroachDBConfiguration;
@@ -54,15 +58,21 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
     {
         this.dataGenerator = dataGenerator;
         logger.info("Initializing the  CockroachDB client");
-        // Load the Postgres JDBC driver.
-        Class.forName("org.postgresql.Driver");
 
         Properties props = new Properties();
-        props.setProperty("user", config.getUser());
+        props.setProperty("dataSourceClassName", "org.postgresql.ds.PGSimpleDataSource");
+        props.setProperty("dataSource.serverName", config.getLoadBalancer());
+        props.setProperty("dataSource.user", config.getUser());
+        props.setProperty("dataSource.password", config.getPassword());
+        props.setProperty("dataSource.databaseName", config.getDBName());
+        props.setProperty("dataSource.portNumber", config.getPort());
+        props.setProperty("maximumPoolSize", config.getPoolSize());
+        props.setProperty("leakDetectionThreshold", "2000");
+
 
         try
         {
-            connection = DriverManager.getConnection(String.format("jdbc:postgresql://%s:80/%s", config.getLoadBalancer(), config.getDBName()), props);
+            ds = new HikariDataSource(new HikariConfig(props));
         }
         catch (Exception e)
         {
@@ -79,16 +89,9 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
      * Shutdown the client
      */
     @Override
-    public void shutdown() throws Exception
+    public void shutdown()
     {
-        try
-        {
-            connection.close();
-        }
-        catch (SQLException e)
-        {
-            logger.error("Failed to close connection", e);
-        }
+        ds.close();
     }
 
     /**
@@ -97,14 +100,20 @@ public abstract class CockroachDBPluginBase implements NdBenchClient
     @Override
     public String getConnectionInfo() throws Exception
     {
-        return String.format("Connected to database: %s using driver: %s as user :%s",
+        Connection connection = ds.getConnection();
+
+        String info =  String.format("Connected to database: %s using driver: %s as user :%s",
                              connection.getMetaData().getDatabaseProductName(),
                              connection.getMetaData().getDriverName(),
                              connection.getMetaData().getUserName());
+
+        connection.close();
+
+        return info;
     }
 
     @Override
-    public String runWorkFlow() throws Exception
+    public String runWorkFlow()
     {
         return null;
     }

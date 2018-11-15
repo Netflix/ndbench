@@ -16,6 +16,7 @@
 
 package com.netflix.ndbench.plugin.cockroachdb.operations;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -43,6 +44,7 @@ public class CockroachDBSimplePlugin extends CockroachDBPluginBase
     @Override
     public String readSingle(String key) throws Exception
     {
+        Connection connection = ds.getConnection();
         ResultSet rs = connection.createStatement().executeQuery(readQuery + "'" + key + "'");
         int rsSize = 0;
         while (rs.next())
@@ -52,14 +54,17 @@ public class CockroachDBSimplePlugin extends CockroachDBPluginBase
 
         if (rsSize == 0)
         {
+            connection.close();
             return CacheMiss;
         }
 
         if (rsSize > 1)
         {
+            connection.close();
             throw new Exception("Expecting only 1 row with a given key: " + key);
         }
 
+        connection.close();
         return ResultOK;
     }
 
@@ -67,10 +72,13 @@ public class CockroachDBSimplePlugin extends CockroachDBPluginBase
     public String writeSingle(String key) throws Exception
     {
         String values = getNDelimitedStrings(config.getColsPerRow());
+        Connection connection = ds.getConnection();
 
         connection
         .createStatement()
-        .execute(writeQuery + "('" + key + "', 1 ," + values + ")");
+        .executeUpdate(writeQuery + "('" + key + "', 1 ," + values + ")");
+        connection.close();
+
         return ResultOK;
     }
 
@@ -78,9 +86,13 @@ public class CockroachDBSimplePlugin extends CockroachDBPluginBase
     {
         String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value" + i + " STRING").collect(Collectors.joining(", "));
 
+        Connection connection = ds.getConnection();
+
         connection
         .createStatement()
         .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, %s)", config.getDBName(), config.getTableName(), values));
+
+        connection.close();
     }
 
     public void prepareStatements()

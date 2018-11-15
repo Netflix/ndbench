@@ -16,6 +16,7 @@
 
 package com.netflix.ndbench.plugin.cockroachdb.operations;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -44,6 +45,7 @@ public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
     @Override
     public String readSingle(String key) throws Exception
     {
+        Connection connection = ds.getConnection();
         ResultSet rs = connection.createStatement().executeQuery(readFromMainQuery + "'" + key + "'");
         int rsSize = 0;
         while (rs.next())
@@ -53,14 +55,17 @@ public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
 
         if (rsSize == 0)
         {
+            connection.close();
             return CacheMiss;
         }
 
         if (rsSize > 1)
         {
+            connection.close();
             throw new Exception("Expecting only 1 row with a given key: " + key);
         }
 
+        connection.close();
         return ResultOK;
     }
 
@@ -68,14 +73,17 @@ public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
     public String writeSingle(String key) throws Exception
     {
         String columns = getNDelimitedStrings(config.getColsPerRow());
+        Connection connection = ds.getConnection();
         connection
         .createStatement()
-        .execute(writeToMainQuery + "('" + key + "', " + columns + ")");
+        .executeUpdate(writeToMainQuery + "('" + key + "', " + columns + ")");
+        connection.close();
         return ResultOK;
     }
 
     public void createTables() throws Exception
     {
+        Connection connection = ds.getConnection();
         String columns = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "column" + i + " STRING").collect(Collectors.joining(", "));
         connection
         .createStatement()
@@ -88,6 +96,8 @@ public class CockroachDBSecondaryIndexPlugin extends CockroachDBPluginBase
             .createStatement()
             .execute(String.format("CREATE INDEX IF NOT EXISTS %s_column%d_index on %s (column%d)", config.getTableName(), i, config.getTableName(), i));
         }
+
+        connection.close();
     }
 
     public void prepareStatements()
