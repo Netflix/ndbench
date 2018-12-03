@@ -24,7 +24,7 @@ import com.amazonaws.services.dynamodbv2.model.DescribeTableResult;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.model.TableDescription;
 import com.amazonaws.services.dynamodbv2.model.TableStatus;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane.CreateDynamoDBTable;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane.CreateDynamoDBTable;
 import org.junit.Test;
 import org.mockito.Mockito;
 

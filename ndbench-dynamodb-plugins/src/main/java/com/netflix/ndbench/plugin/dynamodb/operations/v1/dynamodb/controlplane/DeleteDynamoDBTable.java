@@ -14,12 +14,12 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.controlplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.controlplane;
 
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.model.ResourceNotFoundException;
-import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.AbstractDynamoDBOperation;
+import com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.AbstractDynamoDBOperation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

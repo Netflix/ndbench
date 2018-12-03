@@ -14,7 +14,7 @@
  *  limitations under the License.
  *
  */
-package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
+package com.netflix.ndbench.plugin.dynamodb.operations.v1.dynamodb.dataplane;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -37,8 +37,7 @@ import java.util.stream.Collectors;
  * @author Alexander Patrikalakis
  * @author ipapapa
  */
-public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation
-        implements CapacityConsumingFunction<BatchGetItemResult, List<String>, List<String>> {
+public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation<BatchGetItemResult, List<String>, List<String>> {
     public DynamoDBReadBulk(DataGenerator dataGenerator, AmazonDynamoDB dynamoDB, String tableName,
                             String partitionKeyName, boolean consistentRead,
                             ReturnConsumedCapacity returnConsumedCapacity) {
@@ -59,6 +58,12 @@ public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation
         } catch (AmazonClientException ace) {
             throw amazonClientException(ace);
         }
+    }
+
+    @Override
+    public BatchGetItemResult measureConsumedCapacity(BatchGetItemResult result) {
+        consumed.addAndGet(result.getConsumedCapacity() == null ? 0 : getConsumedCapacityForTable(result.getConsumedCapacity()));
+        return result;
     }
 
     private KeysAndAttributes generateReadRequests(List<String> keys) {
@@ -84,11 +89,5 @@ public class DynamoDBReadBulk extends AbstractDynamoDBReadOperation
         return measureConsumedCapacity(dynamoDB.batchGetItem(new BatchGetItemRequest()
                 .withRequestItems(ImmutableMap.of(tableName, keysAndAttributes))
                 .withReturnConsumedCapacity(returnConsumedCapacity)));
-    }
-
-    @Override
-    public BatchGetItemResult measureConsumedCapacity(BatchGetItemResult result) {
-        consumed.addAndGet(result.getConsumedCapacity() == null ? 0 : getConsumedCapacityForTable(result.getConsumedCapacity()));
-        return result;
     }
 }
