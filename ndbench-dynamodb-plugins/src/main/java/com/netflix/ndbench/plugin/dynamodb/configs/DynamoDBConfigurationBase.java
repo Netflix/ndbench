@@ -85,4 +85,16 @@ public interface DynamoDBConfigurationBase {
      */
     @DefaultValue("10")
     Integer getMaxRetries();
+
+    /*
+     * Number of main table columns and consequently number of child tables - related to use cases of domain and mapping tables.
+     */
+    @DefaultValue("5")
+    Integer getMainTableColsPerRow();
+
+    /*
+     * Prefix for child table name
+     */
+    @DefaultValue("child")
+    String getChildTableNamePrefix();
 }
