@@ -31,6 +31,8 @@ import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoD
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBReadSingle;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteBulk;
 import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteSingle;
+import com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane.DynamoDBWriteTransaction;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +59,7 @@ public abstract class DynamoDBKeyValueBase<C extends DynamoDBConfigurationBase> 
     protected DynamoDBReadBulk bulkRead;
     protected DynamoDBWriteSingle singleWrite;
     protected DynamoDBWriteBulk bulkWrite;
+    protected DynamoDBWriteTransaction transactionWrite;
 
     /**
      * Protected method to inject credentials and configuration
@@ -87,6 +90,8 @@ public abstract class DynamoDBKeyValueBase<C extends DynamoDBConfigurationBase> 
                 returnConsumedCapacity);
         this.bulkWrite = new DynamoDBWriteBulk(dataGenerator, dynamoDB, tableName, partitionKeyName,
                 returnConsumedCapacity);
+        this.transactionWrite = new DynamoDBWriteTransaction(dataGenerator, dynamoDB, tableName, partitionKeyName,
+                                                             config.getChildTableNamePrefix(), config.getMainTableColsPerRow(), returnConsumedCapacity);
     }
 
     protected void createAndSetDynamoDBClient() {
