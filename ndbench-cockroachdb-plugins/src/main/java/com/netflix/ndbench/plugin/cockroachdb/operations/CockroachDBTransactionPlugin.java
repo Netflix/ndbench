@@ -16,10 +16,7 @@
 
 package com.netflix.ndbench.plugin.cockroachdb.operations;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Savepoint;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -50,6 +47,8 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
     @Override
     public String readSingle(String key) throws Exception
     {
+        Connection connection = ds.getConnection();
+
         ResultSet rs = connection.createStatement().executeQuery(readFromMainQuery + "'" + key + "'");
         int rsSize = 0;
         while (rs.next())
@@ -59,14 +58,17 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
 
         if (rsSize == 0)
         {
+            connection.close();
             return CacheMiss;
         }
 
         if (rsSize > 1)
         {
+            connection.close();
             throw new Exception("Expecting only 1 row with a given key: " + key);
         }
 
+        connection.close();
         return ResultOK;
     }
 
@@ -80,11 +82,11 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
             childKeys[i] = "'" + dataGenerator.getRandomValue() + "'";
         }
 
-        connection.setAutoCommit(false);
-        Savepoint sp = connection.setSavepoint("cockroach_restart");
+        Connection connection = ds.getConnection();
 
-        try
-        {
+        connection.setAutoCommit(false);
+
+        CockroachDBRetryableTransaction transaction = conn -> {
             Statement statement = connection.createStatement();
 
             // write to main table
@@ -97,28 +99,45 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
             }
 
             statement.executeBatch();
+        };
 
-            connection.releaseSavepoint(sp);
-        }
-        catch (SQLException ex)
-        {
-            if(ex.getSQLState().equals("40001")) {
-                connection.rollback(sp);
-                connection.commit();
-                connection.setAutoCommit(true);
-                //optionally, we can retry
-                return ResultFailed;
+        Savepoint sp = connection.setSavepoint("cockroach_restart");
+
+        while(true) {
+            boolean releaseAttempted = false;
+            try {
+                transaction.run(connection);
+                releaseAttempted = true;
+                connection.releaseSavepoint(sp);
+                break;
+            }
+            catch(SQLException e) {
+                String sqlState = e.getSQLState();
+
+                // Check if the error code indicates a SERIALIZATION_FAILURE.
+                if(sqlState.equals("40001")) {
+                    // Signal the database that we will attempt a retry.
+                    connection.rollback(sp);
+                } else if(releaseAttempted) {
+                    connection.close();
+                    return ResultAmbiguous;
+                } else {
+                    connection.close();
+                    return ResultFailed;
+                }
             }
         }
-
         connection.commit();
         connection.setAutoCommit(true);
+        connection.close();
 
         return ResultOK;
     }
 
     public void createTables() throws Exception
     {
+        Connection connection = ds.getConnection();
+
         String columns = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "column" + i + " STRING").collect(Collectors.joining(", "));
         connection
         .createStatement()
@@ -131,6 +150,8 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
             .createStatement()
             .execute(String.format("CREATE TABLE IF NOT EXISTS %s.child%d (key STRING PRIMARY KEY, column1 INT, value STRING)", config.getDBName(), i));
         }
+
+        connection.close();
     }
 
     public void prepareStatements()
