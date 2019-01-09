@@ -9,7 +9,6 @@ buildscript {
 
 plugins {
     id 'nebula.netflixoss' version '5.1.1'
-    id "de.undercouch.download" version "3.4.2"
 
 }
 
