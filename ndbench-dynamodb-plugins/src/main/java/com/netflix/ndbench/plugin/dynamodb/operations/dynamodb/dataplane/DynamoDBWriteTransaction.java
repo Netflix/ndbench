@@ -18,6 +18,7 @@ package com.netflix.ndbench.plugin.dynamodb.operations.dynamodb.dataplane;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.amazonaws.services.cloudwatch.model.ResourceNotFoundException;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.CancellationReason;
 import com.amazonaws.services.dynamodbv2.model.ConsumedCapacity;
 import com.amazonaws.services.dynamodbv2.model.InternalServerErrorException;
 import com.amazonaws.services.dynamodbv2.model.Put;
@@ -97,17 +99,31 @@ public class DynamoDBWriteTransaction extends AbstractDynamoDBDataPlaneOperation
         }
         catch (ResourceNotFoundException rnf)
         {
-            logger.error("One of the table involved in the transaction is not found" + rnf.getMessage());
+            logger.error("One of the table involved in the transaction is not found" + rnf);
+            throw rnf;
         }
         catch (InternalServerErrorException ise)
         {
-            logger.error("Internal Server Error" + ise.getMessage());
+            logger.error("Internal Server Error" + ise);
+            throw ise;
         }
         catch (TransactionCanceledException tce)
         {
-            logger.warn("Transaction Canceled " + tce.getMessage());
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format("Transaction cancelled. %s", tce));
+
+            // get cancellation reasons
+            List<CancellationReason> cancellationReasonList = tce.getCancellationReasons();
+            if (cancellationReasonList != null)
+            {
+                for (CancellationReason cancellationReason : cancellationReasonList)
+                {
+                    sb.append(String.format("Cancellation reason: %s", cancellationReason.getMessage()));
+                }
+            }
+            logger.warn(sb.toString());
+            throw tce;
         }
-        return ResultFailed;
     }
 
     @Override
