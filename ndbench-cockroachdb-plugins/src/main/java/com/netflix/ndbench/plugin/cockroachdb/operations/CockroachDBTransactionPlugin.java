@@ -120,10 +120,12 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
                     connection.rollback(sp);
                 } else if(releaseAttempted) {
                     connection.close();
-                    return ResultAmbiguous;
+                    // ResultAmbiguous;
+                    throw e;
                 } else {
                     connection.close();
-                    return ResultFailed;
+                    // ResultFailed;
+                    throw e;
                 }
             }
         }
