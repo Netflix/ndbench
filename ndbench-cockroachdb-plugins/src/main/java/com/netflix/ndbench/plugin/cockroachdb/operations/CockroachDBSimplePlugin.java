@@ -44,55 +44,91 @@ public class CockroachDBSimplePlugin extends CockroachDBPluginBase
     @Override
     public String readSingle(String key) throws Exception
     {
-        Connection connection = ds.getConnection();
-        ResultSet rs = connection.createStatement().executeQuery(readQuery + "'" + key + "'");
-        int rsSize = 0;
-        while (rs.next())
+        Connection connection = null;
+        try
         {
-            rsSize++;
-        }
+            connection = ds.getConnection();
+            ResultSet rs = connection.createStatement().executeQuery(readQuery + "'" + key + "'");
+            int rsSize = 0;
+            while (rs.next())
+            {
+                rsSize++;
+            }
 
-        if (rsSize == 0)
-        {
+            if (rsSize == 0)
+            {
+                connection.close();
+                return CacheMiss;
+            }
+
+            if (rsSize > 1)
+            {
+                connection.close();
+                throw new Exception("Expecting only 1 row with a given key: " + key);
+            }
+
             connection.close();
-            return CacheMiss;
+            return ResultOK;
         }
-
-        if (rsSize > 1)
+        catch (Exception ex)
         {
-            connection.close();
-            throw new Exception("Expecting only 1 row with a given key: " + key);
+            if (connection != null)
+            {
+                connection.close();
+            }
+            throw ex;
         }
-
-        connection.close();
-        return ResultOK;
     }
 
     @Override
     public String writeSingle(String key) throws Exception
     {
-        String values = getNDelimitedStrings(config.getColsPerRow());
-        Connection connection = ds.getConnection();
+        Connection connection = null;
+        try
+        {
+            String values = getNDelimitedStrings(config.getColsPerRow());
+            connection = ds.getConnection();
 
-        connection
-        .createStatement()
-        .executeUpdate(writeQuery + "('" + key + "', 1 ," + values + ")");
-        connection.close();
+            connection
+            .createStatement()
+            .executeUpdate(writeQuery + "('" + key + "', 1 ," + values + ")");
+            connection.close();
 
-        return ResultOK;
+            return ResultOK;
+        }
+        catch (Exception ex)
+        {
+            if (connection != null)
+            {
+                connection.close();
+            }
+            throw ex;
+        }
     }
 
     public void createTables() throws Exception
     {
-        String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value" + i + " STRING").collect(Collectors.joining(", "));
+        Connection connection = null;
+        try
+        {
+            String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value" + i + " STRING").collect(Collectors.joining(", "));
 
-        Connection connection = ds.getConnection();
+            connection = ds.getConnection();
 
-        connection
-        .createStatement()
-        .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, %s)", config.getDBName(), config.getTableName(), values));
+            connection
+            .createStatement()
+            .execute(String.format("CREATE TABLE IF NOT EXISTS %s.%s (key STRING PRIMARY KEY, column1 INT, %s)", config.getDBName(), config.getTableName(), values));
 
-        connection.close();
+            connection.close();
+        }
+        catch (Exception ex)
+        {
+            if (connection != null)
+            {
+                connection.close();
+            }
+            throw ex;
+        }
     }
 
     public void prepareStatements()

@@ -47,93 +47,127 @@ public class CockroachDBTransactionPlugin extends CockroachDBPluginBase
     @Override
     public String readSingle(String key) throws Exception
     {
-        Connection connection = ds.getConnection();
-
-        ResultSet rs = connection.createStatement().executeQuery(readFromMainQuery + "'" + key + "'");
-        int rsSize = 0;
-        while (rs.next())
+        Connection connection = null;
+        try
         {
-            rsSize++;
-        }
+            connection = ds.getConnection();
 
-        if (rsSize == 0)
-        {
+            ResultSet rs = connection.createStatement().executeQuery(readFromMainQuery + "'" + key + "'");
+            int rsSize = 0;
+            while (rs.next())
+            {
+                rsSize++;
+            }
+
+            if (rsSize == 0)
+            {
+                connection.close();
+                return CacheMiss;
+            }
+
+            if (rsSize > 1)
+            {
+                connection.close();
+                throw new Exception("Expecting only 1 row with a given key: " + key);
+            }
+
             connection.close();
-            return CacheMiss;
+            return ResultOK;
         }
-
-        if (rsSize > 1)
+        catch (Exception ex)
         {
-            connection.close();
-            throw new Exception("Expecting only 1 row with a given key: " + key);
+            if (connection != null)
+            {
+                connection.close();
+            }
+            throw ex;
         }
-
-        connection.close();
-        return ResultOK;
     }
 
     @Override
     public String writeSingle(String key) throws Exception
     {
-        //execute transaction
-        String[] childKeys = new String[config.getColsPerRow()];
-        for (int i = 0; i < config.getColsPerRow(); i++)
+        Connection connection = null;
+        try
         {
-            childKeys[i] = "'" + dataGenerator.getRandomValue() + "'";
-        }
-
-        Connection connection = ds.getConnection();
-
-        connection.setAutoCommit(false);
-
-        CockroachDBRetryableTransaction transaction = conn -> {
-            Statement statement = connection.createStatement();
-
-            // write to main table
-            statement.addBatch(writeToMainQuery + "('" + key + "', " + StringUtils.join(childKeys, ',') + ")");
-
-            // writes to child tables
+            //execute transaction
+            String[] childKeys = new String[config.getColsPerRow()];
             for (int i = 0; i < config.getColsPerRow(); i++)
             {
-                statement.addBatch(String.format(writeToChildQuery, i) + "(" + childKeys[i] + ", 1, '" + dataGenerator.getRandomValue() + "')");
+                childKeys[i] = "'" + dataGenerator.getRandomValue() + "'";
             }
 
-            statement.executeBatch();
-        };
+            connection = ds.getConnection();
 
-        Savepoint sp = connection.setSavepoint("cockroach_restart");
+            connection.setAutoCommit(false);
 
-        while(true) {
-            boolean releaseAttempted = false;
-            try {
-                transaction.run(connection);
-                releaseAttempted = true;
-                connection.releaseSavepoint(sp);
-                break;
-            }
-            catch(SQLException e) {
-                String sqlState = e.getSQLState();
+            Connection closurePtr = connection;
 
-                // Check if the error code indicates a SERIALIZATION_FAILURE.
-                if(sqlState.equals("40001")) {
-                    // Signal the database that we will attempt a retry.
-                    connection.rollback(sp);
-                } else if(releaseAttempted) {
-                    connection.close();
-                    // ResultAmbiguous;
-                    throw e;
-                } else {
-                    connection.close();
-                    // ResultFailed;
-                    throw e;
+            CockroachDBRetryableTransaction transaction = conn -> {
+                Statement statement = closurePtr.createStatement();
+
+                // write to main table
+                statement.addBatch(writeToMainQuery + "('" + key + "', " + StringUtils.join(childKeys, ',') + ")");
+
+                // writes to child tables
+                for (int i = 0; i < config.getColsPerRow(); i++)
+                {
+                    statement.addBatch(String.format(writeToChildQuery, i) + "(" + childKeys[i] + ", 1, '" + dataGenerator.getRandomValue() + "')");
+                }
+
+                statement.executeBatch();
+            };
+
+            Savepoint sp = connection.setSavepoint("cockroach_restart");
+
+            while (true)
+            {
+                boolean releaseAttempted = false;
+                try
+                {
+                    transaction.run(connection);
+                    releaseAttempted = true;
+                    connection.releaseSavepoint(sp);
+                    break;
+                }
+                catch (SQLException e)
+                {
+                    String sqlState = e.getSQLState();
+
+                    // Check if the error code indicates a SERIALIZATION_FAILURE.
+                    if (sqlState.equals("40001"))
+                    {
+                        // Signal the database that we will attempt a retry.
+                        connection.rollback(sp);
+                    }
+                    else if (releaseAttempted)
+                    {
+                        connection.close();
+                        // ResultAmbiguous;
+                        throw e;
+                    }
+                    else
+                    {
+                        connection.close();
+                        // ResultFailed;
+                        throw e;
+                    }
                 }
             }
-        }
-        connection.commit();
-        connection.setAutoCommit(true);
-        connection.close();
+            connection.commit();
+            connection.setAutoCommit(true);
+            connection.close();
 
-        return ResultOK;
+            return ResultOK;
+        }
+        catch (Exception ex)
+        {
+            if (connection != null)
+            {
+                connection.close();
+            }
+            throw ex;
+        }
     }
 
     public void createTables() throws Exception
