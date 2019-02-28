@@ -1,5 +1,7 @@
 dependencies {
     compile project(':ndbench-api')
+    compile project(':ndbench-core')
+
     //Datastax - Cassandra Java driver
     compile group: 'com.datastax.cassandra', name: 'cassandra-driver-core', version: '3.1.0'
 

@@ -1,32 +1,24 @@
 package com.netflix.ndbench.core;
 
-import java.util.Collections;
+import java.util.List;
 import javax.inject.Inject;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.archaius.guice.ArchaiusModule;
-import com.netflix.archaius.test.Archaius2TestConfig;
 import com.netflix.governator.guice.test.ModulesForTesting;
 import com.netflix.governator.guice.test.junit4.GovernatorJunit4ClassRunner;
-import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
-import com.netflix.ndbench.api.plugin.NdBenchMonitor;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.defaultimpl.NdBenchGuiceModule;
 
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({ NdBenchGuiceModule.class, ArchaiusModule.class})
@@ -44,6 +36,13 @@ public class DataBackfillTest
         dataBackfill.stopBackfill();
     }
 
+    @Test
+    public void backfill() throws Exception
+    {
+        NdBenchClient mockClientPlugin = mock(NdBenchClient.class);
+        when(mockClientPlugin.writeSingle(anyString())).thenReturn("foo");
+        dataBackfill.backfill(mockClientPlugin);
+    }
 
     @Test
     public void backfillAsync() throws Exception
@@ -61,5 +60,16 @@ public class DataBackfillTest
         dataBackfill.backfillAsync(mockClientPlugin);
         dataBackfill.stopBackfill();
         dataBackfill.backfillAsync(mockClientPlugin);
+    }
+
+    @Test
+    public void getKeyRangesPerThread()
+    {
+        for (int i = 0; i < 100; i++)
+        {
+            List<Pair<Integer, Integer>> s = dataBackfill.getKeyRangesPerThread(10, 4, 100);
+            s.forEach(st_end -> Assert.assertTrue(st_end.getRight() <= 100));
+            s.forEach(System.out::println);
+        }
     }
 }

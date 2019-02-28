@@ -1,0 +1,15 @@
+apply plugin: 'java'
+
+dependencies {
+    compile project(':ndbench-api')
+    compile project(':ndbench-core')
+
+    compile 'javax.inject:javax.inject'
+    testCompile group: 'com.netflix.archaius', name: 'archaius2-guice', version: '2.1.11'
+
+    //CockroachDB supports the PostgreSQL wire protocol - https://www.cockroachlabs.com/blog/why-postgres/
+    // https://mvnrepository.com/artifact/org.postgresql/postgresql
+    compile group: 'org.postgresql', name: 'postgresql', version: '42.2.5'
+    // JDBC Connection Pool - HikariCP - https://github.com/brettwooldridge/HikariCP
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.1.0'
+}

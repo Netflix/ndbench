@@ -35,7 +35,7 @@ public class EnvParser {
   }
 
   public List<URI> getLocators() throws IOException, URISyntaxException {
-    List<URI> locatorList = new ArrayList<URI>();
+    List<URI> locatorList = new ArrayList<>();
     Map credentials = getCredentials();
     List<String> locators = (List<String>) credentials.get("locators");
     for (String locator : locators) {

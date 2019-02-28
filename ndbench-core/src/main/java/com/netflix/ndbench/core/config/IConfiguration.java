@@ -54,11 +54,10 @@ public interface IConfiguration {
         return Runtime.getRuntime().availableProcessors() * 4;
     }
 
+    //Backfill Settings
     @DefaultValue("1")
-    int getNumBackfill();
-
-    @DefaultValue("1")
-    int getBackfillStartKey();
+    //This configuration usually represents number of workers on your ndbench cluster working on backfill
+    int getBackfillKeySlots();
 
 
     // TEST CASE CONFIG

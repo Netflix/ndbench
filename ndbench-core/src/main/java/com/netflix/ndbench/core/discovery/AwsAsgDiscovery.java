@@ -93,12 +93,9 @@ public class AwsAsgDiscovery implements IClusterDiscovery {
 
             DescribeInstancesResult insRes = ec2Client.describeInstances(insReq);
 
-            Set<String> instanceDnsNames = insRes.getReservations().stream()
+            return insRes.getReservations().stream()
                     .flatMap(r -> r.getInstances().stream())
-                    .map(Instance::getPublicDnsName)
-                    .collect(Collectors.toSet());
-
-            return new ArrayList<>(instanceDnsNames);
+                    .map(Instance::getPublicDnsName).distinct().collect(Collectors.toList());
         }
         catch (Exception e)
         {

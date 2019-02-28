@@ -16,7 +16,6 @@
  */
 package com.netflix.ndbench.core.defaultimpl;
 
-import com.amazonaws.auth.AWSCredentialsProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
@@ -28,6 +27,8 @@ import com.netflix.ndbench.core.config.NdbenchConfigListener;
 import com.netflix.ndbench.core.discovery.*;
 import com.netflix.ndbench.core.generators.DefaultDataGenerator;
 import com.netflix.ndbench.core.monitoring.FakeMonitor;
+import com.netflix.ndbench.core.monitoring.NdBenchDefaultMonitor;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +42,7 @@ public class NdBenchGuiceModule extends AbstractModule {
 
     @Override
     protected void configure() {
-        bind(NdBenchMonitor.class).to(FakeMonitor.class);
+        bind(NdBenchMonitor.class).to(NdBenchDefaultMonitor.class);
         String discoveryEnv = System.getenv(NdBenchConstants.DISCOVERY_ENV);
         logger.info("DISCOVERY_ENV is set to: " + discoveryEnv);
         if (discoveryEnv != null && discoveryEnv.equals(NdBenchConstants.DISCOVERY_ENV_CF)) {

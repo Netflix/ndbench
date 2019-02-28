@@ -7,6 +7,7 @@ import com.datastax.driver.core.*;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
 
 import java.time.Instant;
@@ -27,8 +28,8 @@ public class CassJavaDriverBatch extends CJavaDriverBasePlugin<CassandraGenericC
     protected PreparedStatement writePstmt2;
 
     @Inject
-    public CassJavaDriverBatch(CassJavaDriverManager javaDriverManager, CassandraGenericConfiguration cassConfigs) {
-        super(javaDriverManager, cassConfigs);
+    public CassJavaDriverBatch(CassJavaDriverManager javaDriverManager, IConfiguration coreConfig, CassandraGenericConfiguration cassConfigs) {
+        super(javaDriverManager, coreConfig, cassConfigs);
     }
 
     @Override

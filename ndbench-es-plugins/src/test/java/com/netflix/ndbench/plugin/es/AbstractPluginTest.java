@@ -146,13 +146,9 @@ public class AbstractPluginTest {
             }
 
             @Override
-            public int getNumBackfill() {
-                return 0;
-            }
-
-            @Override
-            public int getBackfillStartKey() {
-                return 0;
+            public int getBackfillKeySlots()
+            {
+                return 1;
             }
 
             @Override

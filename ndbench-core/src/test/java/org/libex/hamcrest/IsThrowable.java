@@ -1,7 +1,7 @@
 package org.libex.hamcrest;
 
-import com.google.common.base.Optional;
 import org.hamcrest.BaseMatcher;
+import org.hamcrest.CoreMatchers;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
@@ -10,7 +10,7 @@ import javax.annotation.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 import javax.annotation.concurrent.ThreadSafe;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
+import java.util.Optional;
 
 @ParametersAreNonnullByDefault
 @ThreadSafe
@@ -18,17 +18,17 @@ public class IsThrowable<T extends Throwable> extends BaseMatcher<Object> {
 
     public static <T extends Throwable> IsThrowable<T> isThrowableOfType(
             Class<T> type) {
-        return new IsThrowable<T>(Optional.of(type), Optional.<String> absent());
+        return new IsThrowable<>(Optional.of(type), Optional.empty());
     }
 
     public static IsThrowable<Throwable> isThrowableWithMessage(String message) {
-        return new IsThrowable<Throwable>(Optional.<Class<Throwable>> absent(),
+        return new IsThrowable<>(Optional.empty(),
                 Optional.of(message));
     }
 
     public static <T extends Throwable> IsThrowable<T> isThrowable(
             Class<T> type, String message) {
-        return new IsThrowable<T>(Optional.of(type), Optional.of(message));
+        return new IsThrowable<>(Optional.of(type), Optional.of(message));
     }
 
     @Nullable
@@ -38,9 +38,8 @@ public class IsThrowable<T extends Throwable> extends BaseMatcher<Object> {
 
     private IsThrowable(Optional<Class<T>> type, Optional<String> message) {
         super();
-        this.type = type.isPresent() ? instanceOf(type.get()) : null;
-        this.message = message.isPresent() ? Matchers.containsString(message
-                .get()) : null;
+        this.type = type.map(CoreMatchers::instanceOf).orElse(null);
+        this.message = message.map(Matchers::containsString).orElse(null);
     }
 
     @Override

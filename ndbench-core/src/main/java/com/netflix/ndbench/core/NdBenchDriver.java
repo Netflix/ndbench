@@ -18,10 +18,10 @@
 package com.netflix.ndbench.core;
 
 import com.google.common.util.concurrent.RateLimiter;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import com.google.inject.Inject;
-import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.google.inject.name.Named;
 import com.netflix.archaius.api.config.SettableConfig;
 import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.DataGenerator;
@@ -44,6 +44,7 @@ import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -60,8 +61,8 @@ public class NdBenchDriver {
     private final AtomicInteger readWorkers = new AtomicInteger(0);
     private final AtomicInteger writeWorkers = new AtomicInteger(0);
 
-    private final AtomicReference<ExecutorService> tpReadRef = new AtomicReference<ExecutorService>(null);
-    private final AtomicReference<ExecutorService> tpWriteRef = new AtomicReference<ExecutorService>(null);
+    private final AtomicReference<ExecutorService> tpReadRef = new AtomicReference<>(null);
+    private final AtomicReference<ExecutorService> tpWriteRef = new AtomicReference<>(null);
 
     private final AtomicBoolean readsStarted = new AtomicBoolean(false);
     private final AtomicBoolean writesStarted = new AtomicBoolean(false);
@@ -72,11 +73,11 @@ public class NdBenchDriver {
     private final AtomicReference<RateLimiter> readLimiter;
     private final AtomicReference<RateLimiter> writeLimiter;
 
-    private final AtomicReference<ExecutorService> timerRef = new AtomicReference<ExecutorService>(null);
+    private final AtomicReference<ExecutorService> timerRef = new AtomicReference<>(null);
     private final RPSCount rpsCount;
 
     private final AtomicReference<NdBenchAbstractClient<?>> clientRef =
-            new AtomicReference<NdBenchAbstractClient<?>>(null);
+            new AtomicReference<>(null);
 
     private final AtomicReference<KeyGenerator> keyGeneratorWriteRef = new AtomicReference<>(null);
     private final AtomicReference<KeyGenerator> keyGeneratorReadRef = new AtomicReference<>(null);
@@ -103,19 +104,16 @@ public class NdBenchDriver {
         this.settableConfig = settableConfig;
         this.rpsCount = new RPSCount(readsStarted, writesStarted, readLimiter, writeLimiter, config, ndBenchMonitor);
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                logger.info("*** shutting down NdBench server since JVM is shutting down");
-                NdBenchDriver.this.stop();
-                try {
-                    NdBenchDriver.this.shutdownClient();
-                    Thread.sleep(2000);
-                } catch (Exception e) {
-                    //ignore
-                }
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            logger.info("*** shutting down NdBench server since JVM is shutting down");
+            NdBenchDriver.this.stop();
+            try {
+                NdBenchDriver.this.shutdownClient();
+                Thread.sleep(2000);
+            } catch (Exception e) {
+                //ignore
             }
-        });
+        }));
     }
 
     public void start(LoadPattern loadPattern, int windowSize, long windowDurationInSec, int bulkSize) {
@@ -222,8 +220,11 @@ public class NdBenchDriver {
             return;
         }
         keyGenerator.init();
-        ExecutorService threadPool = Executors.newFixedThreadPool(numWorkersConfig);
+        ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                                      .setNameFormat("ndbench-"+operation.getClass().getSimpleName()+"-pool-%d")
+                                      .setDaemon(false).build();
 
+        ExecutorService threadPool = Executors.newFixedThreadPool(numWorkersConfig, threadFactory);
         boolean success = tpRef.compareAndSet(null, threadPool);
         if (!success) {
             throw new RuntimeException("Unknown threadpool when performing tpRef CAS operation");
@@ -410,16 +411,16 @@ public class NdBenchDriver {
         /** CODE TO PERIODICALLY LOG RPS */
         ExecutorService timer = timerRef.get();
         if (timer == null) {
-            timer = Executors.newFixedThreadPool(1);
-            timer.submit(new Callable<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    while (!Thread.currentThread().isInterrupted()) {
-                        rpsCount.updateRPS();
-                        Thread.sleep(config.getStatsUpdateFreqSeconds() * 1000);
-                    }
-                    return null;
+            ThreadFactory threadFactory = new ThreadFactoryBuilder()
+                                          .setNameFormat("ndbench-updaterps-pool-%d")
+                                          .setDaemon(false).build();
+            timer = Executors.newFixedThreadPool(1, threadFactory);
+            timer.submit(() -> {
+                while (!Thread.currentThread().isInterrupted()) {
+                    rpsCount.updateRPS();
+                    Thread.sleep(config.getStatsUpdateFreqSeconds() * 1000);
                 }
+                return null;
             });
             timerRef.set(timer);
         }

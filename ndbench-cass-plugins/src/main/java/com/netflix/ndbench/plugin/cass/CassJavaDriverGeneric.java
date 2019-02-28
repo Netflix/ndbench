@@ -26,13 +26,19 @@ import org.slf4j.LoggerFactory;
 import com.datastax.driver.core.BatchStatement;
 import com.datastax.driver.core.BoundStatement;
 import com.datastax.driver.core.ConsistencyLevel;
+import com.datastax.driver.core.Host;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
+
+import static com.netflix.ndbench.core.util.NdbUtil.humanReadableByteCount;
+import static java.util.stream.Collectors.counting;
+import static java.util.stream.Collectors.groupingBy;
 
 @Singleton
 @NdBenchClientPlugin("CassJavaDriverGeneric")
@@ -41,8 +47,8 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
     private static final Logger logger = LoggerFactory.getLogger(CassJavaDriverGeneric.class);
 
     @Inject
-    public CassJavaDriverGeneric(CassJavaDriverManager cassJavaDriverManager, CassandraGenericConfiguration cassConfigs) {
-        super(cassJavaDriverManager, cassConfigs);
+    public CassJavaDriverGeneric(CassJavaDriverManager cassJavaDriverManager, IConfiguration coreConfig, CassandraGenericConfiguration cassConfigs) {
+        super(cassJavaDriverManager, coreConfig, cassConfigs);
     }
 
     @Override
@@ -112,23 +118,51 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
     @Override
     void upsertCF(Session session) {
-        String createTblQuery = "CREATE TABLE IF NOT EXISTS %s (key text, column1 int, %s, PRIMARY KEY ((key), column1)) WITH compression = {'sstable_compression': ''}";
+        String createTblQuery = "CREATE TABLE IF NOT EXISTS %s.%s (key text, column1 int, %s, PRIMARY KEY ((key), column1)) WITH compression = {'sstable_compression': ''}";
 
         String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value"+i+" text").collect(Collectors.joining(", "));
-        session.execute(String.format(createTblQuery, tableName, values));
+        session.execute(String.format(createTblQuery, keyspaceName, tableName, values));
 
     }
 
     @Override
     void prepStatements(Session session) {
 
-        String insertQuery = "INSERT INTO %s (key, column1 , %s ) VALUES (?, ?, %s )";
+        String insertQuery = "INSERT INTO %s.%s (key, column1 , %s ) VALUES (?, ?, %s )";
         int nCols = config.getColsPerRow();
 
         String values = IntStream.range(0, nCols).mapToObj(i -> "value"+i).collect(Collectors.joining(", "));
         String bindValues = IntStream.range(0, nCols).mapToObj(i -> "?").collect(Collectors.joining(", "));
 
-        writePstmt = session.prepare(String.format(insertQuery, tableName, values, bindValues));
-        readPstmt = session.prepare("SELECT * FROM " + tableName + " WHERE key = ?");
+        writePstmt = session.prepare(String.format(insertQuery, keyspaceName, tableName, values, bindValues));
+        readPstmt = session.prepare(String.format("SELECT * FROM %s.%s WHERE key = ?", keyspaceName, tableName));
+    }
+
+    @Override
+    public String getConnectionInfo() {
+        int bytesPerCol=coreConfig.getDataSize();
+        int numColsPerRow=config.getColsPerRow();
+        int numRowsPerPartition=config.getRowsPerPartition();
+        int numPartitions= coreConfig.getNumKeys();
+        int RF = 3;
+        Long numNodes = cluster.getMetadata().getAllHosts()
+                               .stream()
+                               .collect(groupingBy(Host::getDatacenter,counting()))
+                               .values().stream().findFirst().get();
+
+
+        int partitionSizeInBytes = bytesPerCol * numColsPerRow * numRowsPerPartition;
+        long totalSizeInBytes = (long) partitionSizeInBytes * numPartitions * RF;
+        long totalSizeInBytesPerNode = totalSizeInBytes / numNodes;
+
+
+
+        return String.format("Cluster Name - %s : Keyspace Name - %s : CF Name - %s ::: ReadCL - %s : WriteCL - %s ::: " +
+                             "DataSize per Node: ~[%s], Total DataSize on Cluster: ~[%s], Num nodes in C* DC: %s, PartitionSize: %s",
+                             clusterName, keyspaceName, tableName, config.getReadConsistencyLevel(), config.getWriteConsistencyLevel(),
+                             humanReadableByteCount(totalSizeInBytesPerNode),
+                             humanReadableByteCount(totalSizeInBytes),
+                             numNodes,
+                             humanReadableByteCount(partitionSizeInBytes));
     }
 }

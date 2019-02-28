@@ -4,15 +4,12 @@
 package com.netflix.ndbench.plugin.cass;
 
 import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.ConsistencyLevel;
 import com.datastax.driver.core.Host;
 import com.datastax.driver.core.PreparedStatement;
 import com.datastax.driver.core.Session;
-import com.netflix.archaius.api.PropertyFactory;
-import com.netflix.archaius.api.PropertyListener;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
-import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.plugin.configs.CassandraConfigurationBase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
-import org.apache.commons.lang.StringUtils;
 
 /**
  * @author vchella
@@ -36,6 +30,7 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
     protected static final String CacheMiss = null;
     protected final CassJavaDriverManager cassJavaDriverManager;
     protected final C config;
+    protected final IConfiguration coreConfig;
 
     // settings
     protected volatile DataGenerator dataGenerator;
@@ -58,8 +53,9 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
      * @param javaDriverManager
      * @param config
      */
-    protected CJavaDriverBasePlugin(CassJavaDriverManager javaDriverManager, C config) {
+    protected CJavaDriverBasePlugin(CassJavaDriverManager javaDriverManager, IConfiguration coreConfig, C config) {
         this.cassJavaDriverManager = javaDriverManager;
+        this.coreConfig = coreConfig;
         this.config = config;
     }
 
@@ -106,9 +102,12 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
         this.cluster = cassJavaDriverManager.registerCluster(clusterName, clusterContactPoint, connections, port,
                                                              username, password);
         this.session = cassJavaDriverManager.getSession(cluster);
-
-        upsertKeyspace(this.session);
-        upsertCF(this.session);
+        if(config.getCreateSchema())
+        {
+            logger.info("Trying to upsert schema");
+            upsertKeyspace(this.session);
+            upsertCF(this.session);
+        }
     }
 
     abstract void prepStatements(Session session);
