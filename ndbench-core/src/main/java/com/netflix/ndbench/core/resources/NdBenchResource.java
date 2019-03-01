@@ -87,7 +87,7 @@ public class NdBenchResource {
 
         } catch (Exception e) {
             logger.error("Error initializing dynamic plugin from script", e);
-            return sendErrorResponse("script initialization failed for dynamic plugin!"+e);
+            return sendErrorResponse("script initialization failed for dynamic plugin!" + e.getMessage());
 
         }
     }
@@ -105,7 +105,7 @@ public class NdBenchResource {
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
             logger.error("Error starting datafill", e);
-            return  sendErrorResponse("dataFill failed!");
+            return  sendErrorResponse("dataFill failed!" + e.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class NdBenchResource {
             return sendSuccessResponse( "Async data fill started !");
         } catch (Exception e) {
             logger.error("Error starting datafill", e);
-            return  sendErrorResponse("Async dataFill failed to start!");
+            return  sendErrorResponse("Async dataFill failed to start!" + e.getMessage());
         }
     }
 
@@ -139,7 +139,7 @@ public class NdBenchResource {
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
             logger.error("Error starting datafill", e);
-            return sendErrorResponse("dataFill failed!");
+            return sendErrorResponse("dataFill failed!" + e.getMessage());
         }
     }
 
@@ -156,7 +156,7 @@ public class NdBenchResource {
             return sendSuccessResponse("data fill done!");
         } catch (Exception e) {
             logger.error("Error starting datafill", e);
-            return sendErrorResponse("dataFill failed!");
+            return sendErrorResponse("dataFill failed!" + e.getMessage());
         }
     }
 
@@ -172,7 +172,7 @@ public class NdBenchResource {
             return sendSuccessResponse("data fill stop!" );
         } catch (Exception e) {
             logger.error("Error stop datafill", e);
-            return sendErrorResponse("dataFill failed!");
+            return sendErrorResponse("dataFill failed!" + e.getMessage());
         }
     }
 
@@ -190,7 +190,7 @@ public class NdBenchResource {
             return sendSuccessResponse("data fill stop!" );
         } catch (Exception e) {
             logger.error("Error shutdown datafill", e);
-            return sendErrorResponse("dataFill failed!");
+            return sendErrorResponse("dataFill failed!" + e.getMessage());
         }
     }
 
@@ -206,7 +206,7 @@ public class NdBenchResource {
             return sendSuccessResponse("NdBench client initiated!");
         } catch (Exception e) {
             logger.error("Error initializing the client - "+clientName, e);
-            return sendErrorResponse("Client initialization failed!");
+            return sendErrorResponse("Client initialization failed!" + e.getMessage());
         }
     }
 
@@ -328,7 +328,7 @@ public class NdBenchResource {
             return sendSuccessResponse("NdBench test stopped!");
         } catch (Exception e) {
             logger.error("Error stopping NdBench test", e);
-            return sendErrorResponse("NdBench stop failed! "+ e.getMessage());
+            return sendErrorResponse("NdBench stop failed! " + e.getMessage());
         }
     }
 
