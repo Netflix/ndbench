@@ -85,13 +85,14 @@ public class RestUtil {
    public static class Result
     {
         public boolean isSuccess;
-        String message;
+        public String message;
 
         Result(boolean result, String resultMessage)
         {
             this.isSuccess = result;
             this.message=resultMessage;
         }
+
         public Result(boolean result)
         {
             this.isSuccess = result;
