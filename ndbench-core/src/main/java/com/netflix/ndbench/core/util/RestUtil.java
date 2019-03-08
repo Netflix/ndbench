@@ -16,7 +16,11 @@
  */
 package com.netflix.ndbench.core.util;
 
+import org.apache.log4j.DefaultThrowableRenderer;
+
 import javax.ws.rs.core.Response;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 /**
  * @author vchella
@@ -32,6 +36,10 @@ public class RestUtil {
     }
     public static Response sendResult(Result result) {
         return sendResult(result.isSuccess?Response.Status.OK:Response.Status.INTERNAL_SERVER_ERROR,result);
+    }
+    public static Response sendErrorResponse(String errorMessage, Exception exception)
+    {
+        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse(errorMessage, exception));
     }
     public static Response sendErrorResponse(String errorMessage)
     {
@@ -68,10 +76,29 @@ public class RestUtil {
     }
     public static class ErrorResponse extends Result
     {
+        public String detailedMessage = "NA";
+
         public ErrorResponse(String errorMessage)
         {
 
             super(false,errorMessage);
+        }
+
+        public ErrorResponse(String errorMessage, Exception e)
+        {
+            super(false, errorMessage);
+            makeMessage(e);
+        }
+
+        private void makeMessage(Exception e) {
+            if (e != null) {
+                this.message = this.message + " " + e.getMessage() + " !!!  ";
+                if (e.getCause() != null) {
+                    this.message += e.getCause().getMessage();
+                }
+                DefaultThrowableRenderer dtr = new DefaultThrowableRenderer();
+                detailedMessage = Arrays.stream(dtr.doRender(e)).collect(Collectors.joining("\n"));
+            }
         }
     }
     public static class SuccessResponse extends Result
