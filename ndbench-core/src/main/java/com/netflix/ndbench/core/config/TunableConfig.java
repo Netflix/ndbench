@@ -20,8 +20,8 @@ package com.netflix.ndbench.core.config;
  * @author vchella
  */
 public class TunableConfig {
-    int readRateLimit;
-    int writeRateLimit;
+    public int readRateLimit;
+    public int writeRateLimit;
 
     public TunableConfig(IConfiguration configuration)
     {
@@ -29,11 +29,11 @@ public class TunableConfig {
         this.writeRateLimit = configuration.getWriteRateLimit();
     }
 
-    int getReadRateLimit()
+    public int getReadRateLimit()
     {
         return readRateLimit;
     }
-    int getWriteRateLimit()
+    public int getWriteRateLimit()
     {
         return writeRateLimit;
     }
