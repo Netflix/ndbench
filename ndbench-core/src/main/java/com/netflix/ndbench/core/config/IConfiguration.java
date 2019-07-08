@@ -85,6 +85,12 @@ public interface IConfiguration {
     @DefaultValue("5000")
     int getDataSizeUpperBound();
 
+    @DefaultValue("false")
+    boolean isGenerateChecksum();
+
+    @DefaultValue("false")
+    boolean isValidateChecksum();
+
 
     //Tunable configs
     @DefaultValue("100")
@@ -117,5 +123,4 @@ public interface IConfiguration {
      */
     @DefaultValue("0.01")
     Float getAutoTuneWriteFailureRatioThreshold();
-
 }
