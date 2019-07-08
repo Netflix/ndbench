@@ -42,6 +42,7 @@ import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.config.IConfiguration;
+import com.netflix.ndbench.core.util.CheckSumUtil;
 import com.netflix.ndbench.plugin.cass.astyanax.CassA6XManager;
 import com.netflix.ndbench.plugin.configs.CassandraAstynaxConfiguration;
 
@@ -124,6 +125,18 @@ public class CassAstyanaxPlugin implements NdBenchClient {
         if (!result.isEmpty()) {
             if (result.size() < (config.getColsPerRow())) {
                 throw new Exception("Num Cols returned not ok " + result.size());
+            }
+
+            if (coreConfig.isValidateChecksum())
+            {
+                for (int i = 0; i < result.size(); i++)
+                {
+                    String value = result.getColumnByIndex(i).getStringValue();
+                    if (!CheckSumUtil.isChecksumValid(value))
+                    {
+                        throw new Exception(String.format("Value %s is corrupt. Key %s.", value, key));
+                    }
+                }
             }
         } else {
             return CacheMiss;

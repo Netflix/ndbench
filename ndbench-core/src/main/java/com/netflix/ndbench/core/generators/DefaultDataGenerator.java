@@ -32,6 +32,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import com.netflix.ndbench.core.config.IConfiguration;
+import com.netflix.ndbench.core.util.CheckSumUtil;
 import org.joda.time.DateTime;
 
 /**
@@ -120,10 +121,12 @@ public class DefaultDataGenerator implements DataGenerator
     private String generateRandomString(int length)
     {
         StringBuilder builder = new StringBuilder();
-        while (builder.length()<length)
+        while (builder.length() < length)
         {
             builder.append(Long.toHexString(vRandom.nextLong()));
         }
-        return builder.toString().substring(0,length);
+
+        String randomString = builder.toString().substring(0, length);
+        return config.isGenerateChecksum() ? CheckSumUtil.appendCheckSumAndEncodeBase64(randomString, false) : randomString;
     }
 }
