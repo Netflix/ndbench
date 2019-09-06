@@ -26,6 +26,9 @@ import java.util.Base64;
 import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * @author Sumanth Pasupuleti
  *
@@ -33,6 +36,8 @@ import java.util.zip.Checksum;
  */
 public class CheckSumUtil
 {
+    private static final Logger logger = LoggerFactory.getLogger(CheckSumUtil.class);
+
     /**
      * Generates a checksum of the input string or an abridged version of the input string (depending upon append param)
      * and returns a base64 encoded string of the input string (or an abridged version of it) + checksum.
@@ -81,14 +86,22 @@ public class CheckSumUtil
      */
     public static boolean isChecksumValid(String encodedInput)
     {
-        byte[] inputInBytes = Base64.getDecoder().decode(encodedInput);
-        // assumes last 8 bytes to be checksum and remaining bytes to be the original input string
-        byte[] extractedInputStringInBytes = Arrays.copyOfRange(inputInBytes, 0, inputInBytes.length - 8);
-        byte[] extractedChecksumInBytes = Arrays.copyOfRange(inputInBytes, inputInBytes.length - 8, inputInBytes.length);
+        try
+        {
+            byte[] inputInBytes = Base64.getDecoder().decode(encodedInput);
+            // assumes last 8 bytes to be checksum and remaining bytes to be the original input string
+            byte[] extractedInputStringInBytes = Arrays.copyOfRange(inputInBytes, 0, inputInBytes.length - 8);
+            byte[] extractedChecksumInBytes = Arrays.copyOfRange(inputInBytes, inputInBytes.length - 8, inputInBytes.length);
 
-        Checksum checksum = new CRC32();
-        checksum.update(extractedInputStringInBytes, 0, extractedInputStringInBytes.length);
-        byte[] generatedChecksumInBytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(checksum.getValue()).array();
-        return Arrays.equals(extractedChecksumInBytes, generatedChecksumInBytes);
+            Checksum checksum = new CRC32();
+            checksum.update(extractedInputStringInBytes, 0, extractedInputStringInBytes.length);
+            byte[] generatedChecksumInBytes = ByteBuffer.allocate(Long.SIZE / Byte.SIZE).putLong(checksum.getValue()).array();
+            return Arrays.equals(extractedChecksumInBytes, generatedChecksumInBytes);
+        }
+        catch (Exception ex)
+        {
+            logger.error("Exception during checksum validation for encoded input string: {}", encodedInput, ex);
+            return false;
+        }
     }
 }
