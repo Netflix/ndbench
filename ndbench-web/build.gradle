@@ -20,6 +20,10 @@ dependencies {
     compile 'com.google.inject:guice:4.0'
     compile group: 'com.owlike', name: 'genson', version: '1.4'
 
+    // https://mvnrepository.com/artifact/com.netflix.eureka/eureka-client
+    compile group: 'com.netflix.eureka', name: 'eureka-client', version: '1.9.13'
+
+
 }
 // Gretty allows us to run tomcat from the command line using the "tomcatRun" task.
 Properties development_properties = new Properties()

@@ -34,6 +34,7 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPlugin;
 import com.netflix.ndbench.core.config.IConfiguration;
+import com.netflix.ndbench.core.util.CheckSumUtil;
 import com.netflix.ndbench.plugin.configs.CassandraGenericConfiguration;
 
 import static com.netflix.ndbench.core.util.NdbUtil.humanReadableByteCount;
@@ -66,8 +67,24 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
         if (!result.isEmpty())
         {
             nRows = result.size();
-            if (nRows < (config.getRowsPerPartition())) {
+            if (nRows < (config.getRowsPerPartition()))
+            {
                 throw new Exception("Num rows returned not ok " + nRows);
+            }
+
+            if (coreConfig.isValidateChecksum())
+            {
+                for (Row row : result)
+                {
+                    for (int i = 0; i < config.getColsPerRow(); i++)
+                    {
+                        String value = row.getString(i);
+                        if (!CheckSumUtil.isChecksumValid(value))
+                        {
+                            throw new Exception(String.format("Value %s is corrupt. Key %s.", value, key));
+                        }
+                    }
+                }
             }
         }
         else {
