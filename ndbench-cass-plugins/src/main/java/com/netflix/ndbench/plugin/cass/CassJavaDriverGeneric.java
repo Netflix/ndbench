@@ -78,7 +78,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
                 {
                     for (int i = 0; i < config.getColsPerRow(); i++)
                     {
-                        String value = row.getString(i);
+                        String value = row.getString(getValueColumnName(i));
                         if (!CheckSumUtil.isChecksumValid(value))
                         {
                             throw new Exception(String.format("Value %s is corrupt. Key %s.", value, key));
@@ -123,9 +123,14 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
         bStmt.setInt("column1", col);
         for (int i = 0; i < config.getColsPerRow(); i++)
         {
-            bStmt.setString("value"+i, this.dataGenerator.getRandomValue());
+            bStmt.setString(getValueColumnName(i), this.dataGenerator.getRandomValue());
         }
         return bStmt;
+    }
+
+    private String getValueColumnName(int index)
+    {
+        return "value" + index;
     }
 
     @Override
