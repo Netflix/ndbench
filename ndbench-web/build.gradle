@@ -10,7 +10,7 @@ dependencies {
     
     // compile project(':ndbench-dynamodb-plugins')  // Commented as part of https://github.com/Netflix/ndbench/issues/197
     compile project(':ndbench-cockroachdb-plugins')
-//    compile project(':ndbench-dyno-plugins')
+    compile project(':ndbench-dyno-plugins')
     compile project(':ndbench-es-plugins')
     compile project(':ndbench-geode-plugins')
     compile project(':ndbench-janusgraph-plugins')       
