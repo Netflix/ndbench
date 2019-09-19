@@ -17,6 +17,7 @@ package com.netflix.ndbench.plugin.dyno;
 
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.Host;
+import com.netflix.dyno.connectionpool.HostBuilder;
 import com.netflix.dyno.connectionpool.HostSupplier;
 import com.netflix.dyno.jedis.DynoJedisClient;
 import com.netflix.ndbench.api.plugin.DataGenerator;
@@ -64,7 +65,7 @@ public class DynoJedisHashPipeline implements NdBenchClient {
         HostSupplier hSupplier = () -> {
 
             List<Host> hosts = new ArrayList<>();
-            hosts.add(new Host("localhost", 8102, "local-dc", Host.Status.Up));
+            hosts.add(new HostBuilder().setHostname("localhost").setPort(8102).setRack("local-dc").setStatus(Host.Status.Up).createHost());
 
             return hosts;
         };

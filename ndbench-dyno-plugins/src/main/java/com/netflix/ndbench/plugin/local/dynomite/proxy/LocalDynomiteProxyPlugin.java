@@ -18,6 +18,7 @@ package com.netflix.ndbench.plugin.local.dynomite.proxy;
 import com.google.inject.Singleton;
 import com.netflix.dyno.connectionpool.ConnectionPoolConfiguration.LoadBalancingStrategy;
 import com.netflix.dyno.connectionpool.Host;
+import com.netflix.dyno.connectionpool.HostBuilder;
 import com.netflix.dyno.connectionpool.HostSupplier;
 import com.netflix.dyno.connectionpool.OperationResult;
 import com.netflix.dyno.connectionpool.impl.ConnectionPoolConfigurationImpl;
@@ -67,7 +68,7 @@ public class LocalDynomiteProxyPlugin implements NdBenchClient{
         HostSupplier hSupplier = () -> {
 
             List<Host> hosts = new ArrayList<>();
-            hosts.add(new Host("localhost", dynomitePort, "local-dc", Host.Status.Up));
+            hosts.add(new HostBuilder().setHostname("localhost").setPort(dynomitePort).setRack("local-dc").setStatus(Host.Status.Up).createHost());
 
             return hosts;
         };
