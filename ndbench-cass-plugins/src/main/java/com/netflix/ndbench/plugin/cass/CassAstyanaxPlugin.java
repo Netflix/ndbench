@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableMap;
+import com.netflix.astyanax.model.Column;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -131,7 +132,16 @@ public class CassAstyanaxPlugin implements NdBenchClient {
             {
                 for (int i = 0; i < result.size(); i++)
                 {
-                    String value = result.getColumnByIndex(i).getStringValue();
+                    Column<Integer> column = result.getColumnByIndex(i);
+
+                    // validate column name
+                    if (column.getName() != i)
+                    {
+                        throw new Exception(String.format("Column name %d does not match with the expected column name %d", column.getName(), i));
+                    }
+
+                    // validate column value checksum
+                    String value = column.getStringValue();
                     if (!CheckSumUtil.isChecksumValid(value))
                     {
                         throw new Exception(String.format("Value %s is corrupt. Key %s.", value, key));
