@@ -26,6 +26,8 @@ Every config has to be prefixed with configuration prefix mentioned above
 |cass.cfname| 	emp | Destination CF Name|
 |cass.readConsistencyLevel| 	LOCAL_ONE | Read CL|
 |cass.writeConsistencyLevel| 	LOCAL_ONE | Write CL|
+|cass.truststorePath| null | Absolute path of truststore
+|cass.truststorePass| null | Password of truststore
 
 
 #### Cassandra *CassJavaDriverGeneric* Plugin configurations
