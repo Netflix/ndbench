@@ -112,12 +112,12 @@ public class DataBackfill {
                 while (k < endKey && !stop.get()) {
                     try {
                         String key = "T" + k;
-                        String result = backfillOperation.process(client, key);
-                        logger.debug("Backfill Key:" + key + " | Result: " + result);
                         k++;
                         count.incrementAndGet();
+                        String result = backfillOperation.process(client, key);
+                        logger.info("Backfill Key:" + key + " | Result: " + result);
                     } catch (Exception e) {
-                        logger.error("Retrying after failure", e);
+                        logger.error("Exception in processing backfill write. Key: T{}", k, e);
                     }
                 }
 
