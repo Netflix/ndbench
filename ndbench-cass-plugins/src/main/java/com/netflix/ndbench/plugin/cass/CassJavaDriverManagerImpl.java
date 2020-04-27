@@ -3,17 +3,16 @@
  */
 package com.netflix.ndbench.plugin.cass;
 
-import com.datastax.driver.core.Cluster;
-import com.datastax.driver.core.Session;
-import com.datastax.driver.core.PoolingOptions;
-import com.datastax.driver.core.HostDistance;
+import com.datastax.driver.core.*;
 import com.datastax.driver.core.policies.*;
-import com.datastax.driver.core.NettySSLOptions;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslContext;
+
+import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
+import java.io.InputStream;
 import java.security.KeyStore;
-import com.datastax.driver.core.RemoteEndpointAwareJdkSSLOptions;
+import java.security.KeyStoreException;
 
 
 /**
@@ -34,16 +33,22 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
         PoolingOptions poolingOpts = new PoolingOptions()
                                      .setConnectionsPerHost(HostDistance.LOCAL, connections, connections)
                                      .setMaxRequestsPerConnection(HostDistance.LOCAL, 32768);
+        KeyStore ks = null;
+        SSLContext sslContext = null ;
 
-        KeyStore ks = KeyStore.getInstance("JKS");
-        InputStream trustStore = new java.io.FileInputStream(truststorePath);
-        ks.load(trustStore, truststorePass.toCharArray());
-        TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-        tmf.init(ks);
+        try {
+            ks = KeyStore.getInstance("JKS");
+            InputStream trustStore = new java.io.FileInputStream(truststorePath);
+            ks.load(trustStore, truststorePass.toCharArray());
+            TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            tmf.init(ks);
 
-        SslContext sslContext = javax.net.ssl.SSLContext.getInstance("TLS");
-        sslContext.init(null,tmf.getTrustManagers,null);
-
+            sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null,tmf.getTrustManagers(),null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         SSLOptions sslOptions = RemoteEndpointAwareJdkSSLOptions.builder().withSSLContext(sslContext).build();
 
         Cluster.Builder clusterBuilder = Cluster.builder()
