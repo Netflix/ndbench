@@ -46,6 +46,8 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
     protected volatile Session session;
     protected volatile PreparedStatement readPstmt;
     protected volatile PreparedStatement writePstmt;
+    protected volatile String truststorePath;
+    protected volatile String truststorePass;
 
     /**
      * Creates an instance of the abstract CJavaDriverBasePlugin class. Subclasses calling this method should use
@@ -70,6 +72,8 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
         this.connections = config.getConnections();
         this.username = config.getUsername();
         this.password = config.getPassword();
+        this.truststorePath = config.getTruststorePath();
+        this.truststorePass = config.getTruststorePass();
 
         // we do not set ReadConsistencyLevel and WriteConsistencyLevel and MaxColCount here because the
         // enum classes corresponding to the consistency levels differ among the concrete subclasses and because
@@ -100,7 +104,7 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
         logger.info("Cassandra  Cluster: " + clusterName);
 
         this.cluster = cassJavaDriverManager.registerCluster(clusterName, clusterContactPoint, connections, port,
-                                                             username, password);
+                                                             username, password, truststorePath, truststorePass);
         this.session = cassJavaDriverManager.getSession(cluster);
         if(config.getCreateSchema())
         {

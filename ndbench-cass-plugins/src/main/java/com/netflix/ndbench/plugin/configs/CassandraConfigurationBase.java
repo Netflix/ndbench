@@ -75,4 +75,10 @@ public interface CassandraConfigurationBase {
 
     @DefaultValue("true")
     Boolean getCreateSchema();
+
+    @PropertyName(name = "truststorePath")
+    String getTruststorePath();
+
+    @PropertyName(name = "truststorePass")
+    String getTruststorePass();
 }
