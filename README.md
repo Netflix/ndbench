@@ -1,6 +1,6 @@
 # NdBench
 
-[![Build Status](https://travis-ci.org/Netflix/ndbench.svg)](https://travis-ci.org/Netflix/ndbench)
+[![Build Status](https://travis-ci.com/Netflix/ndbench.svg)](https://travis-ci.com/Netflix/ndbench)
 [![Dev chat at https://gitter.im/Netflix/ndbench](https://badges.gitter.im/Netflix/ndbench.svg)](https://gitter.im/Netflix/ndbench?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Apache V2 License](http://img.shields.io/badge/license-Apache%20V2-blue.svg)](https://github.com/Netflix/ndbench/blob/master/LICENSE)
 
