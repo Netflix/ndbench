@@ -46,6 +46,7 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
     protected volatile Session session;
     protected volatile PreparedStatement readPstmt;
     protected volatile PreparedStatement writePstmt;
+    protected volatile boolean allowBetaProtocol;
 
     /**
      * Creates an instance of the abstract CJavaDriverBasePlugin class. Subclasses calling this method should use
@@ -70,6 +71,7 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
         this.connections = config.getConnections();
         this.username = config.getUsername();
         this.password = config.getPassword();
+        this.allowBetaProtocol = config.getAllowBetaProtocol();
 
         // we do not set ReadConsistencyLevel and WriteConsistencyLevel and MaxColCount here because the
         // enum classes corresponding to the consistency levels differ among the concrete subclasses and because
@@ -99,9 +101,12 @@ public abstract class CJavaDriverBasePlugin<C extends CassandraConfigurationBase
     private void initDriver() {
         logger.info("Cassandra  Cluster: " + clusterName);
 
-        this.cluster = cassJavaDriverManager.registerCluster(clusterName, clusterContactPoint, connections, port,
+        this.cluster = cassJavaDriverManager.registerCluster(clusterName, clusterContactPoint, connections, port, allowBetaProtocol,
                                                              username, password);
         this.session = cassJavaDriverManager.getSession(cluster);
+
+        logger.info("Protocol version in use: {}", session.getCluster().getConfiguration().getProtocolOptions().getProtocolVersion());
+
         if(config.getCreateSchema())
         {
             logger.info("Trying to upsert schema");
