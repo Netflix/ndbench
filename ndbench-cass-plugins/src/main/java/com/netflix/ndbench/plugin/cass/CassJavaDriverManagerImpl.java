@@ -20,10 +20,11 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
 
     @Override
     public Cluster registerCluster(String clName, String contactPoint, int connections, int port) {
-        return registerCluster(clName,contactPoint,connections,port,null,null);
+        return registerCluster(clName,contactPoint,connections,port, false, null,null);
     }
-        @Override
-    public Cluster registerCluster(String clName, String contactPoint, int connections, int port, String username, String password) {
+
+    @Override
+    public Cluster registerCluster(String clName, String contactPoint, int connections, int port, boolean allowBetaProtocol, String username, String password) {
     
         PoolingOptions poolingOpts = new PoolingOptions()
                                      .setConnectionsPerHost(HostDistance.LOCAL, connections, connections)
@@ -38,6 +39,10 @@ public class CassJavaDriverManagerImpl implements CassJavaDriverManager {
                 .withLoadBalancingPolicy( new TokenAwarePolicy( new RoundRobinPolicy() ) );
         if ((username != null) && (password != null)) {
             clusterBuilder = clusterBuilder.withCredentials(username, password);
+        }
+
+        if (allowBetaProtocol) {
+            clusterBuilder.allowBetaProtocolVersion();
         }
 
         cluster = clusterBuilder.build();

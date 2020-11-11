@@ -75,4 +75,7 @@ public interface CassandraConfigurationBase {
 
     @DefaultValue("true")
     Boolean getCreateSchema();
+
+    @DefaultValue("false")
+    Boolean getAllowBetaProtocol();
 }
