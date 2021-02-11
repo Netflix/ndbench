@@ -23,6 +23,13 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 public interface CassandraGenericConfiguration extends CassandraConfigurationBase {
     @DefaultValue("2")
     Integer getRowsPerPartition();
+
     @DefaultValue("5")
     Integer getColsPerRow();
+
+    @DefaultValue("false")
+    Boolean getUseBatchWrites();
+
+    @DefaultValue("false")
+    Boolean getValidateRowsPerPartition();
 }
