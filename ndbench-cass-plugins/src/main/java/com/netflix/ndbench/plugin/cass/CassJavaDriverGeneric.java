@@ -67,7 +67,7 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
         if (!result.isEmpty())
         {
             nRows = result.size();
-            if (nRows < (config.getRowsPerPartition()))
+            if (config.getValidateRowsPerPartition() && nRows < (config.getRowsPerPartition()))
             {
                 throw new Exception("Num rows returned not ok " + nRows);
             }
@@ -99,14 +99,19 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
     {
         if(config.getRowsPerPartition() > 1)
         {
-            BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
-            batch.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
-            for (int i = 0; i < config.getRowsPerPartition(); i++)
-            {
-                batch.add(getWriteBStmt(key,i));
+            if (config.getUseBatchWrites()) {
+                BatchStatement batch = new BatchStatement(BatchStatement.Type.UNLOGGED);
+                batch.setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel()));
+                for (int i = 0; i < config.getRowsPerPartition(); i++) {
+                    batch.add(getWriteBStmt(key, i));
+                }
+                session.execute(batch);
+                batch.clear();
+            } else {
+                session.execute(getWriteBStmt(key, dataGenerator.getRandomInteger() % config.getRowsPerPartition())
+                        .setConsistencyLevel(ConsistencyLevel.valueOf(config.getWriteConsistencyLevel())));
+
             }
-            session.execute(batch);
-            batch.clear();
         }
         else
         {
