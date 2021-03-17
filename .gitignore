@@ -15,3 +15,7 @@ ndbench-cli/src/test/
 ndbench-core/out/
 ndbench-web/out/
 .vscode/*
+
+
+# publishing secrets
+secrets/signing-key
