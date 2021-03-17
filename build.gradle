@@ -8,7 +8,7 @@ buildscript {
 }
 
 plugins {
-    id 'nebula.netflixoss' version '5.1.1'
+    id 'nebula.netflixoss' version '9.3.0'
 
 }
 
@@ -35,7 +35,6 @@ subprojects {
     apply plugin: 'java'
     apply plugin: 'idea'
     apply plugin: 'eclipse'
-    apply plugin: 'nebula.compile-api'
     apply plugin: 'pmd'
 
     group = "com.netflix.${githubProjectName}"
@@ -60,6 +59,9 @@ subprojects {
 
       // Archaius-2
       compile group: 'com.netflix.archaius', name: 'archaius2-core', version: '2.1.11'
+      compile group: 'com.netflix.archaius', name: 'archaius2-api', version: '2.1.11'
+
+      compile 'org.apache.commons:commons-lang3:3.3.2'
 
       //Unit Testing
       testCompile 'org.jmockit:jmockit:1.19'
@@ -71,5 +73,9 @@ subprojects {
 
       compile  'javax.inject:javax.inject:1'
 
+    }
+
+    pmd {
+        ignoreFailures = true
     }
 }

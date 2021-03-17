@@ -57,6 +57,8 @@ dependencies {
     testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
     // enables junit rule that spins up / tears down a one-node dockerized  elastic search cluster for testing
     testCompile 'com.palantir.docker.compose:docker-compose-rule-junit4:0.31.1'
+    testCompile 'com.palantir.docker.compose:docker-compose-rule-core:0.31.1'  // was brought up as runtime transitively and used in compile classpath
+    testCompile 'commons-io:commons-io:2.4' // was brought up as runtime transitively and used in compile classpath
     //
     testCompile 'com.netflix.governator:governator-test-junit'
     testCompile 'io.rest-assured:rest-assured:3.0.1'
