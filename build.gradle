@@ -1,6 +1,11 @@
 
 buildscript {
-    repositories { jcenter() }
+    repositories {
+        mavenCentral()
+        maven {
+            url 'https://plugins.gradle.org/m2'
+        }
+    }
     dependencies {
        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:latest.release'
        classpath 'org.gretty:gretty:3.0.1'
@@ -44,6 +49,20 @@ subprojects {
 
     repositories {
         mavenCentral()
+        /**
+         * This repository locates artifacts that don't exist in maven central but we had to backup from jcenter or palantir repositories
+         * The exclusiveContent makes sure that we don't hit this repository for other dependencies
+         */
+        exclusiveContent {
+            forRepository {
+                maven {
+                    url "https://artifactory-oss.prod.netflix.net/artifactory/required-jcenter-modules-backup"
+                }
+            }
+            filter {
+                includeGroupByRegex "com\\.palantir\\.docker.*"
+            }
+        }
     }
 
     dependencies {
