@@ -129,16 +129,7 @@ public class NDBenchConfigResource {
                 if (entry.getKey()!=null && !entry.getKey().isEmpty()
                         && entry.getValue()!=null && !entry.getValue().isEmpty()) {
 
-                        settableConfig.setProperty(NdBenchConstants.PROP_NAMESPACE +entry.getKey(), entry.getValue());
-                    switch (entry.getKey())
-                    {
-                        case NdBenchConstants.READ_RATE_LIMIT:
-                            ndBenchDriver.onReadRateLimitChange();
-                            break;
-                        case NdBenchConstants.WRITE_RATE_LIMIT:
-                            ndBenchDriver.onWriteRateLimitChange();
-                            break;
-                    }
+                    settableConfig.setProperty(NdBenchConstants.PROP_NAMESPACE +entry.getKey(), entry.getValue());
                 }
             }
             return sendSuccessResponse("Tunable Properties have been applied");

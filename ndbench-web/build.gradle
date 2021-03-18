@@ -1,5 +1,9 @@
 apply plugin: 'war'
-apply plugin: "org.akhikhl.gretty"
+apply plugin: 'org.gretty'
+
+repositories {
+    jcenter()
+}
 
 dependencies {
     compile project(':ndbench-api')
@@ -30,7 +34,7 @@ Properties development_properties = new Properties()
 development_properties.load(new FileInputStream(file("src/main/resources/laptop.properties")))
 gretty {
     contextPath = '/'
-    servletContainer = 'tomcat8'
+    servletContainer = 'tomcat85'
     systemProperties = development_properties
     scanDirs = ['**/src/main/webapp/**']
     scanDependencies = true
@@ -38,7 +42,7 @@ gretty {
     // http://akhikhl.github.io/gretty-doc/Gretty-configuration.html
 }
 configurations {
-      grettyRunnerTomcat8 {
+      grettyRunnerTomcat85 {
            exclude group: 'org.slf4j', module: 'log4j-over-slf4j'
          }
     }
