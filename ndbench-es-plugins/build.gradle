@@ -56,9 +56,9 @@ dependencies {
     // enables junit rule that spins up / tears down a one-node dockerized  elastic search cluster for testing
     // we check in these dependency jars to git to fix issue #254 (https://github.com/Netflix/ndbench/issues/254)
     // once palantir/docker-compose-rule publishes artifacts to Maven Central, we can revert to the commented artifact coordinates
-    testCompile files('libs/docker-compose-rule-junit4-0.31.1.jar') // 'com.palantir.docker.compose:docker-compose-rule-junit4:0.31.1'
-    testCompile files('libs/docker-compose-rule-core-0.31.1.jar')   // 'com.palantir.docker.compose:docker-compose-rule-core:0.31.1'
-    testCompile 'commons-io:commons-io:2.4'                         // was brought up as runtime transitively and used in compile classpath
+    testCompile 'com.palantir.docker.compose:docker-compose-rule-junit4:0.31.1'
+    testCompile 'com.palantir.docker.compose:docker-compose-rule-core:0.31.1'  // was brought up as runtime transitively and used in compile classpath
+    testCompile 'commons-io:commons-io:2.4' // was brought up as runtime transitively and used in compile classpath
 
     testCompile 'com.netflix.governator:governator-test-junit'
     testCompile 'io.rest-assured:rest-assured:3.0.1'

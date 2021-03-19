@@ -2,7 +2,7 @@ apply plugin: 'war'
 apply plugin: 'org.gretty'
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
