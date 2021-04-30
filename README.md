@@ -37,6 +37,10 @@ The stable version of NdBench is the [master]( https://github.com/Netflix/ndbenc
 
 For questions or contributions, please consider reading [CONTRIBUTING.md](CONTRIBUTING.md).
 
+## Installation requirements
+
+Java 8 recommended. Java 11+ is not supported.
+
 ## Build
 
 NdBench comes with a Gradle wrapper
