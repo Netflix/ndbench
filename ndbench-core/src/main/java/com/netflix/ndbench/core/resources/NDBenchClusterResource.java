@@ -17,7 +17,9 @@
 package com.netflix.ndbench.core.resources;
 
 import com.google.inject.Inject;
+import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
+import com.netflix.ndbench.core.util.RestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +29,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static com.netflix.ndbench.core.util.RestUtil.sendErrorResponse;
-import static com.netflix.ndbench.core.util.RestUtil.sendJson;
-
 /**
  * @author vchella
  */
@@ -38,14 +37,16 @@ public class NDBenchClusterResource {
     private static final Logger logger = LoggerFactory.getLogger(NDBenchClusterResource.class);
 
     private final IClusterDiscovery clusterManager;
+    private final IConfiguration config;
 
     @Context
     HttpServletRequest request;
 
 
     @Inject
-    public NDBenchClusterResource(IClusterDiscovery clusterManager) {
+    public NDBenchClusterResource(IClusterDiscovery clusterManager, IConfiguration config) {
         this.clusterManager = clusterManager;
+        this.config = config;
 
     }
     @Path("/list")
@@ -77,4 +78,11 @@ public class NDBenchClusterResource {
         }
     }
 
+    private Response sendErrorResponse(String errorMessage) {
+        return RestUtil.sendErrorResponse(errorMessage, this.config);
+    }
+
+    private <T> Response sendJson(T object) {
+        return RestUtil.sendJson(object, this.config);
+    }
 }

@@ -16,6 +16,7 @@
  */
 package com.netflix.ndbench.core.util;
 
+import com.netflix.ndbench.core.config.IConfiguration;
 import org.apache.log4j.DefaultThrowableRenderer;
 
 import javax.ws.rs.core.Response;
@@ -26,53 +27,41 @@ import java.util.stream.Collectors;
  * @author vchella
  */
 public class RestUtil {
-
-
-    public static Response sendResult(Response.Status status, Result result) {
-        return sendResponse(status, result);
+    public static Response sendResult(Response.Status status, Result result, IConfiguration config) {
+        return sendResponse(status, result, config);
     }
-    public static Response sendResult(int status, Result result) {
-        return sendResponse(status, result);
+    public static Response sendResult(Result result, IConfiguration config) {
+        return sendResult(result.isSuccess?Response.Status.OK:Response.Status.INTERNAL_SERVER_ERROR,result, config);
     }
-    public static Response sendResult(Result result) {
-        return sendResult(result.isSuccess?Response.Status.OK:Response.Status.INTERNAL_SERVER_ERROR,result);
-    }
-    public static Response sendErrorResponse(String errorMessage, Exception exception)
+    public static Response sendErrorResponse(String errorMessage, Exception exception, IConfiguration config)
     {
-        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse(errorMessage, exception));
+        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse(errorMessage, exception), config);
     }
-    public static Response sendErrorResponse(String errorMessage)
+    public static Response sendErrorResponse(String errorMessage, IConfiguration config)
     {
-        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse(errorMessage));
+        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse(errorMessage), config);
     }
-    public static Response sendSuccessResponse(String returnMessage)
+    public static Response sendSuccessResponse(String returnMessage, IConfiguration config)
     {
-        return sendResponse(Response.Status.OK, new SuccessResponse(returnMessage));
+        return sendResponse(Response.Status.OK, new SuccessResponse(returnMessage), config);
     }
-    public static Response sendErrorResponse()
+    public static Response sendErrorResponse(IConfiguration config)
     {
-        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse("Unknown error occurred."));
+        return sendResponse(Response.Status.INTERNAL_SERVER_ERROR, new ErrorResponse("Unknown error occurred."), config);
     }
-     static <T> Response sendResponse(Response.Status status, T object)
+    static <T> Response sendResponse(Response.Status status, T object, IConfiguration config)
     {
-        return Response.status(status).type(javax.ws.rs.core.MediaType.APPLICATION_JSON).entity(object)
-                .header("Access-Control-Allow-Origin","*")
-                .header("Access-Control-Allow-Headers","Content-Type, content-type")
-                .header("Access-Control-Allow-Method","OPTIONS, GET, POST")
-                .build();
-    }
-     static <T> Response sendResponse(int status, T object)
-    {
-        return Response.status(status).type(javax.ws.rs.core.MediaType.APPLICATION_JSON).entity(object)
-                .header("Access-Control-Allow-Origin","*")
-                .header("Access-Control-Allow-Headers","Content-Type, content-type")
-                .header("Access-Control-Allow-Method","OPTIONS, GET, POST")
-                .build();
+        Response.ResponseBuilder builder = Response.status(status).type(javax.ws.rs.core.MediaType.APPLICATION_JSON).entity(object);
+        if (!config.getAllowedOrigins().isEmpty()) {
+            builder = builder.header("Access-Control-Allow-Origin", config.getAllowedOrigins())
+                    .header("Vary", "Origin");
+        }
+        return builder.build();
     }
 
-    public static <T> Response sendJson(T object)
+    public static <T> Response sendJson(T object, IConfiguration config)
     {
-        return sendResponse(Response.Status.OK, object);
+        return sendResponse(Response.Status.OK, object, config);
     }
     public static class ErrorResponse extends Result
     {

@@ -23,6 +23,7 @@ import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.config.TunableConfig;
+import com.netflix.ndbench.core.util.RestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +31,6 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.Map;
-
-import static com.netflix.ndbench.core.util.RestUtil.*;
 
 
 /**
@@ -145,4 +144,15 @@ public class NDBenchConfigResource {
         return sendSuccessResponse("OK");
     }
 
+    private Response sendSuccessResponse(String returnMessage) {
+        return RestUtil.sendSuccessResponse(returnMessage, this.config);
+    }
+
+    private Response sendErrorResponse(String errorMessage) {
+        return RestUtil.sendErrorResponse(errorMessage, this.config);
+    }
+
+    private <T> Response sendJson(T object) {
+        return RestUtil.sendJson(object, this.config);
+    }
 }
