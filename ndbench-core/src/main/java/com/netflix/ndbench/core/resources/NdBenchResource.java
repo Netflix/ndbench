@@ -28,6 +28,7 @@ import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.generators.KeyGenerator;
 import com.netflix.ndbench.core.util.LoadPattern;
+import com.netflix.ndbench.core.util.RestUtil;
 import com.sun.jersey.multipart.FormDataParam;
 import groovy.lang.GroovyClassLoader;
 import org.slf4j.Logger;
@@ -40,8 +41,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.netflix.ndbench.core.util.RestUtil.*;
-
+import static com.netflix.ndbench.core.util.RestUtil.Result;
+import static com.netflix.ndbench.core.util.RestUtil.ErrorResponse;
+import static com.netflix.ndbench.core.util.RestUtil.SuccessResponse;
 
 /**
  * @author vchella, pencal
@@ -530,5 +532,21 @@ public class NdBenchResource {
             return new ErrorResponse(returnMsg);
         }
         return new SuccessResponse("");
+    }
+
+    private Response sendSuccessResponse(String returnMessage) {
+        return RestUtil.sendSuccessResponse(returnMessage, this.config);
+    }
+
+    private Response sendErrorResponse(String errorMessage, Exception e) {
+        return RestUtil.sendErrorResponse(errorMessage, e, this.config);
+    }
+
+    private Response sendResult(RestUtil.Result result) {
+        return RestUtil.sendResult(result, this.config);
+    }
+
+    private <T> Response sendJson(T object) {
+        return RestUtil.sendJson(object, this.config);
     }
 }

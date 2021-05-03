@@ -123,4 +123,10 @@ public interface IConfiguration {
      */
     @DefaultValue("0.01")
     Float getAutoTuneWriteFailureRatioThreshold();
+
+    /**
+     * Service config
+     */
+    @DefaultValue("")
+    String getAllowedOrigins();
 }
