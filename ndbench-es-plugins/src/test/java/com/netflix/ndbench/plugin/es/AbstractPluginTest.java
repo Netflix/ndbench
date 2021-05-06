@@ -227,6 +227,8 @@ public class AbstractPluginTest {
                 return maxAcceptableWriteFailures;
             }
 
+            @Override
+            public String getAllowedOrigins() { return ""; }
         };
     }
 }
