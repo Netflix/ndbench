@@ -14,5 +14,7 @@ dependencies {
     compile 'com.datastax.cassandra:cassandra-driver-mapping:3.+'
     compile 'com.datastax.cassandra:cassandra-driver-extras:3.+'
 
+    compile 'com.datastax.oss:java-driver-core:4.+'
+
 
 }

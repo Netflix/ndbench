@@ -16,6 +16,7 @@
  */
 package com.netflix.ndbench.plugin.cass;
 
+import com.netflix.ndbench.plugin.QueryUtil;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -145,24 +146,19 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
     @Override
     void upsertCF(Session session) {
-        String createTblQuery = "CREATE TABLE IF NOT EXISTS %s.%s (key text, column1 int, %s, PRIMARY KEY ((key), column1)) WITH compression = {'sstable_compression': ''}";
-
-        String values = IntStream.range(0, config.getColsPerRow()).mapToObj(i -> "value"+i+" text").collect(Collectors.joining(", "));
-        session.execute(String.format(createTblQuery, keyspaceName, tableName, values));
-
+        session.execute(QueryUtil.upsertCFQuery(config.getColsPerRow(), keyspaceName, tableName));
     }
 
     @Override
     void prepStatements(Session session) {
 
-        String insertQuery = "INSERT INTO %s.%s (key, column1 , %s ) VALUES (?, ?, %s )";
         int nCols = config.getColsPerRow();
 
         String values = IntStream.range(0, nCols).mapToObj(i -> "value"+i).collect(Collectors.joining(", "));
         String bindValues = IntStream.range(0, nCols).mapToObj(i -> "?").collect(Collectors.joining(", "));
 
-        writePstmt = session.prepare(String.format(insertQuery, keyspaceName, tableName, values, bindValues));
-        readPstmt = session.prepare(String.format("SELECT * FROM %s.%s WHERE key = ?", keyspaceName, tableName));
+        writePstmt = session.prepare(String.format(QueryUtil.INSERT_QUERY, keyspaceName, tableName, values, bindValues));
+        readPstmt = session.prepare(String.format(QueryUtil.READ_QUERY, keyspaceName, tableName));
     }
 
     @Override
