@@ -69,9 +69,6 @@ public abstract class CJavaDriverBasePlugin<Config extends CassandraConfiguratio
         this.session = cassJavaDriverManager.getSession(sessionName, sessionContactPoint, connections, port,
                 username, password);
 
-        logger.info("Protocol version in use: {}", session.getContext().getConfig().getDefaultProfile().getString(
-                DefaultDriverOption.PROTOCOL_VERSION));
-
         if(config.getCreateSchema())
         {
             logger.info("Trying to upsert schema");
