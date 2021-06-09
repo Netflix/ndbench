@@ -57,9 +57,9 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
     @Override public String readSingle(String key) throws Exception {
         int nRows = 0;
 
-        BoundStatement bStmt = readPstmt.bind();
-        bStmt.setString("key", key);
-        bStmt.setConsistencyLevel(consistencyLevel(config.getReadConsistencyLevel()));
+        BoundStatement bStmt = readPstmt.bind()
+                .setString("key", key)
+                .setConsistencyLevel(consistencyLevel(config.getReadConsistencyLevel()));
         ResultSet rs = session.execute(bStmt);
         List<Row> result=rs.all();
 
@@ -130,12 +130,10 @@ public class CassJavaDriverGeneric extends CJavaDriverBasePlugin<CassandraGeneri
 
     private BoundStatement getWriteBStmt(String key, int col)
     {
-        BoundStatement bStmt = writePstmt.bind();
-        bStmt.setString("key", key);
-        bStmt.setInt("column1", col);
+        BoundStatement bStmt = writePstmt.bind().setString("key", key).setInt("column1", col);
         for (int i = 0; i < config.getColsPerRow(); i++)
         {
-            bStmt.setString(getValueColumnName(i), this.dataGenerator.getRandomValue());
+            bStmt = bStmt.setString(getValueColumnName(i), this.dataGenerator.getRandomValue());
         }
         return bStmt;
     }
