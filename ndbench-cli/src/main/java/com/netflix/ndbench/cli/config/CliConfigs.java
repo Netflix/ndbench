@@ -52,4 +52,12 @@ public interface CliConfigs {
     @PropertyName(name = "clientName")
     @DefaultValue("InMemoryTest")
     String getClientName();
+
+    @PropertyName(name = "writeRateLimit")
+    @DefaultValue("100")
+    String getReadRateLimit();
+
+    @PropertyName(name = "readRateLimit")
+    @DefaultValue("100")
+    String getWriteRateLimit();
 }
