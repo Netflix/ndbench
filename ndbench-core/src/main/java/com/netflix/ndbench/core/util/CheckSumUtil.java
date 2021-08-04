@@ -82,10 +82,14 @@ public class CheckSumUtil
      * Base64 decodes the input string, extracts original string bytes and checksum bytes, generates checksum from the
      * extracted string bytes, and validates against the extracted checksum bytes.
      * @param encodedInput
-     * @return true if the checksum is correct, false otherwise
+     * @return true if the checksum is correct or if the encodedInput is null, false otherwise.
      */
     public static boolean isChecksumValid(String encodedInput)
     {
+        // ignore null input
+        if (null == encodedInput)
+            return true;
+
         try
         {
             byte[] inputInBytes = Base64.getDecoder().decode(encodedInput);
