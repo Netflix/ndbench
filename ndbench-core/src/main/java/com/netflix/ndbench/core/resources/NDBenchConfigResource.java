@@ -20,7 +20,6 @@ import com.google.inject.Inject;
 import com.netflix.archaius.api.config.SettableConfig;
 import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
-import com.netflix.ndbench.core.NdBenchDriver;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.config.TunableConfig;
 import com.netflix.ndbench.core.util.RestUtil;
@@ -41,16 +40,13 @@ public class NDBenchConfigResource {
     private static final Logger logger = LoggerFactory.getLogger(NDBenchConfigResource.class);
 
     private final IConfiguration config;
-    private final NdBenchDriver ndBenchDriver;
     private final SettableConfig settableConfig;
 
     @Inject
     public NDBenchConfigResource(IConfiguration config,
-                                 NdBenchDriver ndBenchDriver,
                                  @RuntimeLayer SettableConfig settableConfig
                                  ) {
         this.config = config;
-        this.ndBenchDriver = ndBenchDriver;
         this.settableConfig = settableConfig;
 
     }
