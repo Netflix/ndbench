@@ -52,10 +52,6 @@ public class RestUtil {
     static <T> Response sendResponse(Response.Status status, T object, IConfiguration config)
     {
         Response.ResponseBuilder builder = Response.status(status).type(javax.ws.rs.core.MediaType.APPLICATION_JSON).entity(object);
-        if (!config.getAllowedOrigins().isEmpty()) {
-            builder = builder.header("Access-Control-Allow-Origin", config.getAllowedOrigins())
-                    .header("Vary", "Origin");
-        }
         return builder.build();
     }
 

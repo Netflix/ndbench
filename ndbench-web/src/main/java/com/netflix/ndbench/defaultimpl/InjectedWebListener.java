@@ -44,8 +44,12 @@ public class InjectedWebListener extends GuiceServletContextListener
         protected void configureServlets()
         {
             Map<String, String> params = new HashMap<>();
-            params.put(PackagesResourceConfig.PROPERTY_PACKAGES, "unbound");
-            params.put("com.sun.jersey.config.property.packages", "com.netflix.ndbench.core.resources");
+            String packages =
+                "com.netflix.ndbench.core.resources;" +
+                "com.netflix.ndbench.core.filters;";
+            params.put(PackagesResourceConfig.PROPERTY_PACKAGES, packages);
+            params.put(PackagesResourceConfig.PROPERTY_CONTAINER_RESPONSE_FILTERS,
+                "com.netflix.ndbench.core.filters.CorsResponseFilter");
             params.put(ServletContainer.PROPERTY_FILTER_CONTEXT_PATH, "/REST");
             serve("/REST/*").with(GuiceContainer.class, params);
         }
