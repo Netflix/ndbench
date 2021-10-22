@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2021 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,15 +16,13 @@
  */
 package com.netflix.ndbench.plugin.es;
 
-import org.elasticsearch.client.RestClient;
-
 public class WriteResult {
     /**
-     * This constant is provided as a place holder (constant) return value  for
-     * {@link EsWriter#writeDocument(RestClient, String, Boolean)} so that for now we effectively ignore
-     * numRejectedExecutionExceptions -- artificially considering them to be zero.  At some future time
+     * This constant is provided as a placeholder (constant) return value for
+     * {@link EsWriter#writeDocument} so that for now we effectively ignore
+     * numRejectedExecutionExceptions -- artificially considering them to be zero. At some future time
      * these exceptions should affect what write rate we recommend during auto-tuning (i.e., if we see these
-     * exceptions occuring we might want to back off on the rate.)
+     * exceptions occurring we might want to back off on the rate.)
      */
     public static final WriteResult PROVISIONAL_RESULT_THAT_ASSUMES_ALL_WENT_WELL = new WriteResult(0);
 
@@ -36,8 +34,6 @@ public class WriteResult {
 
     @Override
     public String toString() {
-        return "WriteResult{" +
-                "numRejectedExecutionExceptions=" + numRejectedExecutionExceptions +
-                '}';
+        return "WriteResult{numRejectedExecutionExceptions=" + numRejectedExecutionExceptions + "}";
     }
 }

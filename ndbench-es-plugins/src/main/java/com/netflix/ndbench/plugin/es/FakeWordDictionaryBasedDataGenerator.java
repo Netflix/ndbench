@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2021 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -41,13 +41,11 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
     final static int MAX_PAD_CHARS = 10;
     final static int DEFAULT_PAD_CHARS = 4;
 
-
     private final char firstValidChar;
     private final char lastValidChar;
     private final DataGenerator dataGeneratorDelegate;
     private final int expectedSizeOfRandomValues;
     private final String[] words;
-
 
     /**
      * variables that help define the domain of generated fake word values.
@@ -101,11 +99,9 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
         return retval;
     }
 
-
     String[] getWords() {
         return words;
     }
-
 
     /**
      * Create a fake word dictionary with 4 pad characters which may be any between 'a' and 'j' (a sample pool of 10).
@@ -120,7 +116,6 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
                 defaultLastValidCharForSuffixes);
     }
 
-
     FakeWordDictionaryBasedDataGenerator(DataGenerator dataGenerator,
                                          int expectedSizeOfRandomValues,
                                          int numPadChars,
@@ -133,7 +128,6 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
         this.expectedSizeOfRandomValues = expectedSizeOfRandomValues;
         words = getWordArray(numPadChars);
     }
-
 
     @Override
     public String getRandomString() {
@@ -155,7 +149,7 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
             buf.append(" ");
         }
 
-        return buf.toString().substring(0, expectedSizeOfRandomValues);
+        return buf.substring(0, expectedSizeOfRandomValues);
     }
 
     private int getIndexIntoWordArray() {

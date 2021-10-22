@@ -8,11 +8,6 @@ import org.junit.runner.RunWith;
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({})
 public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
-
-    static final String ELASTICSEARCH = "elasticsearch";
-    private static final String ES_HOST_PORT = "http://localhost:9200";
-
-
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidIndexRollSettingsGreaterThan1440() throws Exception {
         EsRestPlugin plugin = getPlugin(/* specify host and avoid discovery mechanism */"localhost",
@@ -29,7 +24,6 @@ public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
         plugin.init(null);
     }
 
-
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidIndexRollSettingsDoesntEvenlyDivide1440() throws Exception {
         EsRestPlugin plugin = getPlugin(/* specify host and avoid discovery mechanism */"localhost",
@@ -45,14 +39,5 @@ public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {
                 false, 0, 443);
         plugin.init(null);
     }
-
-
-    private void testCanReadWhatWeJustWroteUsingPlugin(EsRestPlugin plugin) throws Exception {
-        String writeResult = plugin.writeSingle("the-key").toString();
-        assert writeResult.contains("numRejectedExecutionExceptions=0");
-
-        assert plugin.readSingle("the-key").equals(EsRestPlugin.RESULT_OK);
-    }
-
 }
 

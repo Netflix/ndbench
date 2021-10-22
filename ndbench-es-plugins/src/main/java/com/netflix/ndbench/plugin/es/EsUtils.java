@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2021 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -18,10 +18,11 @@ package com.netflix.ndbench.plugin.es;
 
 import com.google.gson.Gson;
 import com.netflix.ndbench.api.plugin.DataGenerator;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,25 +34,37 @@ import java.util.Map;
 
 public class EsUtils {
     private static final Logger logger = LoggerFactory.getLogger(EsUtils.class);
+    private static final Gson gsonObj = new Gson();
 
-    private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
-    private static final MediaType XML = MediaType.parse("application/xml; charset=utf-8");
+    public static String httpGetWithRetries(String url, long maxRetries, long delayBetweenRetriesMs) throws IOException {
+        HttpGet get = new HttpGet(url);
 
-    private static final OkHttpClient httpClient = new OkHttpClient();
+        try (CloseableHttpClient httpClient =
+                     HttpClients.custom().setRetryHandler((exception, executionCount, context) -> {
+                         if (executionCount > maxRetries) {
+                             return false;
+                         } else {
+                             try {
+                                 if (delayBetweenRetriesMs > 0) {
+                                     Thread.sleep(delayBetweenRetriesMs);
+                                 }
+                             } catch (InterruptedException e) {
+                                 e.printStackTrace();
+                             }
+                             return true;
+                         }
+                     }).build();
+             CloseableHttpResponse response = httpClient.execute(get)) {
+            int statusCode = response.getStatusLine().getStatusCode();
+            if (statusCode != 200 && statusCode != 201) {
+                String message = String.format("Unable to read data from %s, response code: %d", url, statusCode);
+                logger.error(message);
+                throw new IOException(message);
+            }
 
-    public static String httpGet(String url) throws IOException {
-        Request request = new Request.Builder().url(url).get().build();
-        Response response = httpClient.newCall(request).execute();
-
-        if (response.code() != 200 && response.code() != 201) {
-            String message = "Unable to read data from " + url + " response code was: " + response.code();
-            logger.error(message);
-            throw new IOException(message);
+            return EntityUtils.toString(response.getEntity());
         }
-
-        return response.body().string();
     }
-
 
     public static Map<String, Object> createDefaultDocument(DataGenerator dataGenerator) {
         Map<String, Object> defaultDocument = new HashMap<>();
@@ -81,17 +94,16 @@ public class EsUtils {
         defaultDocumentNested0.put("long0", dataGenerator.getRandomIntegerValue());
         defaultDocument.put("nested0", defaultDocumentNested0);
 
-
         return defaultDocument;
     }
 
-
     public static String createDefaultDocumentAsJson(DataGenerator dataGenerator, Boolean isBulkWrite) {
         Map<String, Object> doc = createDefaultDocument(dataGenerator);
+
         if (isBulkWrite) {
             doc.put("isBulkWrite", "true");
         }
-        Gson gsonObj = new Gson();         // TODO - consider making one static instance since this class is thread safe
+
         return gsonObj.toJson(doc);
     }
 }

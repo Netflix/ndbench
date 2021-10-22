@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2021 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@ import com.netflix.archaius.api.annotations.Configuration;
 import com.netflix.archaius.api.annotations.DefaultValue;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
 
-@Configuration(prefix =  NdBenchConstants.PROP_NAMESPACE +  "es")
-public interface IEsConfig {
+@Configuration(prefix = NdBenchConstants.PROP_NAMESPACE + "es")
+public interface EsConfig {
     @DefaultValue("es_ndbench_test")
     String getCluster();
 
@@ -38,12 +38,10 @@ public interface IEsConfig {
     @DefaultValue("9200")
     Integer getRestClientPort();
 
-
     @DefaultValue("0")
     Integer getBulkWriteBatchSize();
 
-
-  /**
+    /**
      * If true then the values of string type fields written to Elasticsearch will be random, and if false the generated
      * values for  fields  will be formed using a 'dictionary' of fake words starting with a defined prefix.
      * This dictionary would contain entries such as: dog-ab, dog-yb, dog-bt, etc.
@@ -76,11 +74,9 @@ public interface IEsConfig {
      * as the return value.
      * <p>
      * Example 2:  if you wanted to roll 7 times per hour you would be out of luck as 1440/(7*24) is not an integer.
-     *
      */
     @DefaultValue("0")
     Integer getIndexRollsPerDay();
-
 
     /**
      * Sets the corresponding parameter in the underlying
@@ -147,7 +143,7 @@ public interface IEsConfig {
      * <p>
      * Note that the API for the
      * <a href="https://artifacts.elastic.co/javadoc/org/elasticsearch/client/elasticsearch-rest-client/5.6.4/org/elasticsearch/client/RestClientBuilder.html">
-     *     Elasticsearch Rest client builder </a> requires values given in milliseconds, whereas this API requires you
+     * Elasticsearch Rest client builder </a> requires values given in milliseconds, whereas this API requires you
      * to specify the value in seconds.
      * <p>
      * Also note:  generally, it is advisable to set all timeout parameters that  affect the underlying connection to the

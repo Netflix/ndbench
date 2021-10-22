@@ -1,10 +1,8 @@
 apply plugin: 'java'
 
-
 dependencies {
     compile project(':ndbench-api')
     compile project(':ndbench-core')
-    compile 'org.elasticsearch:elasticsearch:2.3.3'
 }
 
 sourceSets {
@@ -30,39 +28,28 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
-
 repositories {
     mavenCentral()
 }
 
 
 dependencies {
-    compile 'org.elasticsearch.client:rest:5.4.2'
-    compile 'org.elasticsearch.client:transport:5.4.1'
-    //
-    compile 'javax.inject:javax.inject:1'
-    compile 'com.squareup.okhttp3:okhttp:3.8.0'
-    compile 'org.apache.logging.log4j:log4j-to-slf4j:2.8.2'
+    compile 'org.apache.httpcomponents:httpclient:4.5.13'
+    compile 'org.apache.logging.log4j:log4j-to-slf4j:2.14.1'
 
     compile 'com.netflix.ndbench:ndbench-core:latest.release' // Needed so we can pull in IClusterDiscovery interface
 
-    // Test dependencies
-    //
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.6.2'
     testCompile 'org.mockito:mockito-all:1.+'
     testCompile 'com.netflix.governator:governator-test-junit:[1.15.3,)'
 
-    // enables junit rule that spins up / tears down a one-node dockerized  elastic search cluster for testing
+    // Enables junit rule that spins up / tears down a one-node dockerized Elasticsearch cluster for testing
     // we check in these dependency jars to git to fix issue #254 (https://github.com/Netflix/ndbench/issues/254)
-    // once palantir/docker-compose-rule publishes artifacts to Maven Central, we can revert to the commented artifact coordinates
+    // once palantir/docker-compose-rule publishes artifacts to Maven Central,
+    // we can revert to the commented artifact coordinates
     testCompile 'com.palantir.docker.compose:docker-compose-rule-junit4:0.31.1'
-    testCompile 'com.palantir.docker.compose:docker-compose-rule-core:0.31.1'  // was brought up as runtime transitively and used in compile classpath
-    testCompile 'commons-io:commons-io:2.4' // was brought up as runtime transitively and used in compile classpath
-
-    testCompile 'com.netflix.governator:governator-test-junit'
-    testCompile 'io.rest-assured:rest-assured:3.0.1'
-    testCompile 'com.netflix.governator:governator-jetty:latest.release'
+    testCompile 'com.palantir.docker.compose:docker-compose-rule-core:0.31.1'
 }
 
 
