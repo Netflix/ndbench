@@ -49,7 +49,7 @@ public class EsUtils {
                                      Thread.sleep(delayBetweenRetriesMs);
                                  }
                              } catch (InterruptedException e) {
-                                 e.printStackTrace();
+                                 logger.warn("Exception waiting for the next retry", e);
                              }
                              return true;
                          }

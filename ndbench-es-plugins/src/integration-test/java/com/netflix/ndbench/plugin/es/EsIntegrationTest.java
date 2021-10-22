@@ -24,7 +24,7 @@ public class EsIntegrationTest extends AbstractPluginIntegrationTest {
             throw new IllegalStateException("Docker was not detected in your environment");
         }
         if (StringUtils.isNotEmpty(System.getenv("ES_NDBENCH_NO_DOCKER"))) {
-            throw new IllegalStateException("Docker was not detected in your environment");
+            throw new IllegalStateException("ES_NDBENCH_NO_DOCKER is configured to skip integration test");
         }
 
         String localRestEndpoint = "http://localhost:9200";
@@ -45,7 +45,7 @@ public class EsIntegrationTest extends AbstractPluginIntegrationTest {
                 docker.containers().container(ELASTICSEARCH).stop();
             }
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException("Exception when trying to stop Docker container", e);
+            throw new RuntimeException("Exception trying to stop Docker container", e);
         }
     }
 
