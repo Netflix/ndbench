@@ -11,21 +11,20 @@ import javax.inject.Inject;
 
 /**
  * Verifies that system properties may be used to set values returned by dynamic proxies generated from
- * {@link IEsConfig},using the namespace prefix "ndbench.config.es".
- *
+ * {@link EsConfig},using the namespace prefix "ndbench.config.es".
  */
 @RunWith(GovernatorJunit4ClassRunner.class)
-@ModulesForTesting({NfndbenchEsModule.class, ArchaiusModule.class})
+@ModulesForTesting({EsModule.class, ArchaiusModule.class})
 public class ConfigurationPropertiesTest {
     static {
         System.setProperty("ndbench.config.es.connectTimeoutSeconds", "777");
     }
 
     @Inject
-    IEsConfig esConfig;
+    EsConfig esConfig;
 
     @Test
-    public void testInvokingProcessMethodOnWriteOperationSetsNewRateLimit() throws Exception {
+    public void testInvokingProcessMethodOnWriteOperationSetsNewRateLimit() {
         assert (esConfig.getConnectTimeoutSeconds() == 777);
         assert (esConfig.getConnectionRequestTimeoutSeconds() == 120);
         assert (esConfig.getSocketTimeoutSeconds() == 120);

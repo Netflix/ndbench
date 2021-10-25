@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2021 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -23,17 +23,15 @@ import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule
 
 import javax.inject.Singleton;
 
-
 @NdBenchClientPluginGuiceModule
-public final class NfndbenchEsModule extends AbstractModule {
+public final class EsModule extends AbstractModule {
     @Override
     protected void configure() {
     }
 
     @Provides
     @Singleton
-    IEsConfig getEsNfndbenchConfig(ConfigProxyFactory factory) {
-        // Here we turn the config interface into an implementation that can load dynamic properties.
-        return factory.newProxy(IEsConfig.class);
+    EsConfig getEsConfig(ConfigProxyFactory factory) {
+        return factory.newProxy(EsConfig.class);
     }
 }

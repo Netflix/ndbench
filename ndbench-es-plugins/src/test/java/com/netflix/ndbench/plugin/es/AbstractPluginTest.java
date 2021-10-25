@@ -9,12 +9,11 @@ import java.util.List;
 
 
 /**
- * Enables integration tests to run such  that Docker container initialization can be short circuited in favor
- * of running a full Elasticsearch distribution locally, where such distribution is listening on standard ports
- * (9200 for REST and 9300 for transport.)
+ * Enables integration tests to run such  that Docker container initialization can be short-circuited in favor
+ * of running a full Elasticsearch distribution locally, where such distribution is listening on standard ports.
  * <p>
  * To suppress start up of Elasticsearch in Docker, set the environment variable  ES_NDBENCH_NO_DOCKER.
- * The main reason you would want to do this is because the current Docker configuration has some issues with
+ * The main reason you would want to do this is that the current Docker configuration has some issues with
  * being run so that requests can be routed through an HTTP traffic proxy -- which is useful for debugging.
  */
 public class AbstractPluginTest {
@@ -37,13 +36,13 @@ public class AbstractPluginTest {
         }
     }
 
-    protected static IEsConfig getConfig(final int portNum,
-                                         @Nullable final String forcedHostName,
-                                         final String indexName,
-                                         final boolean isBulkWrite,
-                                         final float maxAcceptableWriteFailures,
-                                         final int indexRollsPerHour) {
-        return new IEsConfig() {
+    protected static EsConfig getConfig(final int portNum,
+                                        @Nullable final String hostName,
+                                        final String indexName,
+                                        final boolean isBulkWrite,
+                                        final float maxAcceptableWriteFailures,
+                                        final int indexRollsPerHour) {
+        return new EsConfig() {
             @Override
             public String getCluster() {
                 return "elasticsearch";
@@ -51,7 +50,7 @@ public class AbstractPluginTest {
 
             @Override
             public String getHostName() {
-                return forcedHostName;
+                return hostName;
             }
 
             @Override
@@ -107,17 +106,15 @@ public class AbstractPluginTest {
         };
     }
 
-
     protected static IConfiguration getCoreConfig(final int writeRateLimit,
                                                   final boolean isAutoTuneEnabled,
-                                                  final int autoTuneRampPeriodMillisecs,
-                                                  final int autoTuneIncremenetIntervalMillisecs,
+                                                  final int autoTuneRampPeriodMs,
+                                                  final int autoTuneIncrementIntervalMs,
                                                   final int autoTuneFinalRate,
                                                   float maxAcceptableWriteFailures) {
         return new IConfiguration() {
             @Override
             public void initialize() {
-
             }
 
             @Override
@@ -146,8 +143,7 @@ public class AbstractPluginTest {
             }
 
             @Override
-            public int getBackfillKeySlots()
-            {
+            public int getBackfillKeySlots() {
                 return 1;
             }
 
@@ -187,10 +183,14 @@ public class AbstractPluginTest {
             }
 
             @Override
-            public boolean isGenerateChecksum() { return false; }
+            public boolean isGenerateChecksum() {
+                return false;
+            }
 
             @Override
-            public boolean isValidateChecksum() { return false; }
+            public boolean isValidateChecksum() {
+                return false;
+            }
 
             @Override
             public int getReadRateLimit() {
@@ -209,12 +209,12 @@ public class AbstractPluginTest {
 
             @Override
             public Integer getAutoTuneRampPeriodMillisecs() {
-                return autoTuneRampPeriodMillisecs;
+                return autoTuneRampPeriodMs;
             }
 
             @Override
             public Integer getAutoTuneIncrementIntervalMillisecs() {
-                return autoTuneIncremenetIntervalMillisecs;
+                return autoTuneIncrementIntervalMs;
             }
 
             @Override
@@ -228,7 +228,9 @@ public class AbstractPluginTest {
             }
 
             @Override
-            public String getAllowedOrigins() { return ""; }
+            public String getAllowedOrigins() {
+                return "";
+            }
         };
     }
 }

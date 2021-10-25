@@ -1,5 +1,5 @@
 /*
- *  Copyright 2016 Netflix, Inc.
+ *  Copyright 2021 Netflix, Inc.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,44 +29,41 @@ class EsAutoTuner {
     private final ConstantStepWiseRateIncreaser rateIncreaser;
     private final Float autoTuneFailureRatioThreshold;
 
-
     private static final Logger logger = LoggerFactory.getLogger(EsAutoTuner.class);
 
-
-     // captures  time of first auto-tune recommendation request (made via a call to recommendNewRate);
+    // Captures time of first auto-tune recommendation request (made via a call to recommendNewRate);
     private volatile long timeOfFirstAutoTuneRequest = -1;
-
-
     private volatile boolean crossedAllowedFailureThreshold = false;
 
-    EsAutoTuner(Integer rampPeriodMillisecs,
-                Integer incrementIntervalMillisecs,
+    EsAutoTuner(Integer rampPeriodMs,
+                Integer incrementIntervalMs,
                 Integer initRate,
                 Integer finalRate,
                 Float autoTuneFailureRatioThreshold) {
 
         if (autoTuneFailureRatioThreshold <= 0 || autoTuneFailureRatioThreshold >= 1.0) {
             throw new IllegalArgumentException(
-                    "autoTuneFailureRatioThreshold must be > 0 and < 1.0. Actual was " + autoTuneFailureRatioThreshold);
+                    "autoTuneFailureRatioThreshold must be > 0 and < 1. Actual was " + autoTuneFailureRatioThreshold);
         }
 
         this.autoTuneFailureRatioThreshold = autoTuneFailureRatioThreshold;
         this.rateIncreaser = new ConstantStepWiseRateIncreaser(
-                rampPeriodMillisecs,
-                incrementIntervalMillisecs,
+                rampPeriodMs,
+                incrementIntervalMs,
                 initRate,
                 finalRate);
     }
 
-    /** Recommends the new write rate potentially taking into account the current rate, the result of the last write and
-     *  statistics accumulated to date.   Currently only the success-to-failure ratio is considered and
-     *  compared against {@link com.netflix.ndbench.core.config.IConfiguration#getAutoTuneWriteFailureRatioThreshold()}
-     *
+    /**
+     * Recommends the new write rate potentially taking into account the current rate, the result of the last write and
+     * statistics accumulated to date. Currently only the success-to-failure ratio is considered and
+     * compared against {@link com.netflix.ndbench.core.config.IConfiguration#getAutoTuneWriteFailureRatioThreshold()}
+     * <p>
      * Note that we can ignore the  possible race condition that arises if multiple threads call this method at around
-     * the same time.     In this case two threads will be attempting to set timeOfFirstAutoTuneRequest.. but the
+     * the same time. In this case two threads will be attempting to set timeOfFirstAutoTuneRequest, but the
      * target values they are using to set this variable  be so close it will not affect the desired behavior of the
      * auto-tuning feature.
-     *
+     * <p>
      * Note 2: this method will only be called after the ndbench driver tries to perform a writeSingle operation
      */
     double recommendNewRate(double currentRateLimit, List<WriteResult> event, NdBenchMonitor runStats) {
@@ -94,7 +91,7 @@ class EsAutoTuner {
                 // trying to step wise increase to the max rate.
                 if (crossedAllowedFailureThreshold) {
                     crossedAllowedFailureThreshold = false;
-                    timeOfFirstAutoTuneRequest  = currentTime;
+                    timeOfFirstAutoTuneRequest = currentTime;
                 }
             }
         }

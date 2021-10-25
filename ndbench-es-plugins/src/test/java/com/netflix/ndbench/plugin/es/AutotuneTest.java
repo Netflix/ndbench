@@ -13,70 +13,56 @@ import java.util.List;
 
 public class AutotuneTest extends AbstractPluginTest {
     private static final Logger logger = LoggerFactory.getLogger(AutotuneTest.class);
-	
+
     @Test
     public void testRateStopsIncreasingAfterAcceptableWriteFailureThresholdReached() throws Exception {
-
         NdBenchMonitor noWritesYet = getMonitorInstance(0, 0);
         NdBenchMonitor failuresAlmostAtThreshold = getMonitorInstance(101, 1);
         NdBenchMonitor failuresExactlyAtThreshold = getMonitorInstance(100, 1);
         NdBenchMonitor failuresSlightlyOverThreshold = getMonitorInstance(99, 1);
 
-
-        List<Double> result1 =
-                stepThroughRateIncreases(noWritesYet, noWritesYet, noWritesYet);
+        List<Double> result1 = stepThroughRateIncreases(noWritesYet, noWritesYet, noWritesYet);
         logger.info("result1:" + result1);
         assert (result1.equals(ImmutableList.of(1.0, 2.0, 3.0, 11.0)));
 
-
-        List<Double> result2 =
-                stepThroughRateIncreases(noWritesYet, failuresAlmostAtThreshold, failuresAlmostAtThreshold);
+        List<Double> result2 = stepThroughRateIncreases(noWritesYet, failuresAlmostAtThreshold, failuresAlmostAtThreshold);
         logger.info("result2:" + result2);
         assert (result2.equals(ImmutableList.of(1.0, 2.0, 3.0, 11.0)));
 
-
-        List<Double> result3 =
-                stepThroughRateIncreases(noWritesYet, failuresExactlyAtThreshold, failuresExactlyAtThreshold);
+        List<Double> result3 = stepThroughRateIncreases(noWritesYet, failuresExactlyAtThreshold, failuresExactlyAtThreshold);
         logger.info("result3:" + result3);
-        assert (result3.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one..
+        assert (result3.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one.
 
-
-        List<Double> result4 =
-                stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresSlightlyOverThreshold);
+        List<Double> result4 = stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresSlightlyOverThreshold);
         logger.info("result4:" + result4);
-        assert (result4.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one..
+        assert (result4.equals(ImmutableList.of(1.0, 0.0, 0.0, 1.0)));  // expect passed in current rate (0) after 2nd one.
 
-
-        // This next test verifies that when the failure rate rises above allowed threshold we stop increasing. However,
-        // if at some future time enough successful writes go through to the extent that the rate subsequently
+        // This next test verifies that when the failure rate rises above allowed threshold we stop increasing.
+        // However, if at some future time enough successful writes go through to the extent that the rate subsequently
         // drops below that threshold, we will once again start increasing the rate (if we have not yet reached the
         // max rate.)
-        List<Double> result5 =
-                stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresAlmostAtThreshold);
+        List<Double> result5 = stepThroughRateIncreases(noWritesYet, failuresSlightlyOverThreshold, failuresAlmostAtThreshold);
         logger.info("result5:" + result5);
-        assert (result5.equals(ImmutableList.of(1.0, 0.0, 1.0, 11.0)));  // expect passed in current rate (0) after 2nd one..
+        assert (result5.equals(ImmutableList.of(1.0, 0.0, 1.0, 11.0)));  // expect passed in current rate (0) after 2nd one.
     }
 
     private List<Double> stepThroughRateIncreases(NdBenchMonitor m1,
                                                   NdBenchMonitor m2,
                                                   NdBenchMonitor m3) throws Exception {
-        IEsConfig config =
-                getConfig(9200, "google.com", "junkIndexName", true, 0.01f, 0);
         EsRestPlugin plugin =
                 new EsRestPlugin(
                         getCoreConfig(1, true, 100, 10, 11, 0.01f),
-                        config,
+                        getConfig(9200, "netflix.com", "junkIndexName", true, 0.01f, 0),
                         new MockServiceDiscoverer(9200),
+                        new GenericEsRestClient(),
                         false);
+
         plugin.init(null);
+
         WriteResult okWriteResult = new WriteResult(0);
-
-
         NdBenchMonitor failuresAlmostAtThreshold = getMonitorInstance(101, 1);
 
-
         List<Double> result;
-
         ArrayList<Double> returnValue = new ArrayList<>();
 
         Double res1 = plugin.autoTuneWriteRateLimit(0D, Collections.singletonList(okWriteResult), m1);      // assume current rate is zero
@@ -99,17 +85,14 @@ public class AutotuneTest extends AbstractPluginTest {
     }
 
 
-    NdBenchMonitor getMonitorInstance(final int writeSuccesses, final int writeFailures) {
+    private NdBenchMonitor getMonitorInstance(final int writeSuccesses, final int writeFailures) {
         return new NdBenchMonitor() {
-
             @Override
             public void initialize() {
-
             }
 
             @Override
             public void incReadSuccess() {
-
             }
 
             @Override
@@ -119,7 +102,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void incReadFailure() {
-
             }
 
             @Override
@@ -129,7 +111,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void incWriteSuccess() {
-
             }
 
             @Override
@@ -139,7 +120,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void incWriteFailure() {
-
             }
 
             @Override
@@ -149,7 +129,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void incCacheHit() {
-
             }
 
             @Override
@@ -159,7 +138,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void incCacheMiss() {
-
             }
 
             @Override
@@ -169,7 +147,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void recordReadLatency(long duration) {
-
             }
 
             @Override
@@ -244,17 +221,14 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void setWriteRPS(long writeRPS) {
-
             }
 
             @Override
             public void setReadRPS(long readRPS) {
-
             }
 
             @Override
             public void recordWriteLatency(long duration) {
-
             }
 
             @Override
@@ -264,7 +238,6 @@ public class AutotuneTest extends AbstractPluginTest {
 
             @Override
             public void resetStats() {
-
             }
         };
     }
