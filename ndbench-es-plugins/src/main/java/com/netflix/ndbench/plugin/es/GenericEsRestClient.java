@@ -29,12 +29,14 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
+import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@Singleton
 public class GenericEsRestClient implements EsRestClient {
     private static final BasicHeader APPLICATION_JSON_HEADER = new BasicHeader("Content-Type", "application/json");
     private static final BasicHeader APPLICATION_XNDJSON_HEADER = new BasicHeader("Content-Type", "application/x-ndjson");
@@ -61,7 +63,7 @@ public class GenericEsRestClient implements EsRestClient {
                         .setDefaultRequestConfig(requestConfig)
                         .setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
 
-        customizeHttpClientBuilder(httpClientBuilder);
+        customizeHttpClientBuilder(httpClientBuilder, config);
 
         this.httpClient = httpClientBuilder.build();
     }
@@ -108,8 +110,12 @@ public class GenericEsRestClient implements EsRestClient {
         }
     }
 
-    protected void customizeHttpClientBuilder(HttpClientBuilder clientBuilder) {
-
+    /**
+     * Override this method to add custom configuration to the Apache HttpClient before it is built, called during init phase.
+     * @param clientBuilder - HTTP client builder with preset RequestConfig and 0-retry DefaultHttpRequestRetryHandler
+     * @param config - ES REST plugin configuration
+     */
+    protected void customizeHttpClientBuilder(HttpClientBuilder clientBuilder, EsConfig config) {
     }
 
     protected URI selectHost() {
