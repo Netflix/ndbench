@@ -7,27 +7,34 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Date;
 
+import static org.junit.Assert.*;
+
+
 public class EsWriterTest {
     private static final Logger logger = LoggerFactory.getLogger(EsWriterTest.class);
 
     @Test
     public void verifyConstructIndexName() {
-        assert EsWriter.constructIndexName("foo", 0, new Date(0)).equals("foo");
+        assertEquals("foo", EsWriter.constructIndexName("foo", 0, new Date(0)));
 
         long exactlyHalfAnHourPassedDawnOfTime = 30 * 60 * 1000;
         long oneMsBeforeMidnightOnFirstDayOfTime = 1000 * 60 * 60 * 24 - 1;
 
-        assert EsWriter.constructIndexName("foo", 48, new Date(exactlyHalfAnHourPassedDawnOfTime)).
-                equals("foo-1970-01-01.0001");
+        assertEquals(
+                "foo-1970-01-01.0001",
+                EsWriter.constructIndexName("foo", 48, new Date(exactlyHalfAnHourPassedDawnOfTime)));
 
-        assert EsWriter.constructIndexName("foo", 48, new Date(exactlyHalfAnHourPassedDawnOfTime - 1)).
-                equals("foo-1970-01-01.0000");
+        assertEquals(
+                "foo-1970-01-01.0000",
+                EsWriter.constructIndexName("foo", 48, new Date(exactlyHalfAnHourPassedDawnOfTime - 1)));
 
-        assert EsWriter.constructIndexName("foo", 48, new Date(oneMsBeforeMidnightOnFirstDayOfTime)).
-                equals("foo-1970-01-01.0047");
+        assertEquals(
+                "foo-1970-01-01.0047",
+                EsWriter.constructIndexName("foo", 48, new Date(oneMsBeforeMidnightOnFirstDayOfTime)));
 
-        assert EsWriter.constructIndexName("foo", 48, new Date(oneMsBeforeMidnightOnFirstDayOfTime + 2)).
-                equals("foo-1970-01-02.0000");
+        assertEquals(
+                "foo-1970-01-02.0000",
+                EsWriter.constructIndexName("foo", 48, new Date(oneMsBeforeMidnightOnFirstDayOfTime + 2)));
     }
 
     @Test
@@ -41,12 +48,12 @@ public class EsWriterTest {
             String indexName = EsWriter.constructIndexName("foo", 60 * 24, new Date(msSinceEpochStart));
             msSinceEpochStart = msSinceEpochStart + 60 * 1000;
             indexNames.add(indexName);
-            logger.info("indexName:" + indexName);
+            logger.info("indexName: " + indexName);
         }
 
-        assert indexNames.get(59).equals("foo-1970-01-01.0059");
-        assert indexNames.get(60).equals("foo-1970-01-01.0060");
-        assert indexNames.get(loopTimes - 1).equals("foo-1970-01-01.0599");
+        assertEquals("foo-1970-01-01.0059", indexNames.get(59));
+        assertEquals("foo-1970-01-01.0060", indexNames.get(60));
+        assertEquals("foo-1970-01-01.0599", indexNames.get(loopTimes - 1));
     }
 }
 

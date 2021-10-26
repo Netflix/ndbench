@@ -29,7 +29,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicHeader;
 
-import javax.inject.Singleton;
+import com.google.inject.Singleton;
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;

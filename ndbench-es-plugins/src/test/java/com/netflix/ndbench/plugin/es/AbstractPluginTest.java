@@ -1,25 +1,26 @@
 package com.netflix.ndbench.plugin.es;
 
-import com.google.common.collect.ImmutableList;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 
 import javax.annotation.Nullable;
+import java.util.Collections;
 import java.util.List;
 
 
 /**
- * Enables integration tests to run such  that Docker container initialization can be short-circuited in favor
+ * Enables integration tests to run such that Docker container initialization can be short-circuited in favor
  * of running a full Elasticsearch distribution locally, where such distribution is listening on standard ports.
  * <p>
- * To suppress start up of Elasticsearch in Docker, set the environment variable  ES_NDBENCH_NO_DOCKER.
+ * To suppress start up of Elasticsearch in Docker, set the environment variable ES_NDBENCH_NO_DOCKER.
  * The main reason you would want to do this is that the current Docker configuration has some issues with
  * being run so that requests can be routed through an HTTP traffic proxy -- which is useful for debugging.
  */
 public class AbstractPluginTest {
+    private static final String DEFAULT_DOC_TYPE = "default";
 
     static class MockServiceDiscoverer implements IClusterDiscovery {
-        int port;
+        private int port;
 
         MockServiceDiscoverer(int port) {
             this.port = port;
@@ -27,12 +28,12 @@ public class AbstractPluginTest {
 
         @Override
         public List<String> getApps() {
-            return ImmutableList.of();
+            return Collections.emptyList();
         }
 
         @Override
         public List<String> getEndpoints(String appName, int defaultPort) {
-            return ImmutableList.of("localhost:" + port);
+            return Collections.singletonList("localhost:" + port);
         }
     }
 
@@ -62,6 +63,9 @@ public class AbstractPluginTest {
             public String getIndexName() {
                 return indexName;
             }
+
+            @Override
+            public String getDocumentType() { return DEFAULT_DOC_TYPE; }
 
             @Override
             public Integer getRestClientPort() {
