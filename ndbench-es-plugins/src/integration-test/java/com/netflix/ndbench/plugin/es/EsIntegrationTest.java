@@ -9,6 +9,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 /**
  * Verifies behavior of ES REST plugin by bringing up Elasticsearch in a docker container
  * and operating against that instance.
@@ -72,7 +75,7 @@ public class EsIntegrationTest extends AbstractPluginIntegrationTest {
     private void testVerifySingleWrite(EsRestPlugin plugin) throws Exception {
         String writeResult = plugin.writeSingle("the-key").toString();
 
-        assert writeResult.contains("numRejectedExecutionExceptions=0");
-        assert plugin.readSingle("the-key").equals(EsRestPlugin.RESULT_OK);
+        assertTrue(writeResult.contains("numRejectedExecutionExceptions=0"));
+        assertEquals(EsRestPlugin.RESULT_OK, plugin.readSingle("the-key"));
     }
 }

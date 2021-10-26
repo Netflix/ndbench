@@ -21,8 +21,6 @@ import com.google.inject.Provides;
 import com.netflix.archaius.ConfigProxyFactory;
 import com.netflix.ndbench.api.plugin.annotations.NdBenchClientPluginGuiceModule;
 
-import javax.inject.Singleton;
-
 @NdBenchClientPluginGuiceModule
 public final class EsModule extends AbstractModule {
     @Override
@@ -30,7 +28,6 @@ public final class EsModule extends AbstractModule {
     }
 
     @Provides
-    @Singleton
     EsConfig getEsConfig(ConfigProxyFactory factory) {
         return factory.newProxy(EsConfig.class);
     }

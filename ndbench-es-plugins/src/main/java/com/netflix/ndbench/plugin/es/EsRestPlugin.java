@@ -42,9 +42,8 @@ import java.util.stream.Collectors;
 public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     private static final Logger logger = LoggerFactory.getLogger(EsRestPlugin.class);
 
-    static final String RESULT_OK = "Ok";
+    public static final String RESULT_OK = "Ok";
     public static final int MAX_INDEX_ROLLS_PER_HOUR = 60;
-    private static final String DEFAULT_DOC_TYPE = "default";
 
     private final IClusterDiscovery discoverer;
     private final EsConfig config;
@@ -121,17 +120,16 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
 
         this.esHostPort = hosts.get(0).toString();
         this.connectionInfo = String.format(
-                "Cluster: %s\nTest index URL: %s/%s/%s",
-                this.getClusterOrHostName(), esHostPort, config.getIndexName(), DEFAULT_DOC_TYPE);
+                "Cluster: %s\ntest index URL: %s/%s/%s",
+                this.getClusterOrHostName(), esHostPort, config.getIndexName(), config.getDocumentType());
 
         writer = new EsWriter(
                 config.getIndexName(),
-                DEFAULT_DOC_TYPE,
+                config.getDocumentType(),
                 config.getBulkWriteBatchSize() > 0,
                 indexRollsPerHour,
-                config.getBulkWriteBatchSize(), config.isRandomizeStrings() ?
-                dataGenerator :
-                new FakeWordDictionaryBasedDataGenerator(dataGenerator, coreConfig.getDataSize()));
+                config.getBulkWriteBatchSize(),
+                config.isRandomizeStrings() ? dataGenerator : new FakeWordDictionaryBasedDataGenerator(dataGenerator, coreConfig.getDataSize()));
 
         if (coreConfig.isAutoTuneEnabled()) {
             this.autoTuner = new EsAutoTuner(
@@ -141,7 +139,7 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
                     coreConfig.getAutoTuneFinalWriteRate(),
                     coreConfig.getAutoTuneWriteFailureRatioThreshold());
         } else {
-            // OK if it is null because it will never be used if ! isAutoTuneEnabled
+            // OK if it is null because it will never be used if !isAutoTuneEnabled
             // In fact if we initialized it when autotune is not enabled, then we would
             // enforce needless checks on related parameters that would impose more
             // hassle on the user to configure.
@@ -179,13 +177,13 @@ public class EsRestPlugin implements NdBenchAbstractClient<WriteResult> {
     public String readSingle(String key) throws Exception {
         logger.debug("readSingle key=[{}]", key);
 
-        StatusLine statusLine = this.restClient.readSingleDocument(config.getIndexName(), DEFAULT_DOC_TYPE, key);
+        StatusLine statusLine = this.restClient.readSingleDocument(config.getIndexName(), config.getDocumentType(), key);
 
         logger.debug("readSingle key=[{}] resulted in: {}", key, statusLine);
 
         int responseCode = statusLine.getStatusCode();
         if (responseCode != 200) {
-            throw new RuntimeException("Write operation failed for " + key + ",  code " + responseCode);
+            throw new RuntimeException("Read operation failed for key \"" + key + "\" (HTTP code " + responseCode + ")");
         }
 
         return RESULT_OK;

@@ -1,11 +1,8 @@
 package com.netflix.ndbench.plugin.es;
 
-import com.google.common.collect.ImmutableList;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import static org.junit.Assert.*;
 
 
 public class FakeWordDictionaryBasedDataGeneratorTest {
@@ -14,16 +11,19 @@ public class FakeWordDictionaryBasedDataGeneratorTest {
         String[] array;
 
         array = new FakeWordDictionaryBasedDataGenerator(null, 0, 1, 'x', 'x').getWords();
-        assert array.length == 1;
-        assert array[0].equals("dogx");
+        assertNotNull(array);
+        assertEquals(1, array.length);
+        assertEquals("nflxx", array[0]);
 
         array = new FakeWordDictionaryBasedDataGenerator(null, 0, 2, 'x', 'x').getWords();
-        assert array.length == 1;
-        assert array[0].equals("dogxx");
+        assertNotNull(array);
+        assertEquals(1, array.length);
+        assertEquals("nflxxx", array[0]);
 
         array = new FakeWordDictionaryBasedDataGenerator(null, 0, 2, 'x', 'y').getWords();
-        List<String> words = Arrays.asList(array);
-        assert words.equals(ImmutableList.of("dogxx", "dogxy", "dogyx", "dogyy"));
+        assertNotNull(array);
+        assertEquals(4, array.length);
+        assertArrayEquals(new String[]{"nflxxx", "nflxxy", "nflxyx", "nflxyy"}, array);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -31,18 +31,17 @@ public class FakeWordDictionaryBasedDataGeneratorTest {
         new FakeWordDictionaryBasedDataGenerator(null, 0, 1, 'x', 'a');
     }
 
-    @SuppressWarnings("AssertWithSideEffects")
     @Test
     public void testRandomValues() {
-        FakeWordDictionaryBasedDataGenerator generator = new FakeWordDictionaryBasedDataGenerator(null, 11, 2, 'a', 'c');
-        generator.wordIndexBaseCounter = new AtomicInteger(0);
+        FakeWordDictionaryBasedDataGenerator generator =
+                new FakeWordDictionaryBasedDataGenerator(null, 13, 2, 'a', 'c');
 
-        assert generator.getRandomValue().equals("dogab dogac");
-        assert generator.getRandomValue().equals("dogba dogbb");
-        assert generator.getRandomValue().equals("dogbc dogca");
-        assert generator.getRandomValue().equals("dogcb dogcc");
-        assert generator.getRandomValue().equals("dogaa dogab");
-        assert generator.getRandomValue().equals("dogac dogba");
+        assertEquals("nflxaa nflxab", generator.getRandomValue());
+        assertEquals("nflxac nflxba", generator.getRandomValue());
+        assertEquals("nflxbb nflxbc", generator.getRandomValue());
+        assertEquals("nflxca nflxcb", generator.getRandomValue());
+        assertEquals("nflxcc nflxaa", generator.getRandomValue());
+        assertEquals("nflxab nflxac", generator.getRandomValue());
     }
 }
 

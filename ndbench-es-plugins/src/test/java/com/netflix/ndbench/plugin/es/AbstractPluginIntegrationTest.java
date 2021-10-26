@@ -14,10 +14,10 @@ import java.util.concurrent.TimeUnit;
 
 
 /**
- * Enables integration tests to run such  that Docker container initialization can be short-circuited in favor
+ * Enables integration tests to run such that Docker container initialization can be short-circuited in favor
  * of running a full Elasticsearch distribution locally, where such distribution is listening on standard ports.
  * <p>
- * To suppress start up of Elasticsearch in Docker, set the environment variable  ES_NDBENCH_NO_DOCKER.
+ * To suppress start up of Elasticsearch in Docker, set the environment variable ES_NDBENCH_NO_DOCKER.
  * The main reason you would want to do this is that the current Docker configuration has some issues with
  * being run so that requests can be routed through an HTTP traffic proxy -- which is useful for debugging.
  */
@@ -26,9 +26,9 @@ public class AbstractPluginIntegrationTest extends AbstractPluginTest {
     static final String ELASTICSEARCH = "elasticsearch";
 
     /**
-     * Temporarily shut off mechanism to  detect if docker and docker-compose are not available or not. If these
+     * Temporarily shut off mechanism to detect if docker and docker-compose are not available or not. If these
      * are not available, then we will disable running integration/smoke tests. Docker, and (even more likely)
-     * docker-compose may be unavailable in some  Jenkins and Travis CI environments.
+     * docker-compose may be unavailable in some Jenkins and Travis CI environments.
      */
     protected static boolean isDockerAvailable = true;
 

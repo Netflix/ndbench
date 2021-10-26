@@ -5,6 +5,7 @@ import com.netflix.governator.guice.test.junit4.GovernatorJunit4ClassRunner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({})
 public class EsRestPluginIntegrationTest extends AbstractPluginIntegrationTest {

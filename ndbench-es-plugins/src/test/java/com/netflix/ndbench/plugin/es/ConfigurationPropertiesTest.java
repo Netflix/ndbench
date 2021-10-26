@@ -8,10 +8,12 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 
+import static org.junit.Assert.assertEquals;
+
 
 /**
  * Verifies that system properties may be used to set values returned by dynamic proxies generated from
- * {@link EsConfig},using the namespace prefix "ndbench.config.es".
+ * {@link EsConfig}, using the namespace prefix "ndbench.config.es".
  */
 @RunWith(GovernatorJunit4ClassRunner.class)
 @ModulesForTesting({EsModule.class, ArchaiusModule.class})
@@ -21,14 +23,13 @@ public class ConfigurationPropertiesTest {
     }
 
     @Inject
-    EsConfig esConfig;
+    private EsConfig esConfig;
 
     @Test
-    public void testInvokingProcessMethodOnWriteOperationSetsNewRateLimit() {
-        assert (esConfig.getConnectTimeoutSeconds() == 777);
-        assert (esConfig.getConnectionRequestTimeoutSeconds() == 120);
-        assert (esConfig.getSocketTimeoutSeconds() == 120);
-        assert (esConfig.getMaxRetryTimeoutSeconds() == 120);
+    public void testConfigurationProperties() {
+        assertEquals(777, esConfig.getConnectTimeoutSeconds().intValue());
+        assertEquals(120, esConfig.getConnectionRequestTimeoutSeconds().intValue());
+        assertEquals(120, esConfig.getSocketTimeoutSeconds().intValue());
+        assertEquals(120, esConfig.getMaxRetryTimeoutSeconds().intValue());
     }
 }
-

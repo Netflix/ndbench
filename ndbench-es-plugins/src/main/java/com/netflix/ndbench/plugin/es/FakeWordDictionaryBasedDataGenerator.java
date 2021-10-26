@@ -16,28 +16,30 @@
  */
 package com.netflix.ndbench.plugin.es;
 
-import com.google.common.collect.ImmutableList;
 import com.netflix.ndbench.api.plugin.DataGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
 /**
- * Delegates all method calls except for 'getRandomString()' and   'getRandomValue()'  to  the generator passed to this
- * class's constructor, such that those aforementioned two methods will return a string value that is actually not random,
- * but is instead drawn from a 'dictionary' of fake words starting with a defined prefix. This dictionary would contain
- * entries such as: dog-ab, dog-yb, dog-bt, etc.
+ * Delegates all method calls except for getRandomString and getRandomValue to the generator passed to this
+ * class's constructor, such that those two methods will return a string value that is actually not random,
+ * but is instead drawn from a dictionary of fake words starting with a defined prefix. This dictionary would contain
+ * entries such as "nflxab", "nflxyb", "nflxbt", etc.
  * <p>
  * This helps generate documents whose field content is based on a fixed set of (fake) words. And that results in
- * Lucene indices that are closer to those that result from indexing  documents that contain natural language sentences.
+ * Lucene indices that are closer to those that result from indexing documents that contain natural language sentences.
  * Such indices should be more compact than indices resulting from indexing documents which contain
- * completely random gibberish.
+ * completely random strings.
  */
 class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
+    private static final Logger logger = LoggerFactory.getLogger(FakeWordDictionaryBasedDataGenerator.class);
+
     final static int MAX_PAD_CHARS = 10;
     final static int DEFAULT_PAD_CHARS = 4;
 
@@ -48,72 +50,60 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
     private final String[] words;
 
     /**
-     * variables that help define the domain of generated fake word values.
+     * Constants that help define the domain of generated fake word values.
      */
-    private final static String PREFIX = "dog";
-    private static final char defaultFirstValidCharForSuffixes = 'a';
-    private static final char defaultLastValidCharForSuffixes = 'j';
-
-    private static final Logger logger = LoggerFactory.getLogger(EsRestPlugin.class);
+    private final static String DEFAULT_PREFIX = "nflx";
+    private final static char DEFAULT_FIRST_VALID_CHAR = 'a';
+    private final static char DEFAULT_LAST_VALID_CHAR = 'j';
 
     /**
-     * A counter to index into the next dictionary word to use when requesting a value.. which turns out to not be
-     * so random with this version of DataGenerator.
-     * <p>
-     * Not private so we can set it to a known value during unit tests.
+     * A counter to index into the next dictionary word to use when requesting a value.
      */
-
-    AtomicInteger wordIndexBaseCounter = new AtomicInteger(0);
+    private final AtomicInteger wordIndexBaseCounter = new AtomicInteger(0);
 
     private String[] getWordArray(int numPadChars) {
         if (numPadChars > MAX_PAD_CHARS || numPadChars <= 0) {
-            throw new IllegalArgumentException("numPadChars can't <= zero or > " +
-                    MAX_PAD_CHARS + " (was " + numPadChars + ")");
+            throw new IllegalArgumentException("numPadChars has to be in (0, " + MAX_PAD_CHARS + "], was " + numPadChars);
         }
 
         int numPossibleChars = lastValidChar - firstValidChar + 1;
         if (numPossibleChars <= 0) {
-            throw new IllegalArgumentException("lastValidChar must be >=  firstValidChar");
+            throw new IllegalArgumentException("lastValidChar must be greater or equal to firstValidChar");
         }
 
-        Double howMany = (Math.pow(numPossibleChars, numPadChars));
-        String[] returnArray = new String[howMany.intValue()];
+        int totalGeneratedWords = (int) Math.pow(numPossibleChars, numPadChars);
+        String[] wordsArray = new String[totalGeneratedWords];
 
-        List<String> result = generate(PREFIX, numPadChars, firstValidChar, lastValidChar);
-        assert result.size() == howMany.intValue();
+        List<String> wordsList = generate(DEFAULT_PREFIX, numPadChars, firstValidChar, lastValidChar);
+        assert wordsList.size() == totalGeneratedWords;
 
-
-        logger.info("created FakeWordDictionaryBasedDataGenerator with " + howMany + " words");
-        return result.toArray(returnArray);
+        logger.info("Created FakeWordDictionaryBasedDataGenerator with " + totalGeneratedWords + " words");
+        return wordsList.toArray(wordsArray);
     }
 
     private List<String> generate(String prefix, int remaining, char rangeStart, char rangeEnd) {
         if (remaining <= 0) {
-            return ImmutableList.of(prefix);
+            return Collections.singletonList(prefix);
         }
 
-        List<String> retval = new ArrayList<>();
-        for (char ch = rangeStart; ch <= rangeEnd; ch++) {
-            retval.addAll(generate(prefix + ch, remaining - 1, rangeStart, rangeEnd));
+        List<String> wordsList = new ArrayList<>();
+        for (char c = rangeStart; c <= rangeEnd; c++) {
+            wordsList.addAll(generate(prefix + c, remaining - 1, rangeStart, rangeEnd));
         }
-        return retval;
+
+        return wordsList;
     }
 
     String[] getWords() {
-        return words;
+        return this.words;
     }
 
     /**
      * Create a fake word dictionary with 4 pad characters which may be any between 'a' and 'j' (a sample pool of 10).
-     * This means the size of the dictionary will be 10^4 (10K) words, slightly below the number of words in a  typical
-     * native English speaking adult's vocabulary.
+     * This means the size of the dictionary will be 10^4 words.
      */
     FakeWordDictionaryBasedDataGenerator(DataGenerator dataGenerator, int expectedSizeOfRandomValues) {
-        this(dataGenerator,
-                expectedSizeOfRandomValues,
-                DEFAULT_PAD_CHARS,
-                defaultFirstValidCharForSuffixes,
-                defaultLastValidCharForSuffixes);
+        this(dataGenerator, expectedSizeOfRandomValues, DEFAULT_PAD_CHARS, DEFAULT_FIRST_VALID_CHAR, DEFAULT_LAST_VALID_CHAR);
     }
 
     FakeWordDictionaryBasedDataGenerator(DataGenerator dataGenerator,
@@ -123,10 +113,9 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
                                          char lastValidChar) {
         this.dataGeneratorDelegate = dataGenerator;
         this.firstValidChar = firstValidChar;
-
         this.lastValidChar = lastValidChar;
         this.expectedSizeOfRandomValues = expectedSizeOfRandomValues;
-        words = getWordArray(numPadChars);
+        this.words = getWordArray(numPadChars);
     }
 
     @Override
@@ -135,34 +124,33 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
     }
 
     /**
-     * Return a sentence composed of a space separated sequence of fake words from the dictionary chopped so
-     * that the length is exactly equal to 'expectedSizeOfRandomValues'.
+     * Return a sentence composed of a space separated sequence of fake words from the dictionary cropped so
+     * that the length is exactly equal to expectedSizeOfRandomValues.
      * <p>
-     * Despite the name, this value will NOT be random.
+     * Note: this value will NOT be random.
      */
     @Override
     public String getRandomValue() {
-        StringBuilder buf = new StringBuilder();
-        while (buf.length() < expectedSizeOfRandomValues) {
-            int index = getIndexIntoWordArray();
-            buf.append(words[index]);
-            buf.append(" ");
+        StringBuilder stringBuilder = new StringBuilder();
+        while (stringBuilder.length() < this.expectedSizeOfRandomValues) {
+            stringBuilder.append(getNextWord());
+            stringBuilder.append(" ");
         }
 
-        return buf.substring(0, expectedSizeOfRandomValues);
+        return stringBuilder.substring(0, this.expectedSizeOfRandomValues);
     }
 
-    private int getIndexIntoWordArray() {
-        return Math.abs(wordIndexBaseCounter.incrementAndGet()) % words.length;
+    private String getNextWord() {
+        return this.words[this.wordIndexBaseCounter.getAndIncrement() % this.words.length];
     }
 
     @Override
     public Integer getRandomInteger() {
-        return dataGeneratorDelegate.getRandomInteger();
+        return this.dataGeneratorDelegate.getRandomInteger();
     }
 
     @Override
     public Integer getRandomIntegerValue() {
-        return dataGeneratorDelegate.getRandomIntegerValue();
+        return this.dataGeneratorDelegate.getRandomIntegerValue();
     }
 }
