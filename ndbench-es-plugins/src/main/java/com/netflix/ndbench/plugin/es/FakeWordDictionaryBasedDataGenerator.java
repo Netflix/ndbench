@@ -141,7 +141,8 @@ class FakeWordDictionaryBasedDataGenerator implements DataGenerator {
     }
 
     private String getNextWord() {
-        return this.words[this.wordIndexBaseCounter.getAndIncrement() % this.words.length];
+        return this.words[this.wordIndexBaseCounter.getAndUpdate(
+                currentValue -> (currentValue + 1) % this.words.length)];
     }
 
     @Override
