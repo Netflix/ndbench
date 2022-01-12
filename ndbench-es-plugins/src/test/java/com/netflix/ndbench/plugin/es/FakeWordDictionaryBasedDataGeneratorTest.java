@@ -20,10 +20,17 @@ public class FakeWordDictionaryBasedDataGeneratorTest {
         assertEquals(1, array.length);
         assertEquals("nflxxx", array[0]);
 
-        array = new FakeWordDictionaryBasedDataGenerator(null, 0, 2, 'x', 'y').getWords();
+        FakeWordDictionaryBasedDataGenerator dataGenerator = new FakeWordDictionaryBasedDataGenerator(null, 6, 2, 'x', 'y');
+        array = dataGenerator.getWords();
         assertNotNull(array);
         assertEquals(4, array.length);
         assertArrayEquals(new String[]{"nflxxx", "nflxxy", "nflxyx", "nflxyy"}, array);
+
+        assertEquals("nflxxx", dataGenerator.getRandomString());
+        assertEquals("nflxxy", dataGenerator.getRandomString());
+        assertEquals("nflxyx", dataGenerator.getRandomString());
+        assertEquals("nflxyy", dataGenerator.getRandomString());
+        assertEquals("nflxxx", dataGenerator.getRandomString());
     }
 
     @Test(expected = IllegalArgumentException.class)
