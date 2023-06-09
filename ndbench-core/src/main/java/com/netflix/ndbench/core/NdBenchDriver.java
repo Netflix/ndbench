@@ -89,7 +89,7 @@ public class NdBenchDriver {
     private final SettableConfig settableConfig;
 
     @Inject
-    NdBenchDriver(IConfiguration config,
+    public NdBenchDriver(IConfiguration config,
                   NdBenchMonitor ndBenchMonitor,
                   DataGenerator dataGenerator,
                   @RuntimeLayer SettableConfig settableConfig) {
