@@ -16,13 +16,13 @@
  */
 package com.netflix.ndbench.core.resources;
 
-import com.google.inject.Inject;
 import com.netflix.ndbench.core.config.IConfiguration;
 import com.netflix.ndbench.core.discovery.IClusterDiscovery;
 import com.netflix.ndbench.core.util.RestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;

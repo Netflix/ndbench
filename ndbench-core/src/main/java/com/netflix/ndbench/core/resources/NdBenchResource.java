@@ -17,7 +17,6 @@
 
 package com.netflix.ndbench.core.resources;
 
-import com.google.inject.Inject;
 import com.netflix.ndbench.api.plugin.NdBenchAbstractClient;
 import com.netflix.ndbench.api.plugin.NdBenchClient;
 import com.netflix.ndbench.api.plugin.NdBenchMonitor;
@@ -34,6 +33,7 @@ import groovy.lang.GroovyClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -41,9 +41,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.netflix.ndbench.core.util.RestUtil.Result;
-import static com.netflix.ndbench.core.util.RestUtil.ErrorResponse;
-import static com.netflix.ndbench.core.util.RestUtil.SuccessResponse;
+import static com.netflix.ndbench.core.util.RestUtil.*;
 
 /**
  * @author vchella, pencal

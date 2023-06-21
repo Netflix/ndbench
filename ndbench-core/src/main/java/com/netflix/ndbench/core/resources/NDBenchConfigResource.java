@@ -16,7 +16,6 @@
  */
 package com.netflix.ndbench.core.resources;
 
-import com.google.inject.Inject;
 import com.netflix.archaius.api.config.SettableConfig;
 import com.netflix.archaius.api.inject.RuntimeLayer;
 import com.netflix.ndbench.api.plugin.common.NdBenchConstants;
@@ -26,6 +25,7 @@ import com.netflix.ndbench.core.util.RestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;

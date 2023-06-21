@@ -15,7 +15,7 @@ ndbench-cli/src/test/
 ndbench-core/out/
 ndbench-web/out/
 .vscode/*
-
+.DS_Store
 
 # publishing secrets
 secrets/signing-key
